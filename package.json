@@ -1,0 +1,8 @@
+{
+  "name": "heftology",
+  "private": true,
+  "description": "Heftology — Hefta Crafted Cocktails, Tampa Bay",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  }
+}

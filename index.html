@@ -24,6 +24,15 @@
 
 <link rel="stylesheet" href="styles.css">
 
+
+<!-- Google tag (gtag.js) — replace G-XXXXXXXXXX with your real Measurement ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-XXXXXXXXXX");
+</script>
 </head>
 <body>
 
@@ -121,14 +130,20 @@
 <section class="team-photos" aria-label="Heftology team and craft">
   <div class="team-photos-grid">
     <div class="team-photo-wrap">
-      <img class="team-photo-img" src="images/menu-cocktail-signature.png" alt="Carissa and Michelle, Heftology mixologists" loading="lazy" style="object-position: center 20%;">
+      <picture>
+        <source srcset="images/menu-cocktail-signature.webp" type="image/webp">
+        <img class="team-photo-img" src="images/menu-cocktail-signature.png" alt="Carissa and Michelle, Heftology mixologists" width="800" height="600" loading="lazy" style="object-position: center 20%;">
+      </picture>
       <div class="team-photo-overlay">
         <div class="team-photo-eyebrow">The Duo</div>
         <div class="team-photo-title">Carissa &amp; Michelle</div>
       </div>
     </div>
     <div class="team-photo-wrap">
-      <img class="team-photo-img" src="images/menu-cocktail-house.jpg" alt="Michelle crafting a smoked cocktail" loading="lazy" style="object-position: center top;">
+      <picture>
+        <source srcset="images/menu-cocktail-house.webp" type="image/webp">
+        <img class="team-photo-img" src="images/menu-cocktail-house.jpg" alt="Michelle crafting a smoked cocktail" width="800" height="600" loading="lazy" style="object-position: center top;">
+      </picture>
       <div class="team-photo-overlay">
         <div class="team-photo-eyebrow">The Craft</div>
         <div class="team-photo-title">Smoked Old Fashioned</div>
@@ -201,7 +216,10 @@
   <div class="about-inner">
     <div class="about-visual reveal">
       <div class="about-frame">
-        <img src="images/about-carissa.png" alt="Carissa Hefta, certified mixologist" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;">
+        <picture>
+          <source srcset="images/about-carissa.webp" type="image/webp">
+          <img src="images/about-carissa.png" alt="Carissa Hefta, certified mixologist" width="600" height="800" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;">
+        </picture>
       </div>
       <div class="stat-box">
         <div class="stat-num">2</div>
@@ -229,7 +247,8 @@
       <p class="booking-desc">Tell us a little about what you're planning and we'll get back to you within 24 hours with availability and a custom quote. <strong style="color:var(--white)">Heads up: we're a BYOB service</strong> — you provide the spirits, we handle everything else.</p>
     </div>
     <div class="reveal">
-      <form id="booking-form" novalidate>
+      <form id="booking-form" name="booking" method="POST" netlify action="/thank-you.html" novalidate>
+      <input type="hidden" name="form-name" value="booking">
       <div class="inquiry-form">
         <div class="form-field">
           <label for="field-name">Your Name</label>
@@ -326,38 +345,15 @@
 </div>
 
 <script>
-// Replace with your live inbox (must match footer mailto when you change it).
-const INQUIRY_EMAIL = 'inquiries@heftology.com';
-
 let isOpen = false;
 let isTyping = false;
+let chatHistory = [];
 
-function localBotReply(text) {
-  const t = text.toLowerCase();
-  if (/price|cost|how much|\$|rate|quote/.test(t)) {
-    return "Private events start at $350, corporate at $500, and cocktail classes at $45/person. Weddings are custom — use the booking form below and we’ll reply within 24 hours with a tailored quote.";
-  }
-  if (/service|offer|what do you|do you do/.test(t)) {
-    return "We’re two certified mixologists serving Tampa Bay (and beyond): private parties, weddings, corporate events, and cocktail classes. We’re BYOB — you bring spirits, we bring craft, tools, and the full bar experience. What are you planning?";
-  }
-  if (/book|schedule|availability|hire|contact/.test(t)) {
-    return "The fastest path is the booking form on this page — tell us date, guest count, and venue. You can also email " + INQUIRY_EMAIL + ". We typically respond within a day.";
-  }
-  if (/menu|cocktail|drink|signature|old fashioned|zero|na|non.alc|proof/.test(t)) {
-    return "Highlights: Smoked Old Fashioned, The Riverview, Gulf Coast Mule, Barrel Bloom, Zero-Proof Paloma, and Dark Passage — all customizable, including seasonal and non-alcoholic builds. Want something specific? Ask in your inquiry!";
-  }
-  if (/byob|alcohol|booze|spirit|bring/.test(t)) {
-    return "Yes — Heftology is BYOB. You supply the spirits; we bring expertise, bar tools, mixers, garnishes, and setup so every pour is intentional.";
-  }
-  if (/where|location|tampa|travel|area/.test(t)) {
-    return "We’re based in Tampa Bay and travel throughout Florida; farther events may include a travel fee — share your venue in the form and we’ll confirm.";
-  }
-  return "Thanks for stopping by! For custom quotes and availability, use the booking form or email " + INQUIRY_EMAIL + " — we’ll get back within about 24 hours. Anything else about services or the menu?";
-}
-
-// ── Init ──
+// -- Init --
 window.addEventListener('DOMContentLoaded', () => {
-  appendBotMessage("Hey there! 🍸 Welcome to Heftology. I can answer quick questions about services, pricing, BYOB, and the menu — or point you to the booking form. What can I mix up for you?");
+  const welcome = "Hey there! 🍸 Welcome to Heftology. I can answer quick questions about services, pricing, BYOB, and the menu — or point you to the booking form. What can I mix up for you?";
+  appendBotMessage(welcome);
+  chatHistory.push({ role: "assistant", content: welcome });
 
   const nav = document.getElementById('site-nav');
   const toggle = document.getElementById('nav-menu-toggle');
@@ -376,14 +372,9 @@ window.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
-
-  const bookingForm = document.getElementById('booking-form');
-  if (bookingForm) {
-    bookingForm.addEventListener('submit', handleFormSubmit);
-  }
 });
 
-// ── Toggle ──
+// -- Toggle chat --
 function toggleChat() {
   isOpen = !isOpen;
   const btn = document.getElementById('chat-toggle');
@@ -396,12 +387,12 @@ function toggleChat() {
   if (isOpen) setTimeout(() => document.getElementById('chat-input').focus(), 350);
 }
 
-// ── Append messages ──
+// -- Append messages --
 function appendBotMessage(text) {
   const msgs = document.getElementById('chat-messages');
   const div = document.createElement('div');
   div.className = 'msg bot';
-  div.innerHTML = `<div class="msg-bubble">${text}</div>`;
+  div.innerHTML = '<div class="msg-bubble">' + text + '</div>';
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
@@ -410,7 +401,7 @@ function appendUserMessage(text) {
   const msgs = document.getElementById('chat-messages');
   const div = document.createElement('div');
   div.className = 'msg user';
-  div.innerHTML = `<div class="msg-bubble">${escapeHtml(text)}</div>`;
+  div.innerHTML = '<div class="msg-bubble">' + escapeHtml(text) + '</div>';
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
@@ -420,7 +411,7 @@ function showTyping() {
   const div = document.createElement('div');
   div.className = 'msg bot typing-indicator';
   div.id = 'typing-indicator';
-  div.innerHTML = `<div class="msg-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>`;
+  div.innerHTML = '<div class="msg-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
@@ -434,7 +425,7 @@ function escapeHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── Send ──
+// -- Send --
 async function sendMessage() {
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
@@ -445,64 +436,36 @@ async function sendMessage() {
 
 function sendQuick(text) {
   if (isTyping) return;
-  // Hide quick replies after first use
   document.getElementById('quick-replies').style.display = 'none';
   doSend(text);
 }
 
 async function doSend(text) {
   appendUserMessage(text);
+  chatHistory.push({ role: "user", content: text });
   isTyping = true;
   showTyping();
-  await new Promise((r) => setTimeout(r, 450));
-  removeTyping();
-  isTyping = false;
-  appendBotMessage(localBotReply(text));
-}
 
-// ── Booking form → mailto (works on static hosting) ──
-function handleFormSubmit(e) {
-  e.preventDefault();
-  const name = document.getElementById('field-name').value.trim();
-  const email = document.getElementById('field-email').value.trim();
-  const typeSel = document.getElementById('field-type');
-  const eventType = typeSel.options[typeSel.selectedIndex].text;
-  const guests = document.getElementById('field-guests').value.trim();
-  const eventDate = document.getElementById('field-date').value;
-  const location = document.getElementById('field-location').value.trim();
-  const notes = document.getElementById('field-notes').value.trim();
-
-  if (!name || !email) {
-    alert('Please enter your name and email so we can reply.');
-    return;
+  try {
+    const res = await fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: chatHistory })
+    });
+    const data = await res.json();
+    const reply = data.reply || "Sorry, I could not get a response. Please email inquiries@heftology.com directly.";
+    removeTyping();
+    isTyping = false;
+    appendBotMessage(reply);
+    chatHistory.push({ role: "assistant", content: reply });
+  } catch (err) {
+    removeTyping();
+    isTyping = false;
+    appendBotMessage("Something went wrong. Please email <a href='mailto:inquiries@heftology.com'>inquiries@heftology.com</a> and we will get back to you within 24 hours!");
   }
-
-  const body =
-    'Name: ' + name + '\n' +
-    'Email: ' + email + '\n' +
-    'Event type: ' + eventType + '\n' +
-    'Guest count: ' + (guests || '—') + '\n' +
-    'Event date: ' + (eventDate || '—') + '\n' +
-    'Location / venue: ' + (location || '—') + '\n' +
-    '\nDetails:\n' + (notes || '—');
-
-  const subject = encodeURIComponent('Heftology event inquiry');
-  const mail = 'mailto:' + INQUIRY_EMAIL + '?subject=' + subject + '&body=' + encodeURIComponent(body);
-  window.location.href = mail;
-
-  const btn = document.getElementById('form-submit-btn');
-  const orig = btn.textContent;
-  btn.textContent = '✓ Opening your email app…';
-  btn.style.background = '#2d8c4e';
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.textContent = orig;
-    btn.style.background = '';
-    btn.disabled = false;
-  }, 4000);
 }
 
-// ── Scroll reveals ──
+// -- Scroll reveals --
 const reveals = document.querySelectorAll('.reveal');
 const observer = new IntersectionObserver((entries) => {
   entries.forEach((entry, i) => {

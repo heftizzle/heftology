@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanks for Reaching Out – Heftology</title>
+<meta name="description" content="Inquiry received — Heftology will be in touch within 24 hours.">
+<meta name="theme-color" content="#0A080C">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://www.heftology.com/thank-you.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Dancing+Script:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<!-- GA4 — fire booking_form_submit event on thank-you load -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+  gtag('event', 'booking_form_submit');
+</script>
+<style>
+  .ty-wrap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background: var(--black);
+  }
+  .ty-icon { font-size: 3.5rem; margin-bottom: 1.5rem; }
+  .ty-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--white);
+    letter-spacing: 0.04em;
+    margin-bottom: 1rem;
+  }
+  .ty-title span { color: var(--pink); }
+  .ty-sub {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 1.1rem;
+    color: var(--grey);
+    max-width: 500px;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+  }
+  .ty-rule {
+    width: 60px; height: 2px;
+    background: var(--pink);
+    margin: 0 auto 2.5rem;
+  }
+  .ty-back {
+    display: inline-block;
+    padding: 0.85rem 2.5rem;
+    border: 1px solid var(--pink);
+    color: var(--pink);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .ty-back:hover { background: var(--pink); color: var(--white); }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+  <div class="ty-wrap">
+    <div class="ty-icon">🍸</div>
+    <h1 class="ty-title">You're <span>Confirmed</span></h1>
+    <div class="ty-rule"></div>
+    <p class="ty-sub">Thanks for reaching out! Carissa will review your inquiry and get back to you within 24 hours with availability and a custom quote.</p>
+    <a class="ty-back" href="/">← Back to Heftology</a>
+  </div>
+</main>
+</body>
+</html>

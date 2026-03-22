@@ -1,0 +1,3 @@
+# Static site — drag this folder into Netlify or connect the repo.
+[build]
+  publish = "."

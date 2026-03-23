@@ -33,6 +33,9 @@
   gtag("js", new Date());
   gtag("config", "G-VBYCDBFFM8");
 </script>
+<!-- Calendly -->
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
 </head>
 <body>
 
@@ -239,6 +242,10 @@
       <p class="booking-desc">Tell us a little about what you're planning and we'll get back to you within 24 hours with availability and a custom quote. <strong style="color:var(--white)">Heads up: we're a BYOB service</strong> — you provide the spirits, we handle everything else.</p>
     </div>
     <div class="reveal">
+      <div class="reveal" style="text-align:center;margin-bottom:2.5rem;">
+        <p style="color:var(--grey);font-size:0.95rem;margin-bottom:1.2rem;">Want to talk through your event first? Book a free 30-minute consultation — cameras off, no pressure.</p>
+        <a href="" onclick="Calendly.initPopupWidget({url:'https://calendly.com/carissa-heftology/30min'});return false;" class="btn-primary">Schedule a Free Consultation</a>
+      </div>
       <form id="booking-form" name="booking" method="POST" netlify action="/thank-you.html" novalidate>
       <input type="hidden" name="form-name" value="booking">
       <div class="inquiry-form">

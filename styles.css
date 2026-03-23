@@ -104,49 +104,43 @@ nav {
 .cocktail-desc { font-size: 0.82rem; font-weight: 300; line-height: 1.5; color: var(--grey); }
 .cocktail-tag { font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--black); background: var(--pink); padding: 0.2rem 0.5rem; white-space: nowrap; }
 
-/* ─── ABOUT ─── */
-.about { padding: 8rem 2rem; background: var(--black-mid); }
-.about-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: center; }
-.about-visual { position: relative; }
-.about-frame { aspect-ratio: 3/4; max-width: 360px; background: var(--dark-grey); border: 1px solid rgba(214,59,143,0.2); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-.about-frame::before, .about-frame::after { content: ''; position: absolute; width: 35px; height: 35px; border-color: var(--pink); border-style: solid; opacity: 0.6; }
-.about-frame::before { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
-.about-frame::after  { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
-.frame-placeholder { text-align: center; padding: 2rem; }
-.frame-placeholder span { font-size: 3.5rem; opacity: 0.2; display: block; margin-bottom: 0.8rem; }
-.frame-placeholder p { font-size: 0.75rem; font-weight: 300; letter-spacing: 0.1em; color: rgba(255,255,255,0.2); }
-.stat-box { position: absolute; bottom: -2rem; right: -2rem; background: var(--pink); padding: 1.5rem; text-align: center; }
-.stat-num { font-family: 'Montserrat', sans-serif; font-size: 2.5rem; font-weight: 900; color: var(--black); line-height: 1; }
-.stat-label { font-family: 'Rajdhani', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(0,0,0,0.6); margin-top: 0.3rem; }
-.about-body { font-size: 0.95rem; font-weight: 300; line-height: 1.85; color: var(--grey); margin-top: 1.5rem; }
-.about-body strong { font-weight: 700; color: var(--white); }
-
-/* Meet the Duo (extends .about) */
-.team-duo-inner { max-width: 1100px; margin: 0 auto; }
-.team-duo-header { text-align: center; margin-bottom: 3rem; }
-.team-duo-sub {
+/* ─── ABOUT / MEET THE DUO ─── */
+.about {
+  padding: 8rem 2rem;
+  background: var(--black-mid);
+}
+.about > .team-header,
+.about > .team-cards,
+.about > .team-closing,
+.about > .team-mud {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.team-header { text-align: center; margin-bottom: 3rem; }
+.team-sub {
   font-family: 'Dancing Script', cursive;
   font-size: clamp(1.15rem, 2.5vw, 1.5rem);
   font-weight: 600;
   color: rgba(255,255,255,0.55);
   margin: 0.75rem 0 0;
 }
-.team-duo-rule { margin-left: auto; margin-right: auto; }
-.team-duo-grid {
+.team-header-rule { margin-left: auto; margin-right: auto; }
+.team-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   align-items: stretch;
 }
-.team-profile-card {
+.team-card {
   background: var(--black);
   border: 1px solid rgba(214,59,143,0.12);
   padding: 2rem 1.75rem;
   text-align: center;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
-.team-profile-card:hover { border-color: rgba(214,59,143,0.28); box-shadow: 0 0 28px rgba(214,59,143,0.06); }
-.team-profile-avatar {
+.team-card:hover { border-color: rgba(214,59,143,0.28); box-shadow: 0 0 28px rgba(214,59,143,0.06); }
+.team-card-photo {
   width: 120px;
   height: 120px;
   margin: 0 auto 1.25rem;
@@ -162,14 +156,14 @@ nav {
   background: linear-gradient(145deg, var(--pink) 0%, #c9a227 100%);
   box-shadow: 0 0 24px rgba(214,59,143,0.25);
 }
-.team-profile-name {
+.team-card-name {
   font-family: 'Montserrat', sans-serif;
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--white);
   margin: 0 0 0.35rem;
 }
-.team-profile-title {
+.team-card-role {
   font-family: 'Rajdhani', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
@@ -178,7 +172,7 @@ nav {
   color: var(--pink);
   margin: 0 0 1rem;
 }
-.team-profile-bio {
+.team-card-bio {
   font-size: 0.9rem;
   font-weight: 300;
   line-height: 1.8;
@@ -186,29 +180,29 @@ nav {
   margin: 0;
   text-align: left;
 }
-.team-duo-closing {
+.team-closing {
   text-align: center;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.75;
   color: rgba(255,255,255,0.75);
-  margin: 3rem auto 0;
+  margin: 2.5rem auto 0;
   max-width: 640px;
 }
-.team-duo-photo {
+.team-mud {
   margin: 3rem 0 0;
   padding: 0;
   border: 1px solid rgba(214,59,143,0.15);
   overflow: hidden;
   background: var(--dark-grey);
 }
-.team-duo-photo img {
+.team-mud img {
   display: block;
   width: 100%;
   height: auto;
   vertical-align: middle;
 }
-.team-duo-photo-caption {
+.team-mud-caption {
   font-size: 0.85rem;
   font-weight: 300;
   line-height: 1.65;
@@ -468,9 +462,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .team-photos-grid { grid-template-columns: 1fr; }
   .menu-layout { grid-template-columns: 1fr; gap: 3rem; }
   .menu-sticky { position: static; }
-  .about-inner { grid-template-columns: 1fr; gap: 4rem; }
-  .team-duo-grid { grid-template-columns: 1fr; }
-  .stat-box { right: 0; }
+  .team-cards { grid-template-columns: 1fr; }
   .inquiry-form { grid-template-columns: 1fr; }
   .footer-inner { flex-direction: column; align-items: flex-start; }
   #chat-window { width: calc(100vw - 2rem); right: 1rem; bottom: 5.5rem; }

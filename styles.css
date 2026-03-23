@@ -8,6 +8,7 @@
   --dark-grey:  #1E1520;
   --black:      #0A080C;
   --black-mid:  #130F17;
+  --card-bg:    #1a1a1f;
   --olive:      #7BA05B;
 }
 
@@ -118,11 +119,14 @@ nav {
   margin-right: auto;
 }
 .team-header { text-align: center; margin-bottom: 3rem; }
-.team-sub {
+.about .team-header .section-title {
+  color: var(--white);
+}
+.about .team-header .team-sub {
   font-family: 'Dancing Script', cursive;
   font-size: clamp(1.15rem, 2.5vw, 1.5rem);
   font-weight: 600;
-  color: rgba(255,255,255,0.55);
+  color: var(--white);
   margin: 0.75rem 0 0;
 }
 .team-header-rule { margin-left: auto; margin-right: auto; }
@@ -132,15 +136,19 @@ nav {
   gap: 2rem;
   align-items: stretch;
 }
-.team-card {
-  background: var(--black);
-  border: 1px solid rgba(214,59,143,0.12);
+.about .team-card {
+  background-color: var(--card-bg);
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(255,255,255,0.1);
   padding: 2rem 1.75rem;
   text-align: center;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
-.team-card:hover { border-color: rgba(214,59,143,0.28); box-shadow: 0 0 28px rgba(214,59,143,0.06); }
-.team-card-photo {
+.about .team-card:hover {
+  border-color: rgba(255,255,255,0.18);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 28px rgba(214,59,143,0.12);
+}
+.about .team-card-photo {
   width: 120px;
   height: 120px;
   margin: 0 auto 1.25rem;
@@ -154,25 +162,29 @@ nav {
   letter-spacing: 0.02em;
   color: var(--white);
   background: linear-gradient(145deg, var(--pink) 0%, #c9a227 100%);
-  box-shadow: 0 0 24px rgba(214,59,143,0.25);
+  border: 2px solid rgba(255,255,255,0.22);
+  box-shadow:
+    0 0 0 1px rgba(214,59,143,0.35),
+    0 4px 20px rgba(214,59,143,0.45),
+    0 8px 24px rgba(0,0,0,0.4);
 }
-.team-card-name {
+.about .team-card-name {
   font-family: 'Montserrat', sans-serif;
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--white);
   margin: 0 0 0.35rem;
 }
-.team-card-role {
+.about .team-card-role {
   font-family: 'Rajdhani', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--pink);
+  color: var(--grey);
   margin: 0 0 1rem;
 }
-.team-card-bio {
+.about .team-card-bio {
   font-size: 0.9rem;
   font-weight: 300;
   line-height: 1.8;
@@ -180,12 +192,12 @@ nav {
   margin: 0;
   text-align: left;
 }
-.team-closing {
+.about .team-closing {
   text-align: center;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.75;
-  color: rgba(255,255,255,0.75);
+  color: var(--white);
   margin: 2.5rem auto 0;
   max-width: 640px;
 }

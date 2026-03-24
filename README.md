@@ -6,6 +6,14 @@ Public marketing site for **Heftology — Hefta Crafted Cocktails**: mobile mixo
 
 **Production domain:** [heftology.com](https://www.heftology.com/) (canonical and social meta tags in `index.html` assume `https://www.heftology.com/`).
 
+### Service area (copy alignment)
+
+Heftology serves the **greater Tampa Bay area**. Marketing copy in `index.html` and the chat assistant system prompt in `netlify/functions/chat.js` should stay aligned. Covered locations include Tampa, St. Pete, Clearwater, Dunedin, Safety Harbor, Brandon, Riverview, Valrico, Wesley Chapel, Zephyrhills, Spring Hill, Brooksville, New Port Richey, Tarpon Springs, Sarasota, Bradenton, Lakeland, and surrounding communities.
+
+**Always outside service area** (impractical real-world drive times, regardless of map distance): Orlando, Ocala, Port Charlotte, and anywhere further — politely decline and wish them well finding a local bartender.
+
+**City not on either list:** hand off to **carissa@heftology.com** — Carissa decides edge cases.
+
 ---
 
 ## What this project includes

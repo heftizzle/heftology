@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heftology – Hefta Crafted Cocktails</title>
-<meta name="description" content="Heftology: mobile mixologists and private bartending in Tampa Bay. Hefta Crafted Cocktails — BYOB bar service for weddings, corporate events, and private parties.">
+<meta name="description" content="Heftology: mobile mixologists and private bartending in the greater Tampa Bay area. Hefta Crafted Cocktails — BYOB bar service for weddings, corporate events, and private parties.">
 <meta name="theme-color" content="#0A080C">
 <!-- After your domain is live, update canonical, og:url, og:image, and twitter:image to absolute URLs on that domain. -->
 <link rel="canonical" href="https://www.heftology.com/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Heftology – Hefta Crafted Cocktails">
-<meta property="og:description" content="Traveling mixologists for Tampa Bay and beyond. You bring the spirits; we bring the craft, tools, and experience. Book your event.">
+<meta property="og:description" content="Mobile bartending in the greater Tampa Bay area. You bring the spirits; we bring the craft, tools, and experience. Confirm your venue with carissa@heftology.com.">
 <meta property="og:image" content="https://www.heftology.com/images/menu-cocktail-signature.png">
 <meta property="og:url" content="https://www.heftology.com/">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Heftology – Hefta Crafted Cocktails">
-<meta name="twitter:description" content="Mobile mixologists and private bartending in Tampa Bay.">
+<meta name="twitter:description" content="Mobile mixologists and private bartending in the greater Tampa Bay area. BYOB bar service for private events.">
 <meta name="twitter:image" content="https://www.heftology.com/images/menu-cocktail-signature.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,7 +80,7 @@
       </h1>
       <div class="logo-tagline">Hefta Crafted Cocktails</div>
     </div>
-    <p class="hero-eyebrow">Traveling Mixologists · Tampa Bay &amp; Beyond · You Bring the Booze, We Bring the Craft</p>
+    <p class="hero-eyebrow">Traveling Mixologists · Greater Tampa Bay area · You Bring the Booze, We Bring the Craft</p>
     <div class="hero-divider"><span>✦</span></div>
     <div class="hero-ctas">
       <a class="btn-primary" href="#booking">Book Your Event</a>
@@ -289,7 +289,7 @@
       <span class="cred-dot" aria-hidden="true"></span>
       <span>Background Checked</span>
       <span class="cred-dot" aria-hidden="true"></span>
-      <span>Tampa Bay &amp; Beyond</span>
+      <span>Greater Tampa Bay area</span>
     </div>
   </div>
 </section>
@@ -301,7 +301,7 @@
       <span class="eyebrow">Get In Touch</span>
       <h2 class="section-title">Let's Plan Your Event</h2>
       <div class="pink-rule" style="margin:1.2rem auto;"></div>
-      <p class="booking-desc">Tell us a little about what you're planning and we'll get back to you within 24 hours with availability and a custom quote. <strong style="color:var(--white)">Heads up: we're a BYOB service</strong> — you provide the spirits, we handle everything else.</p>
+      <p class="booking-desc">Tell us a little about what you're planning and we'll get back to you within 24 hours with availability and a custom quote. <strong style="color:var(--white)">Heads up: we're a BYOB service</strong> — you provide the spirits, we handle everything else. We serve the <strong style="color:var(--white)">greater Tampa Bay area</strong>. List your city or venue below; if you're unsure about coverage, Carissa will confirm at <a href="mailto:carissa@heftology.com" style="color:var(--pink-light);">carissa@heftology.com</a>.</p>
     </div>
     <div class="reveal">
       <div class="reveal" style="text-align:center;margin-bottom:2.5rem;">
@@ -344,7 +344,7 @@
         </div>
         <div class="form-field">
           <label for="field-location">Location / Venue</label>
-          <input id="field-location" name="location" type="text" placeholder="City, venue name, or TBD" autocomplete="off">
+          <input id="field-location" name="location" type="text" placeholder="City, venue, or TBD" autocomplete="off" title="Greater Tampa Bay area; questions about coverage — carissa@heftology.com.">
         </div>
         <div class="form-field full">
           <label for="field-notes">Tell Us More</label>
@@ -365,7 +365,7 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <div class="footer-logo-text">HEFTOLOG<span>Y</span></div>
-      <div class="footer-tagline">Hefta Crafted Cocktails · Tampa Bay</div>
+      <div class="footer-tagline">Hefta Crafted Cocktails · Greater Tampa Bay area</div>
     </div>
     <ul class="footer-links">
       <li><a href="#services">Services</a></li>
@@ -423,7 +423,7 @@ let chatHistory = [];
 
 // -- Init --
 window.addEventListener('DOMContentLoaded', () => {
-  const welcome = "Hey there! 🍸 Welcome to Heftology. I can answer quick questions about services, pricing, BYOB, and the menu — or point you to the booking form. What can I mix up for you?";
+  const welcome = "Hey there! 🍸 Welcome to Heftology. I can answer quick questions about services, pricing, BYOB, the menu, and our service area (greater Tampa Bay) — or point you to the booking form. What can I mix up for you?";
   appendBotMessage(welcome);
   chatHistory.push({ role: "assistant", content: welcome });
 
@@ -525,7 +525,7 @@ async function doSend(text) {
       body: JSON.stringify({ messages: chatHistory })
     });
     const data = await res.json();
-    const reply = data.reply || "Sorry, I could not get a response. Please email inquiries@heftology.com directly.";
+    const reply = data.reply || "Sorry, I could not get a response. Please email carissa@heftology.com directly.";
     removeTyping();
     isTyping = false;
     appendBotMessage(reply);
@@ -533,7 +533,7 @@ async function doSend(text) {
   } catch (err) {
     removeTyping();
     isTyping = false;
-    appendBotMessage("Something went wrong. Please email <a href='mailto:inquiries@heftology.com'>inquiries@heftology.com</a> and we will get back to you within 24 hours!");
+    appendBotMessage("Something went wrong. Please email <a href='mailto:carissa@heftology.com'>carissa@heftology.com</a> and we will get back to you within 24 hours!");
   }
 }
 

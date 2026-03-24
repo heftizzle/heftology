@@ -184,6 +184,42 @@ nav {
   color: var(--grey);
   margin: 0 0 1rem;
 }
+.about .team-credential {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  margin: 0 0 1.1rem;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
+}
+.about .team-credential:hover {
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-1px);
+}
+.about .team-credential-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  flex-shrink: 0;
+  background: var(--white);
+  border-radius: 50%;
+  padding: 3px;
+}
+.about .team-credential-text {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-align: left;
+  line-height: 1.35;
+}
 .about .team-card-bio {
   font-size: 0.9rem;
   font-weight: 300;

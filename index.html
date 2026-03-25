@@ -210,6 +210,60 @@
   </div>
 </section>
 
+<!-- SIGNATURE COCKTAIL DESIGNER -->
+<section class="cocktail-widget" id="cocktail-designer" aria-labelledby="cocktail-designer-heading">
+  <div class="cocktail-widget-inner">
+    <header class="cocktail-widget-header reveal">
+      <span class="eyebrow">Signature Build</span>
+      <h2 class="section-title" id="cocktail-designer-heading">Cocktail Designer</h2>
+      <div class="pink-rule cocktail-widget-rule"></div>
+      <p class="cocktail-widget-sub">Tell us your vibe — we’ll draft one custom signature cocktail for your event.</p>
+    </header>
+
+    <div class="cocktail-widget-card reveal" id="cocktail-widget">
+      <form class="cocktail-widget-form" id="cocktail-widget-form">
+        <div class="cocktail-widget-grid">
+          <div class="cocktail-widget-field">
+            <label for="cw-theme">Event theme</label>
+            <input id="cw-theme" name="theme" type="text" placeholder="e.g. Wedding, Bachelorette, Birthday, Corporate…" autocomplete="off" required>
+          </div>
+          <div class="cocktail-widget-field">
+            <label for="cw-colors">Color palette</label>
+            <input id="cw-colors" name="colors" type="text" placeholder="e.g. Dusty rose &amp; sage, Navy &amp; gold…" autocomplete="off" required>
+          </div>
+          <div class="cocktail-widget-field">
+            <label for="cw-month">Month</label>
+            <select id="cw-month" name="month" required>
+              <option value="" disabled selected>Select one…</option>
+              <option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option>
+              <option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option>
+            </select>
+          </div>
+          <div class="cocktail-widget-field">
+            <label for="cw-venue">Venue type</label>
+            <select id="cw-venue" name="venue" required>
+              <option value="" disabled selected>Select one…</option>
+              <option>Beach</option><option>Ballroom</option><option>Hotel</option><option>Pool</option><option>Golf Course</option><option>Home (Indoor)</option>
+              <option>Backyard</option><option>Rooftop</option><option>Boat / Yacht</option><option>Park / Garden</option><option>Warehouse / Industrial</option>
+              <option>Historic Venue</option><option>Restaurant</option>
+            </select>
+          </div>
+          <div class="cocktail-widget-field full">
+            <label for="cw-preferences">Drink preferences</label>
+            <textarea id="cw-preferences" name="preferences" rows="3" placeholder="e.g. Not too sweet, love tequila, spicy, fruity, no coconut…" required></textarea>
+          </div>
+        </div>
+
+        <button class="cocktail-widget-submit" id="cocktail-widget-submit" type="submit">Create my cocktail ✦</button>
+        <p class="cocktail-widget-note" id="cocktail-widget-note">Want this built for your guest count and bar setup? Book via the form below or email <a href="mailto:carissa@heftology.com">carissa@heftology.com</a>.</p>
+      </form>
+
+      <div class="cocktail-widget-status" id="cocktail-widget-status" aria-live="polite"></div>
+      <div class="cocktail-widget-result" id="cocktail-widget-result" hidden></div>
+    </div>
+  </div>
+</section>
+
 <!-- MEET THE DUO -->
 <section class="about" id="about" aria-labelledby="about-heading">
   <header class="team-header reveal">
@@ -536,6 +590,117 @@ async function doSend(text) {
     appendBotMessage("Something went wrong. Please email <a href='mailto:carissa@heftology.com'>carissa@heftology.com</a> and we will get back to you within 24 hours!");
   }
 }
+
+// ─── Signature Cocktail Designer ───
+function setWidgetStatus(text, isError = false) {
+  const el = document.getElementById('cocktail-widget-status');
+  if (!el) return;
+  el.textContent = text || '';
+  el.classList.toggle('error', !!isError);
+}
+
+function renderCocktail(c) {
+  const result = document.getElementById('cocktail-widget-result');
+  if (!result) return;
+  const ingredients = Array.isArray(c.ingredients) ? c.ingredients : [];
+  result.innerHTML = `
+    <div class="cw-result-header">
+      <h3 class="cw-result-name">${escapeHtml(c.name || 'Signature Cocktail')}</h3>
+      <p class="cw-result-tagline">${escapeHtml(c.tagline || '')}</p>
+    </div>
+    <div class="cw-result-grid">
+      <div class="cw-block">
+        <div class="cw-label">Ingredients</div>
+        <ul class="cw-ingredients">
+          ${ingredients.map((i) => `<li>${escapeHtml(String(i))}</li>`).join('')}
+        </ul>
+      </div>
+      <div class="cw-block">
+        <div class="cw-label">Garnish</div>
+        <div class="cw-value">${escapeHtml(c.garnish || '')}</div>
+        <div class="cw-label" style="margin-top:0.9rem;">Glass</div>
+        <div class="cw-value">${escapeHtml(c.glass || '')}</div>
+      </div>
+      <div class="cw-block full">
+        <div class="cw-label">Method</div>
+        <div class="cw-value">${escapeHtml(c.method || '')}</div>
+      </div>
+      <div class="cw-block full">
+        <div class="cw-label">Color story</div>
+        <div class="cw-value">${escapeHtml(c.colorNote || '')}</div>
+      </div>
+      <div class="cw-block full cw-note">
+        <div class="cw-label">A note from ${escapeHtml(c.presenter || 'Heftology')}</div>
+        <div class="cw-value">“${escapeHtml(c.heftologyNote || '')}”</div>
+      </div>
+    </div>
+    <div class="cw-result-actions">
+      <a class="btn-primary cw-book" href="#booking">Book this vibe</a>
+      <button class="btn-ghost cw-reset" type="button" id="cw-reset">Start over</button>
+    </div>
+  `;
+  result.hidden = false;
+  const resetBtn = document.getElementById('cw-reset');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      result.hidden = true;
+      result.innerHTML = '';
+      setWidgetStatus('');
+      const form = document.getElementById('cocktail-widget-form');
+      if (form) form.reset();
+      document.getElementById('cw-theme')?.focus();
+    });
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('cocktail-widget-form');
+  const submit = document.getElementById('cocktail-widget-submit');
+  if (!form || !submit) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    setWidgetStatus('');
+
+    const fd = new FormData(form);
+    const payload = {
+      theme: String(fd.get('theme') || '').trim(),
+      colors: String(fd.get('colors') || '').trim(),
+      month: String(fd.get('month') || '').trim(),
+      venue: String(fd.get('venue') || '').trim(),
+      preferences: String(fd.get('preferences') || '').trim(),
+    };
+
+    if (!payload.theme || !payload.colors || !payload.month || !payload.venue || !payload.preferences) {
+      setWidgetStatus('Please complete all fields to generate your signature cocktail.', true);
+      return;
+    }
+
+    submit.disabled = true;
+    submit.classList.add('loading');
+    submit.textContent = 'Crafting…';
+    setWidgetStatus('Crafting your signature cocktail…');
+    document.getElementById('cocktail-widget-result')?.setAttribute('hidden', 'true');
+
+    try {
+      const res = await fetch('/.netlify/functions/cocktail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.cocktail) throw new Error(data?.error || 'Request failed');
+      setWidgetStatus('');
+      renderCocktail(data.cocktail);
+    } catch (err) {
+      setWidgetStatus('Something went wrong generating your cocktail. Please try again — or email carissa@heftology.com.', true);
+    } finally {
+      submit.disabled = false;
+      submit.classList.remove('loading');
+      submit.textContent = 'Create my cocktail ✦';
+    }
+  });
+});
 
 // -- Scroll reveals --
 const reveals = document.querySelectorAll('.reveal');

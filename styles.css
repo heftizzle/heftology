@@ -13,13 +13,18 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 18px; }
+html { scroll-behavior: smooth; font-size: 18px; overflow-x: hidden; }
 
 body {
   background: var(--black);
   color: var(--white);
   font-family: 'Montserrat', sans-serif;
   overflow-x: hidden;
+}
+
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
 }
 
 /* ─── NAV ─── */
@@ -46,7 +51,7 @@ nav {
   position: relative; overflow: hidden;
   background: radial-gradient(ellipse 100% 80% at 50% 60%, #1A0A14 0%, var(--black) 70%);
 }
-.hero-glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(214,59,143,0.12) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+.hero-glow { position: absolute; width: min(600px, 90vw); height: min(600px, 90vw); border-radius: 50%; background: radial-gradient(circle, rgba(214,59,143,0.12) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 .hero-content { position: relative; z-index: 2; text-align: center; padding: 8rem 2rem 5rem; max-width: 900px; }
 .hero-logo-wrap { margin: 0 auto 2rem; opacity: 0; animation: fadeDown 1s ease 0.2s forwards; }
 .logo-main { display: flex; align-items: center; justify-content: center; margin: 0; font-size: inherit; font-weight: inherit; }
@@ -779,6 +784,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
   body { font-size: 1rem; }
+  .services-grid { grid-template-columns: 1fr; }
   nav { padding: 1rem 1.25rem; flex-wrap: wrap; align-items: center; row-gap: 0.75rem; }
   .nav-menu-toggle { display: inline-flex; }
   .nav-actions { order: 2; margin-left: auto; }
@@ -808,4 +814,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .footer-inner { flex-direction: column; align-items: flex-start; }
   #chat-window { width: calc(100vw - 2rem); right: 1rem; bottom: 5.5rem; }
   #chat-toggle { right: 1rem; bottom: 1rem; }
+}
+
+/* ─── TABLET ─── */
+@media (max-width: 1024px) {
+  nav { padding: 1rem 2rem; }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ─── SMALL PHONE ─── */
+@media (max-width: 480px) {
+  .hero-content { padding: 5rem 1rem 3rem; }
+  .cw-btn-grid-3 { grid-template-columns: 1fr; }
+  .cw-btn-grid-2 { grid-template-columns: 1fr; }
+  .section-title { font-size: clamp(1.4rem, 6vw, 2rem); }
 }

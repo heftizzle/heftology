@@ -23,6 +23,27 @@ function safeString(v) {
   return typeof v === "string" ? v.trim() : "";
 }
 
+const RATE_LIMIT_MAX = 3;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const rateLimitByIp = new Map(); // ip -> number[] (timestamps)
+
+function getClientIp(event) {
+  const h = event.headers || {};
+  const direct =
+    h["x-nf-client-connection-ip"] ||
+    h["X-Nf-Client-Connection-Ip"] ||
+    h["x-real-ip"] ||
+    h["X-Real-Ip"] ||
+    h["client-ip"] ||
+    h["Client-Ip"];
+  if (direct) return String(direct).split(",")[0].trim();
+
+  const xff = h["x-forwarded-for"] || h["X-Forwarded-For"];
+  if (xff) return String(xff).split(",")[0].trim();
+
+  return "unknown";
+}
+
 exports.handler = async (event) => {
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -40,6 +61,23 @@ exports.handler = async (event) => {
   }
 
   try {
+    const now = Date.now();
+    const ip = getClientIp(event);
+    const prev = rateLimitByIp.get(ip) || [];
+    const recent = prev.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+    if (recent.length >= RATE_LIMIT_MAX) {
+      return {
+        statusCode: 429,
+        headers: corsHeaders,
+        body: JSON.stringify({
+          error:
+            "Looks like you're on a roll! Let's make it official — book a free consultation at heftology.com/#booking and Carissa will craft the perfect menu for your event.",
+        }),
+      };
+    }
+    recent.push(now);
+    rateLimitByIp.set(ip, recent);
+
     const body = event.body ? JSON.parse(event.body) : {};
     const theme = safeString(body.theme);
     const colors = safeString(body.colors);

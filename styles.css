@@ -784,7 +784,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
   body { font-size: 1rem; }
-  .services-grid { grid-template-columns: 1fr; }
   nav { padding: 1rem 1.25rem; flex-wrap: wrap; align-items: center; row-gap: 0.75rem; }
   .nav-menu-toggle { display: inline-flex; }
   .nav-actions { order: 2; margin-left: auto; }
@@ -819,7 +818,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* ─── TABLET ─── */
 @media (max-width: 1024px) {
   nav { padding: 1rem 2rem; }
-  .services-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* ─── SMALL PHONE ─── */

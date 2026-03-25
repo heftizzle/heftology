@@ -707,7 +707,8 @@ window.addEventListener('DOMContentLoaded', () => {
   const steps = Array.from(form.querySelectorAll('.cw-step'));
   const progress = Array.from(form.querySelectorAll('.cw-progress-bar'));
 
-  function showStep(n) {
+  function showStep(n, opts = {}) {
+    const focusField = opts.focus !== false;
     step = Math.max(1, Math.min(totalSteps, n));
     steps.forEach((el) => {
       const s = Number(el.getAttribute('data-step') || '0');
@@ -722,9 +723,11 @@ window.addEventListener('DOMContentLoaded', () => {
     submit.textContent = step === totalSteps ? 'Create My Cocktail ✦' : 'Next →';
     setWidgetStatus('');
 
-    if (step === 1) document.getElementById('cw-theme')?.focus();
-    if (step === 2) document.getElementById('cw-colors')?.focus();
-    if (step === 5) document.getElementById('cw-preferences')?.focus();
+    if (focusField) {
+      if (step === 1) document.getElementById('cw-theme')?.focus();
+      if (step === 2) document.getElementById('cw-colors')?.focus();
+      if (step === 5) document.getElementById('cw-preferences')?.focus();
+    }
   }
 
   function validateStep(n) {
@@ -852,8 +855,8 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // init
-  showStep(1);
+  // init — do not focus #cw-theme on load; focus() scrolls the field into view
+  showStep(1, { focus: false });
 });
 
 // -- Scroll reveals --

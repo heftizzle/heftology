@@ -24,8 +24,19 @@ function safeString(v) {
 }
 
 exports.handler = async (event) => {
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Type": "application/json",
+  };
+
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 204, headers: corsHeaders, body: "" };
+  }
+
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
+    return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: "Method Not Allowed" }) };
   }
 
   try {
@@ -39,7 +50,7 @@ exports.handler = async (event) => {
     if (!theme || !colors || !preferences || !month || !venue) {
       return {
         statusCode: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: corsHeaders,
         body: JSON.stringify({ error: "theme, colors, preferences, month, and venue are required" }),
       };
     }
@@ -65,14 +76,14 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: corsHeaders,
       body: JSON.stringify({ cocktail }),
     };
   } catch (err) {
     console.error("Cocktail function error:", err);
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: corsHeaders,
       body: JSON.stringify({ error: "Internal server error" }),
     };
   }

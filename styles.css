@@ -117,7 +117,39 @@ nav {
   padding: 2.25rem 2rem;
   max-width: 920px;
   margin: 0 auto;
+  color-scheme: dark;
 }
+.cw-progress { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 1.4rem; }
+.cw-progress-bar { height: 3px; border-radius: 3px; background: rgba(255,255,255,0.12); transition: background 0.25s ease; }
+.cw-progress-bar.active { background: var(--pink); }
+.cw-step-kicker { margin: 0 0 0.6rem; font-family: 'Rajdhani', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.45); text-align: left; }
+.cw-step-label { font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--white); margin: 0 0 1rem; text-align: left; }
+.cw-btn-grid { display: grid; gap: 0.5rem; }
+.cw-btn-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.cw-btn-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.cw-choice {
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.16);
+  color: rgba(255,255,255,0.75);
+  padding: 0.65rem 0.55rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+}
+.cw-choice:hover { border-color: rgba(214,59,143,0.35); transform: translateY(-1px); }
+.cw-choice.selected {
+  background: var(--pink);
+  border-color: var(--pink);
+  color: var(--black);
+  font-weight: 700;
+}
+.cw-actions { display: flex; gap: 0.75rem; justify-content: space-between; margin-top: 1.25rem; flex-wrap: wrap; }
+.cw-actions .cw-back { padding: 0.9rem 1.25rem; }
+.cw-actions .cw-next { flex: 1; min-width: 220px; }
 .cocktail-widget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(214,59,143,0.1); border: 1px solid rgba(214,59,143,0.1); text-align: left; }
 .cocktail-widget-field { background: var(--black); padding: 1.1rem 1.4rem; display: flex; flex-direction: column; gap: 0.4rem; transition: background 0.3s; }
 .cocktail-widget-field:focus-within { background: var(--dark-grey); }
@@ -130,7 +162,18 @@ nav {
   font-family: 'Montserrat', sans-serif; font-size: 0.92rem; font-weight: 300;
   color: var(--white); resize: none; padding: 0;
 }
-.cocktail-widget-field select { cursor: pointer; }
+.cocktail-widget-field select {
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--white);
+}
+.cocktail-widget-field select option {
+  background: var(--black);
+  color: var(--white);
+}
+.cocktail-widget-field select:invalid {
+  color: rgba(255,255,255,0.55);
+}
 .cocktail-widget-submit {
   width: 100%;
   margin-top: 1.35rem;
@@ -753,6 +796,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .cocktail-widget-grid { grid-template-columns: 1fr; }
   .cocktail-widget-card { padding: 1.75rem 1.25rem; }
   .cw-result-grid { grid-template-columns: 1fr; }
+  .cw-btn-grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .cw-btn-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .cw-actions { flex-direction: column; }
+  .cw-actions .cw-next { min-width: 0; width: 100%; }
   .team-cards { grid-template-columns: 1fr; }
   .credentials-grid { grid-template-columns: 1fr; }
   .inquiry-form { grid-template-columns: 1fr; }

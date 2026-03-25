@@ -222,39 +222,80 @@
 
     <div class="cocktail-widget-card reveal" id="cocktail-widget">
       <form class="cocktail-widget-form" id="cocktail-widget-form">
-        <div class="cocktail-widget-grid">
+        <div class="cw-progress" aria-label="Cocktail designer progress">
+          <div class="cw-progress-bar" data-step="1" aria-hidden="true"></div>
+          <div class="cw-progress-bar" data-step="2" aria-hidden="true"></div>
+          <div class="cw-progress-bar" data-step="3" aria-hidden="true"></div>
+          <div class="cw-progress-bar" data-step="4" aria-hidden="true"></div>
+          <div class="cw-progress-bar" data-step="5" aria-hidden="true"></div>
+        </div>
+
+        <p class="cw-step-kicker" id="cw-step-kicker">Step 1 of 5</p>
+
+        <div class="cw-step" data-step="1">
           <div class="cocktail-widget-field">
-            <label for="cw-theme">Event theme</label>
-            <input id="cw-theme" name="theme" type="text" placeholder="e.g. Wedding, Bachelorette, Birthday, Corporate…" autocomplete="off" required>
+            <label for="cw-theme">Event Type</label>
+            <input id="cw-theme" name="theme" type="text" placeholder="e.g. Wedding, Bachelorette, Birthday, Anniversary, Bar Mitzvah…" autocomplete="off" required>
           </div>
+        </div>
+
+        <div class="cw-step" data-step="2" hidden>
           <div class="cocktail-widget-field">
-            <label for="cw-colors">Color palette</label>
+            <label for="cw-colors">Color Palette</label>
             <input id="cw-colors" name="colors" type="text" placeholder="e.g. Dusty rose &amp; sage, Navy &amp; gold…" autocomplete="off" required>
           </div>
-          <div class="cocktail-widget-field">
-            <label for="cw-month">Month</label>
-            <select id="cw-month" name="month" required>
-              <option value="" disabled selected>Select one…</option>
-              <option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option>
-              <option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option>
-            </select>
+        </div>
+
+        <div class="cw-step" data-step="3" hidden>
+          <div class="cw-step-label">Month</div>
+          <input id="cw-month" name="month" type="hidden" required>
+          <div class="cw-btn-grid cw-btn-grid-3" role="group" aria-label="Select month">
+            <button type="button" class="cw-choice" data-target="month" data-value="January">January</button>
+            <button type="button" class="cw-choice" data-target="month" data-value="February">February</button>
+            <button type="button" class="cw-choice" data-target="month" data-value="March">March</button>
+            <button type="button" class="cw-choice" data-target="month" data-value="April">April</button>
+            <button type="button" class="cw-choice" data-target="month" data-value="May">May</button>
+            <button type="button" class="cw-choice" data-target="month" data-value="June">June</button>
+            <button type="button" class="cw-choice" data-target="month" data-value="July">July</button>
+            <button type="button" class="cw-choice" data-target="month" data-value="August">August</button>
+            <button type="button" class="cw-choice" data-target="month" data-value="September">September</button>
+            <button type="button" class="cw-choice" data-target="month" data-value="October">October</button>
+            <button type="button" class="cw-choice" data-target="month" data-value="November">November</button>
+            <button type="button" class="cw-choice" data-target="month" data-value="December">December</button>
           </div>
-          <div class="cocktail-widget-field">
-            <label for="cw-venue">Venue type</label>
-            <select id="cw-venue" name="venue" required>
-              <option value="" disabled selected>Select one…</option>
-              <option>Beach</option><option>Ballroom</option><option>Hotel</option><option>Pool</option><option>Golf Course</option><option>Home (Indoor)</option>
-              <option>Backyard</option><option>Rooftop</option><option>Boat / Yacht</option><option>Park / Garden</option><option>Warehouse / Industrial</option>
-              <option>Historic Venue</option><option>Restaurant</option>
-            </select>
+        </div>
+
+        <div class="cw-step" data-step="4" hidden>
+          <div class="cw-step-label">Venue Type</div>
+          <input id="cw-venue" name="venue" type="hidden" required>
+          <div class="cw-btn-grid cw-btn-grid-2" role="group" aria-label="Select venue type">
+            <button type="button" class="cw-choice" data-target="venue" data-value="Beach">Beach</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Ballroom">Ballroom</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Hotel">Hotel</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Pool">Pool</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Golf Course">Golf Course</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Home (Indoor)">Home (Indoor)</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Backyard">Backyard</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Rooftop">Rooftop</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Boat / Yacht">Boat / Yacht</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Park / Garden">Park / Garden</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Warehouse / Industrial">Warehouse / Industrial</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Historic Venue">Historic Venue</button>
+            <button type="button" class="cw-choice" data-target="venue" data-value="Restaurant">Restaurant</button>
           </div>
-          <div class="cocktail-widget-field full">
-            <label for="cw-preferences">Drink preferences</label>
+        </div>
+
+        <div class="cw-step" data-step="5" hidden>
+          <div class="cocktail-widget-field">
+            <label for="cw-preferences">Drink Preferences</label>
             <textarea id="cw-preferences" name="preferences" rows="3" placeholder="e.g. Not too sweet, love tequila, spicy, fruity, no coconut…" required></textarea>
           </div>
         </div>
 
-        <button class="cocktail-widget-submit" id="cocktail-widget-submit" type="submit">Create my cocktail ✦</button>
+        <div class="cw-actions">
+          <button class="btn-ghost cw-back" id="cw-back" type="button">← Back</button>
+          <button class="cocktail-widget-submit cw-next" id="cocktail-widget-submit" type="button">Next →</button>
+        </div>
         <p class="cocktail-widget-note" id="cocktail-widget-note">Want this built for your guest count and bar setup? Book via the form below or email <a href="mailto:carissa@heftology.com">carissa@heftology.com</a>.</p>
       </form>
 
@@ -656,7 +697,116 @@ function renderCocktail(c) {
 window.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('cocktail-widget-form');
   const submit = document.getElementById('cocktail-widget-submit');
+  const back = document.getElementById('cw-back');
+  const kicker = document.getElementById('cw-step-kicker');
   if (!form || !submit) return;
+
+  let step = 1;
+  const totalSteps = 5;
+  const steps = Array.from(form.querySelectorAll('.cw-step'));
+  const progress = Array.from(form.querySelectorAll('.cw-progress-bar'));
+
+  function showStep(n) {
+    step = Math.max(1, Math.min(totalSteps, n));
+    steps.forEach((el) => {
+      const s = Number(el.getAttribute('data-step') || '0');
+      el.hidden = s !== step;
+    });
+    progress.forEach((el) => {
+      const s = Number(el.getAttribute('data-step') || '0');
+      el.classList.toggle('active', s <= step);
+    });
+    if (kicker) kicker.textContent = `Step ${step} of ${totalSteps}`;
+    if (back) back.style.visibility = step === 1 ? 'hidden' : 'visible';
+    submit.textContent = step === totalSteps ? 'Create My Cocktail ✦' : 'Next →';
+    setWidgetStatus('');
+
+    if (step === 1) document.getElementById('cw-theme')?.focus();
+    if (step === 2) document.getElementById('cw-colors')?.focus();
+    if (step === 5) document.getElementById('cw-preferences')?.focus();
+  }
+
+  function validateStep(n) {
+    if (n === 1) return String(document.getElementById('cw-theme')?.value || '').trim().length > 0;
+    if (n === 2) return String(document.getElementById('cw-colors')?.value || '').trim().length > 0;
+    if (n === 3) return String(document.getElementById('cw-month')?.value || '').trim().length > 0;
+    if (n === 4) return String(document.getElementById('cw-venue')?.value || '').trim().length > 0;
+    if (n === 5) return String(document.getElementById('cw-preferences')?.value || '').trim().length > 0;
+    return false;
+  }
+
+  function setChoice(target, value) {
+    const inputId = target === 'month' ? 'cw-month' : 'cw-venue';
+    const input = document.getElementById(inputId);
+    if (input) input.value = value;
+    form.querySelectorAll(`.cw-choice[data-target="${target}"]`).forEach((btn) => {
+      btn.classList.toggle('selected', btn.getAttribute('data-value') === value);
+      btn.setAttribute('aria-pressed', btn.getAttribute('data-value') === value ? 'true' : 'false');
+    });
+  }
+
+  form.querySelectorAll('.cw-choice').forEach((btn) => {
+    btn.setAttribute('aria-pressed', 'false');
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-target');
+      const value = btn.getAttribute('data-value');
+      if (!target || !value) return;
+      setChoice(target, value);
+    });
+  });
+
+  submit.addEventListener('click', () => {
+    if (!validateStep(step)) {
+      setWidgetStatus('Please complete this step to continue.', true);
+      return;
+    }
+    if (step < totalSteps) {
+      showStep(step + 1);
+      return;
+    }
+    // Step 5: submit (keeps existing submit/fetch/render logic intact)
+    if (typeof form.requestSubmit === 'function') form.requestSubmit();
+    else form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  });
+
+  if (back) {
+    back.addEventListener('click', () => {
+      showStep(step - 1);
+    });
+  }
+
+  // Enter-to-advance on steps 1, 2, and 5
+  const themeInput = document.getElementById('cw-theme');
+  const colorsInput = document.getElementById('cw-colors');
+  const prefsInput = document.getElementById('cw-preferences');
+
+  if (themeInput) {
+    themeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submit.click();
+      }
+    });
+  }
+
+  if (colorsInput) {
+    colorsInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submit.click();
+      }
+    });
+  }
+
+  if (prefsInput) {
+    prefsInput.addEventListener('keydown', (e) => {
+      // Allow Shift+Enter for a newline; Enter advances/creates
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submit.click();
+      }
+    });
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -700,6 +850,9 @@ window.addEventListener('DOMContentLoaded', () => {
       submit.textContent = 'Create my cocktail ✦';
     }
   });
+
+  // init
+  showStep(1);
 });
 
 // -- Scroll reveals --

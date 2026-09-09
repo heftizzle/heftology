@@ -747,6 +747,7 @@ footer { background: var(--black); padding: 3rem 2rem; border-top: 1px solid rgb
   background: rgba(214,59,143,0.15);
 }
 .team-photo-wrap { position: relative; overflow: hidden; aspect-ratio: 3/4; }
+.team-photo-wrap--cheers { aspect-ratio: 3 / 2; }
 .team-photo-img {
   width: 100%; height: 100%; object-fit: cover; transition: transform 0.55s ease;
 }

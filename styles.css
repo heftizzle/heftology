@@ -386,7 +386,7 @@ nav {
   border-bottom: 1px solid rgba(214,59,143,0.15);
 }
 .credentials-inner {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
   text-align: center;
 }
@@ -419,9 +419,12 @@ nav {
 }
 .credentials-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.25rem;
   text-align: center;
+}
+.cred-card--guild {
+  grid-column: 1 / -1;
 }
 .cred-card {
   background: rgba(255,255,255,0.03);

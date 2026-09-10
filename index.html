@@ -119,22 +119,50 @@
   </div>
 </section>
 
-<!-- TEAM PHOTOS -->
-<section class="team-photos" aria-label="Heftology team and craft">
-  <div class="team-photos-grid">
-    <div class="team-photo-wrap team-photo-wrap--cheers">
-      <img class="team-photo-img" src="images/team-cheers.jpg" alt="Carissa and Michelle toasting cocktails behind the bar" width="800" height="600" loading="lazy" style="object-position: center 35%;">
-      <div class="team-photo-overlay">
-        <div class="team-photo-eyebrow">The Duo</div>
-        <div class="team-photo-title">Michelle and Carissa</div>
-      </div>
+<!-- TEAM PHOTOS / GALLERY -->
+<section class="team-photos" aria-labelledby="gallery-heading">
+  <div class="team-photos-inner">
+    <div class="team-photos-header reveal">
+      <span class="eyebrow">Behind the Bar</span>
+      <h2 class="section-title" id="gallery-heading">Meet the Duo</h2>
+      <div class="pink-rule"></div>
     </div>
-    <div class="team-photo-wrap team-photo-wrap--craft">
-      <img class="team-photo-img" src="images/team-craft.jpg" alt="Michelle and Carissa crafting cocktails together behind the bar" width="2400" height="1600" loading="lazy" style="object-position: center 40%;">
-      <div class="team-photo-overlay">
-        <div class="team-photo-eyebrow">The Craft</div>
-        <div class="team-photo-title">Behind the Bar</div>
+    <div class="gallery-shell">
+      <button type="button" class="gallery-nav gallery-nav--prev" id="gallery-prev" aria-label="Scroll gallery left" disabled>
+        <span aria-hidden="true">‹</span>
+      </button>
+      <div class="gallery-track" id="gallery-track" aria-label="Photo gallery" tabindex="0">
+        <img class="gallery-item" src="images/team-cheers.jpg" alt="Carissa and Michelle toasting cocktails behind the bar" height="380" decoding="async">
+        <img class="gallery-item" src="images/team-craft.jpg" alt="Michelle and Carissa crafting cocktails together behind the bar" height="380" decoding="async">
+        <img class="gallery-item" src="images/gallery/gallery-01.jpg" alt="Heftology behind the scenes — photo 1" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-02.jpg" alt="Heftology behind the scenes — photo 2" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-03.jpg" alt="Heftology behind the scenes — photo 3" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-04.jpg" alt="Heftology behind the scenes — photo 4" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-05.jpg" alt="Heftology behind the scenes — photo 5" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-06.jpg" alt="Heftology behind the scenes — photo 6" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-07.jpg" alt="Heftology behind the scenes — photo 7" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-08.jpg" alt="Heftology behind the scenes — photo 8" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-09.jpg" alt="Heftology behind the scenes — photo 9" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-10.jpg" alt="Heftology behind the scenes — photo 10" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-11.jpg" alt="Heftology behind the scenes — photo 11" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-12.jpg" alt="Heftology behind the scenes — photo 12" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-13.jpg" alt="Heftology behind the scenes — photo 13" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-14.jpg" alt="Heftology behind the scenes — photo 14" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-15.jpg" alt="Heftology behind the scenes — photo 15" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-16.jpg" alt="Heftology behind the scenes — photo 16" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-17.jpg" alt="Heftology behind the scenes — photo 17" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-18.jpg" alt="Heftology behind the scenes — photo 18" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-19.jpg" alt="Heftology behind the scenes — photo 19" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-21.jpg" alt="Heftology behind the scenes — photo 21" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-22.jpg" alt="Heftology behind the scenes — photo 22" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-23.jpg" alt="Heftology behind the scenes — photo 23" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-24.jpg" alt="Heftology behind the scenes — photo 24" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-25.jpg" alt="Heftology behind the scenes — photo 25" height="380" loading="lazy">
+        <img class="gallery-item" src="images/gallery/gallery-26.jpg" alt="Heftology behind the scenes — photo 26" height="380" loading="lazy">
       </div>
+      <button type="button" class="gallery-nav gallery-nav--next" id="gallery-next" aria-label="Scroll gallery right">
+        <span aria-hidden="true">›</span>
+      </button>
     </div>
   </div>
 </section>
@@ -847,6 +875,34 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // init — do not focus #cw-theme on load; focus() scrolls the field into view
   showStep(1, { focus: false });
+});
+
+// ─── Photo gallery arrows ───
+window.addEventListener('DOMContentLoaded', () => {
+  const track = document.getElementById('gallery-track');
+  const prev = document.getElementById('gallery-prev');
+  const next = document.getElementById('gallery-next');
+  if (!track || !prev || !next) return;
+
+  const updateNav = () => {
+    const max = track.scrollWidth - track.clientWidth;
+    prev.disabled = track.scrollLeft <= 4;
+    next.disabled = track.scrollLeft >= max - 4;
+  };
+
+  const scrollByPage = (dir) => {
+    const amount = Math.max(240, Math.floor(track.clientWidth * 0.85));
+    track.scrollBy({ left: dir * amount, behavior: 'smooth' });
+  };
+
+  prev.addEventListener('click', () => scrollByPage(-1));
+  next.addEventListener('click', () => scrollByPage(1));
+  track.addEventListener('scroll', updateNav, { passive: true });
+  window.addEventListener('resize', updateNav);
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(updateNav).observe(track);
+  }
+  updateNav();
 });
 
 // -- Scroll reveals --

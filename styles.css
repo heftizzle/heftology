@@ -753,29 +753,84 @@ footer { background: var(--black); padding: 3rem 2rem; border-top: 1px solid rgb
 }
 .nav-menu-toggle:hover { border-color: var(--pink); color: var(--pink); }
 
-.team-photos { padding: 0; background: var(--black); overflow: hidden; }
-.team-photos-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
-  background: rgba(214,59,143,0.15);
+/* ─── TEAM PHOTOS / GALLERY ─── */
+.team-photos {
+  padding: 5rem 0 6rem;
+  background: linear-gradient(180deg, var(--black) 0%, var(--black-mid) 50%, var(--black) 100%);
 }
-.team-photo-wrap { position: relative; overflow: hidden; aspect-ratio: 3/4; }
-.team-photo-wrap--cheers { aspect-ratio: 3 / 2; }
-.team-photo-wrap--craft { aspect-ratio: 3 / 2; }
-.team-photo-img {
-  width: 100%; height: 100%; object-fit: cover; transition: transform 0.55s ease;
+.team-photos-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+.team-photos-header { text-align: center; margin-bottom: 2.5rem; }
+.team-photos-header .pink-rule { margin: 1.2rem auto 0; }
+
+.gallery-shell { position: relative; }
+.gallery-track {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  height: 380px;
+  padding: 0.35rem 0.15rem 0.85rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(214,59,143,0.45) transparent;
 }
-.team-photo-wrap:hover .team-photo-img { transform: scale(1.04); }
-.team-photo-overlay {
-  position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem;
-  background: linear-gradient(to top, rgba(10,8,12,0.88), transparent);
+.gallery-track::-webkit-scrollbar { height: 6px; }
+.gallery-track::-webkit-scrollbar-thumb {
+  background: rgba(214,59,143,0.45);
+  border-radius: 3px;
 }
-.team-photo-eyebrow {
-  font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; font-weight: 700;
-  letter-spacing: 0.3em; text-transform: uppercase; color: var(--pink); margin-bottom: 0.3rem;
+.gallery-item {
+  height: 100%;
+  width: auto;
+  max-width: none;
+  flex-shrink: 0;
+  border-radius: 8px;
+  scroll-snap-align: start;
+  display: block;
+  object-fit: contain;
+  background: rgba(255,255,255,0.03);
+  transition: transform 0.35s ease;
 }
-.team-photo-title {
-  font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 900;
-  text-transform: uppercase; letter-spacing: 0.04em; color: var(--white);
+@media (hover: hover) and (pointer: fine) {
+  .gallery-item:hover { transform: scale(1.03); }
+}
+
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-60%);
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(10,8,12,0.72);
+  color: var(--white);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, opacity 0.2s;
+}
+.gallery-nav:hover:not(:disabled) {
+  background: var(--pink);
+  border-color: var(--pink);
+  color: var(--black);
+}
+.gallery-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.gallery-nav--prev { left: -0.25rem; }
+.gallery-nav--next { right: -0.25rem; }
+@media (min-width: 769px) {
+  .gallery-nav { display: inline-flex; }
+  .team-photos-inner { padding: 0 3.5rem; }
 }
 
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
@@ -791,7 +846,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     transition-duration: 0.01ms !important;
   }
   .reveal { opacity: 1 !important; transform: none !important; }
-  .team-photo-wrap:hover .team-photo-img { transform: none !important; }
+  .gallery-item:hover { transform: none !important; }
+  .gallery-track { scroll-behavior: auto; }
   .about .team-card:hover .team-card-photo img { transform: none !important; }
 }
 
@@ -811,7 +867,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   nav.nav-open .nav-links { display: flex; }
   .nav-links li { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.06); }
   .nav-links a { display: block; padding: 0.85rem 0; }
-  .team-photos-grid { grid-template-columns: 1fr; }
+  .gallery-track { height: 260px; }
   .menu-layout { grid-template-columns: 1fr; gap: 3rem; }
   .menu-sticky { position: static; }
   .cocktail-widget-grid { grid-template-columns: 1fr; }

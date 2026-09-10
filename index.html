@@ -473,13 +473,15 @@
 
 <!-- ─── CHATBOT ─── -->
 <button type="button" id="chat-toggle" onclick="toggleChat()" aria-label="Open chat" aria-expanded="false" aria-controls="chat-window">
-  <span class="chat-icon">🍸</span>
+  <img src="images/heftology-icon.png" alt="" class="chat-icon" aria-hidden="true" width="174" height="262">
   <span class="chat-close">✕</span>
 </button>
 
 <div id="chat-window" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Chat with Heftology">
   <div class="chat-header">
-    <div class="chat-avatar">🍸</div>
+    <div class="chat-avatar">
+      <img src="images/heftology-icon.png" alt="" class="chat-avatar-icon" aria-hidden="true" width="174" height="262">
+    </div>
     <div class="chat-header-info">
       <div class="chat-header-name">HEFTOLOGY AI</div>
       <div class="chat-header-status"><span class="status-dot"></span> Online — Ask me anything</div>

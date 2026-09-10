@@ -110,7 +110,17 @@ exports.handler = async (event) => {
 
     // Best-effort cleanup if the model wraps JSON (shouldn't, per prompt).
     const clean = raw.replace(/```json|```/gi, "").trim();
-    const cocktail = JSON.parse(clean);
+    let cocktail;
+    try {
+      cocktail = JSON.parse(clean);
+    } catch (parseErr) {
+      console.error("Cocktail JSON parse error:", parseErr, clean.slice(0, 200));
+      return {
+        statusCode: 502,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: "Could not craft that cocktail. Please try again." }),
+      };
+    }
 
     return {
       statusCode: 200,

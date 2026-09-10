@@ -18,6 +18,8 @@
 <meta name="twitter:title" content="Heftology – Hefta Crafted Cocktails">
 <meta name="twitter:description" content="Mobile mixologists and private bartending in the greater Tampa Bay area. BYOB bar service for private events.">
 <meta name="twitter:image" content="https://www.heftology.com/images/team-cheers.jpg">
+<link rel="icon" type="image/png" href="images/heftology-icon.png">
+<link rel="apple-touch-icon" href="images/heftology-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Dancing+Script:wght@400;600;700&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -66,7 +68,9 @@
   <div class="hero-glow"></div>
   <div class="hero-content">
     <div class="hero-logo-wrap">
-      <img src="images/heftology-logo.png" alt="Heftology — Hefta Crafted Cocktails" class="hero-logo-img">
+      <h1 class="hero-logo-heading">
+        <img src="images/heftology-logo.png" alt="Heftology — Hefta Crafted Cocktails" class="hero-logo-img">
+      </h1>
     </div>
     <p class="hero-eyebrow">Traveling Mixologists · Greater Tampa Bay area · You Bring the Booze, We Bring the Craft</p>
     <div class="hero-divider"><span>✦</span></div>
@@ -124,7 +128,7 @@
   <div class="team-photos-inner">
     <div class="team-photos-header reveal">
       <span class="eyebrow">Behind the Bar</span>
-      <h2 class="section-title" id="gallery-heading">Meet the Duo</h2>
+      <h2 class="section-title" id="gallery-heading">The Craft in Action</h2>
       <div class="pink-rule"></div>
     </div>
     <div class="gallery-shell">
@@ -338,7 +342,7 @@
       </div>
       <h3 class="team-card-name">Carissa Hefta</h3>
       <p class="team-card-role">Co-Founder &amp; Lead Mixologist</p>
-      <a class="team-credential" href="https://www.usbg.org" target="_blank" rel="noopener noreferrer" aria-label="United States Bartenders' Guild profile">
+      <a class="team-credential" href="https://www.usbg.org" target="_blank" rel="noopener noreferrer" aria-label="United States Bartenders' Guild profile for Carissa Hefta">
         <img class="team-credential-logo" src="images/usbg-logo.svg" alt="United States Bartenders' Guild logo" loading="lazy">
         <span class="team-credential-text">United States Bartenders' Guild — Member #49727</span>
       </a>
@@ -454,9 +458,9 @@
     <div class="reveal">
       <div class="reveal" style="text-align:center;margin-bottom:2.5rem;">
         <p style="color:var(--grey);font-size:0.95rem;margin-bottom:1.2rem;">Want to talk through your event first? Book a free 30-minute consultation — cameras off, no pressure.</p>
-        <a href="" onclick="Calendly.initPopupWidget({url:'https://calendly.com/carissa-heftology/30min'});return false;" class="btn-primary">Schedule a Free Consultation</a>
+        <a href="https://calendly.com/carissa-heftology/30min" onclick="Calendly.initPopupWidget({url:'https://calendly.com/carissa-heftology/30min'});return false;" class="btn-primary">Schedule a Free Consultation</a>
       </div>
-      <form id="booking-form" name="booking" method="POST" netlify action="/thank-you.html" novalidate>
+      <form id="booking-form" name="booking" method="POST" netlify action="/thank-you.html">
       <input type="hidden" name="form-name" value="booking">
       <div class="inquiry-form">
         <div class="form-field">
@@ -473,7 +477,7 @@
         </div>
         <div class="form-field">
           <label for="field-type">Event Type</label>
-          <select id="field-type" name="eventType">
+          <select id="field-type" name="eventType" required>
             <option value="" disabled selected>Select one…</option>
             <option value="Private Party">Private Party</option>
             <option value="Wedding / Reception">Wedding / Reception</option>
@@ -575,7 +579,7 @@ let chatHistory = [];
 window.addEventListener('DOMContentLoaded', () => {
   const welcome = "Hey there! 🍸 Welcome to Heftology. I can answer quick questions about services, pricing, BYOB, the menu, and our service area (greater Tampa Bay) — or point you to the booking form. What can I mix up for you?";
   appendBotMessage(welcome);
-  chatHistory.push({ role: "assistant", content: welcome });
+  // Do not seed chatHistory with the welcome assistant turn — Anthropic requires user-first history.
 
   const nav = document.getElementById('site-nav');
   const toggle = document.getElementById('nav-menu-toggle');
@@ -607,14 +611,23 @@ function toggleChat() {
   btn.setAttribute('aria-label', isOpen ? 'Close chat' : 'Open chat');
   win.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
   if (isOpen) setTimeout(() => document.getElementById('chat-input').focus(), 350);
+  else btn.focus();
 }
 
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && isOpen) toggleChat();
+});
+
 // -- Append messages --
-function appendBotMessage(text) {
+function appendBotMessage(text, allowTrustedHtml = false) {
   const msgs = document.getElementById('chat-messages');
   const div = document.createElement('div');
   div.className = 'msg bot';
-  div.innerHTML = '<div class="msg-bubble">' + text + '</div>';
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  if (allowTrustedHtml) bubble.innerHTML = text;
+  else bubble.textContent = text;
+  div.appendChild(bubble);
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
@@ -623,7 +636,10 @@ function appendUserMessage(text) {
   const msgs = document.getElementById('chat-messages');
   const div = document.createElement('div');
   div.className = 'msg user';
-  div.innerHTML = '<div class="msg-bubble">' + escapeHtml(text) + '</div>';
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.textContent = text;
+  div.appendChild(bubble);
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
@@ -674,16 +690,21 @@ async function doSend(text) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: chatHistory })
     });
-    const data = await res.json();
-    const reply = data.reply || "Sorry, I could not get a response. Please email carissa@heftology.com directly.";
+    const data = await res.json().catch(() => ({}));
     removeTyping();
     isTyping = false;
+    if (!res.ok) {
+      const errMsg = data.error || "Something went wrong. Please email carissa@heftology.com and we will get back to you within 24 hours!";
+      appendBotMessage(errMsg);
+      return;
+    }
+    const reply = data.reply || "Sorry, I could not get a response. Please email carissa@heftology.com directly.";
     appendBotMessage(reply);
     chatHistory.push({ role: "assistant", content: reply });
   } catch (err) {
     removeTyping();
     isTyping = false;
-    appendBotMessage("Something went wrong. Please email <a href='mailto:carissa@heftology.com'>carissa@heftology.com</a> and we will get back to you within 24 hours!");
+    appendBotMessage('Something went wrong. Please email carissa@heftology.com and we will get back to you within 24 hours!');
   }
 }
 
@@ -739,12 +760,7 @@ function renderCocktail(c) {
   const resetBtn = document.getElementById('cw-reset');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      result.hidden = true;
-      result.innerHTML = '';
-      setWidgetStatus('');
-      const form = document.getElementById('cocktail-widget-form');
-      if (form) form.reset();
-      document.getElementById('cw-theme')?.focus();
+      if (typeof window.resetCocktailWizard === 'function') window.resetCocktailWizard();
     });
   }
 }
@@ -896,18 +912,43 @@ window.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok || !data?.cocktail) throw new Error(data?.error || 'Request failed');
       setWidgetStatus('');
       renderCocktail(data.cocktail);
     } catch (err) {
-      setWidgetStatus('Something went wrong generating your cocktail. Please try again — or email carissa@heftology.com.', true);
+      const msg = err && err.message ? String(err.message) : '';
+      setWidgetStatus(
+        msg && msg !== 'Request failed'
+          ? msg
+          : 'Something went wrong generating your cocktail. Please try again — or email carissa@heftology.com.',
+        true
+      );
     } finally {
       submit.disabled = false;
       submit.classList.remove('loading');
-      submit.textContent = 'Create my cocktail ✦';
+      submit.textContent = 'Create My Cocktail ✦';
     }
   });
+
+  window.resetCocktailWizard = () => {
+    const result = document.getElementById('cocktail-widget-result');
+    if (result) {
+      result.hidden = true;
+      result.innerHTML = '';
+    }
+    setWidgetStatus('');
+    form.reset();
+    form.querySelectorAll('.cw-choice').forEach((btn) => {
+      btn.classList.remove('selected');
+      btn.setAttribute('aria-pressed', 'false');
+    });
+    const month = document.getElementById('cw-month');
+    const venue = document.getElementById('cw-venue');
+    if (month) month.value = '';
+    if (venue) venue.value = '';
+    showStep(1);
+  };
 
   // init — do not focus #cw-theme on load; focus() scrolls the field into view
   showStep(1, { focus: false });

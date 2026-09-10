@@ -12,16 +12,17 @@ Heftology serves the **greater Tampa Bay area**. Marketing copy in `index.html` 
 
 **Always outside service area** (impractical real-world drive times, regardless of map distance): Orlando, Ocala, Port Charlotte, and anywhere further — politely decline and wish them well finding a local bartender.
 
-**City not on either list:** hand off to **carissa@heftology.com** — Carissa decides edge cases.
+**City not on either list:** hand off to **carissa@heftology.com** — Carissa and Michelle decide edge cases.
 
 ---
 
 ## What this project includes
 
-- **Landing page** (`index.html`) — hero, service tiers, team photos, cocktail menu, about, and a **Netlify Forms** booking form that POSTs to Netlify and redirects to a thank-you page.
-- **Thank-you page** (`thank-you.html`) — confirmation after a form submission, `noindex` for search engines, and a GA4 **booking_form_submit** event (swap in your real Measurement ID).
-- **Styles** (`styles.css`) — layout, typography, responsive nav, chat widget, and section styling.
+- **Landing page** (`index.html`) — hero, services, photo gallery, cocktail menu, Signature Cocktail Designer, about, credentials, testimonials, and a **Netlify Forms** booking form that POSTs to Netlify and redirects to a thank-you page.
+- **Thank-you page** (`thank-you.html`) — confirmation after a form submission, `noindex` for search engines, and a GA4 **booking_form_submit** event.
+- **Styles** (`styles.css`) — layout, typography, responsive nav, chat widget, gallery, and section styling.
 - **Chat assistant** — browser UI talks to **`/.netlify/functions/chat`**, a Netlify Function that calls the **Anthropic** API. The API key never ships to the client; it lives only in Netlify environment variables.
+- **Signature Cocktail Designer** — client stepper posts to **`/.netlify/functions/cocktail`** (also Anthropic; rate-limited).
 - **SEO basics** — `robots.txt` (including `Disallow` for the thank-you URL) and `sitemap.xml` (homepage only). Submit the sitemap URL in Google Search Console when the site is verified.
 
 ---
@@ -30,12 +31,13 @@ Heftology serves the **greater Tampa Bay area**. Marketing copy in `index.html` 
 
 | Path | Role |
 |------|------|
-| `index.html` | Main page: content, meta/OG/Twitter tags, GA4 snippet (placeholder ID), form, chat UI + client script |
+| `index.html` | Main page: content, meta/OG/Twitter tags, GA4, form, chat UI + client script |
 | `thank-you.html` | Post-form confirmation; GA4 conversion event |
 | `styles.css` | All visual styling |
 | `images/` | Photo assets (PNG/JPG referenced from `index.html`) |
 | `netlify.toml` | Publish root, functions directory, security headers |
 | `netlify/functions/chat.js` | Serverless chat handler (Anthropic Messages API) |
+| `netlify/functions/cocktail.js` | Serverless cocktail designer handler (Anthropic) |
 | `netlify/functions/package.json` | Function dependencies (`@anthropic-ai/sdk`) for Netlify’s bundler |
 | `package.json` | Root metadata / optional tooling; Netlify installs function deps from `netlify/functions/package.json` |
 | `robots.txt` | Crawl rules + sitemap URL |
@@ -50,7 +52,7 @@ Heftology serves the **greater Tampa Bay area**. Marketing copy in `index.html` 
 You can open `index.html` directly in a browser. Some features behave differently offline:
 
 - **Netlify Forms** only process submissions on Netlify (or with Netlify CLI).
-- **Chat** only works where **`/.netlify/functions/chat`** is deployed and `ANTHROPIC_API_KEY` is set.
+- **Chat** and **Cocktail Designer** only work where the Netlify Functions are deployed and `ANTHROPIC_API_KEY` is set.
 
 For a simple local server (static files only):
 
@@ -65,8 +67,9 @@ npx serve .
 1. Connect this Git repository to a Netlify site (or link the repo in the Netlify UI).
 2. Build settings are driven by **`netlify.toml`**: publish directory is **`.`**, functions live in **`netlify/functions`**.
 3. Under **Site settings → Environment variables**, add:
-   - **`ANTHROPIC_API_KEY`** — required for the chat function.
-   - **`CLAUDE_MODEL`** (optional) — overrides the default model string in `chat.js` if you want a different Claude model later.
+   - **`ANTHROPIC_API_KEY`** — required for chat and cocktail functions.
+   - **`CLAUDE_MODEL`** (optional) — overrides the default model string in `chat.js` / `cocktail.js`.
+   - **`COCKTAIL_MODEL`** (optional) — cocktail-only model override.
 4. After the first deploy, open **Forms** in the Netlify UI and confirm the **booking** form is detected (it must appear in the deployed HTML with the `netlify` attribute and `form-name` hidden field).
 5. Configure **form notifications** (email, Slack, etc.) under Netlify Forms so inquiries reach the team.
 
@@ -76,13 +79,13 @@ Redeploys track `main` (or whichever branch you connect). You can trigger a rebu
 
 ## Google Analytics 4
 
-Replace every **`G-XXXXXXXXXX`** placeholder in `index.html` and `thank-you.html` with your real **Measurement ID**. The thank-you page fires **`booking_form_submit`** on load so conversions are attributed after a successful form redirect.
+Both `index.html` and `thank-you.html` use Measurement ID **`G-VBYCDBFFM8`**. The thank-you page fires **`booking_form_submit`** on load so conversions are attributed after a successful form redirect.
 
 ---
 
 ## Images
 
-`index.html` loads photos with plain **`<img>`** tags pointing at `images/*.png` and `images/*.jpg`. Keep paths and filenames in sync with the files in `images/`. You can switch to **`<picture>`** + WebP later if you add `.webp` variants.
+`index.html` loads photos with plain **`<img>`** tags pointing at `images/*.png` and `images/*.jpg` (including `images/gallery/`). Keep paths and filenames in sync with the files on disk. You can switch to **`<picture>`** + WebP later if you add `.webp` variants.
 
 ---
 
@@ -101,4 +104,4 @@ This repository is **not open source**. Terms are defined in the dedicated licen
 - **Holder:** **Heftology LLC**, copyright © 2026
 - **Summary:** All rights reserved. No copying, distribution, or use without written permission from Heftology LLC, except as allowed by law.
 
-The [`LICENSE`](LICENSE) file is the authoritative text. Site copy, images, and branding are part of the same proprietary work. For permission or partnership questions, use the contact options on [heftology.com](https://www.heftology.com/) (e.g. [inquiries@heftology.com](mailto:inquiries@heftology.com)).
+The [`LICENSE`](LICENSE) file is the authoritative text. Site copy, images, and branding are part of the same proprietary work. For permission or partnership questions, use the contact options on [heftology.com](https://www.heftology.com/) (e.g. [carissa@heftology.com](mailto:carissa@heftology.com)).

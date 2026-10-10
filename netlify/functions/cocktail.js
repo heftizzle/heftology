@@ -24,7 +24,7 @@ function safeString(v) {
 }
 
 const RATE_LIMIT_MAX = 3;
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const RATE_LIMIT_WINDOW_MS = 72 * 60 * 60 * 1000; // 3 days
 const rateLimitByIp = new Map(); // ip -> number[] (timestamps)
 
 function getClientIp(event) {
@@ -71,7 +71,7 @@ exports.handler = async (event) => {
         headers: corsHeaders,
         body: JSON.stringify({
           error:
-            "Looks like you're on a roll! Let's make it official — book a free consultation at heftology.com/#booking and Carissa will craft the perfect menu for your event.",
+            "Looks like you're on a roll! Let's make it official — book a free consultation at heftology.com/#booking and Carissa and Michelle will craft the perfect menu for your event.",
         }),
       };
     }

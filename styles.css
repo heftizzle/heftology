@@ -539,17 +539,6 @@ nav {
   background: rgba(214,59,143,0.35);
   flex-shrink: 0;
 }
-.credentials .cred-knot-link {
-  display: inline-flex;
-  width: auto;
-  max-width: 100%;
-  margin: 1.35rem auto 0;
-  justify-content: center;
-  text-align: center;
-}
-.credentials .cred-knot-link .cred-guild-link-text {
-  text-align: center;
-}
 
 /* ─── TESTIMONIALS ─── */
 .testimonials {
@@ -564,6 +553,58 @@ nav {
 }
 .testimonials-header { margin-bottom: 2.5rem; }
 .testimonials-header .pink-rule { margin: 1.2rem auto 0; }
+.knot-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  max-width: 100%;
+  margin-bottom: 2.5rem;
+  padding: 1rem 2rem;
+  background: rgba(214,59,143,0.13);
+  border: 1px solid rgba(214,59,143,0.32);
+  border-radius: 999px;
+  text-decoration: none;
+  transition: border-color 0.3s, background 0.3s, transform 0.3s;
+}
+.knot-badge:hover {
+  border-color: rgba(214,59,143,0.6);
+  background: rgba(214,59,143,0.18);
+  transform: translateY(-3px);
+}
+.knot-badge-score {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(2rem, 4.5vw, 2.75rem);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--white);
+}
+.knot-badge-stars {
+  color: var(--pink);
+  font-size: 1.6rem;
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+.knot-badge-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--white);
+  line-height: 1.1;
+  text-align: left;
+}
+.knot-badge-sub {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+}
 .testimonials-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1023,6 +1064,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .team-cards { grid-template-columns: 1fr; }
   .credentials-grid { grid-template-columns: 1fr; }
   .testimonials-grid { grid-template-columns: 1fr; }
+  .knot-badge { padding: 0.9rem 1.4rem; border-radius: 24px; }
+  .knot-badge-score { font-size: 2rem; }
+  .knot-badge-stars { font-size: 1.3rem; }
+  .knot-badge-label { flex-basis: 100%; align-items: center; text-align: center; }
   .inquiry-form { grid-template-columns: 1fr; }
   .footer-inner { flex-direction: column; align-items: flex-start; }
   #chat-window { width: calc(100vw - 2rem); right: 1rem; bottom: 5.5rem; }

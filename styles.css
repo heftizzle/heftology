@@ -68,7 +68,7 @@ nav {
 .hero-divider::after  { --d: left; }
 .hero-divider span { color: var(--pink); font-size: 0.8rem; }
 .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.9s ease 1.1s forwards; }
-.btn-primary { font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--black); background: var(--pink); border: none; padding: 1rem 2.5rem; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.3s; box-shadow: 0 0 20px rgba(214,59,143,0.4); }
+.hero-knot { margin-top: 2.5rem; opacity: 0; animation: fadeUp 0.9s ease 1.3s forwards; }.btn-primary { font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--black); background: var(--pink); border: none; padding: 1rem 2.5rem; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.3s; box-shadow: 0 0 20px rgba(214,59,143,0.4); }
 .btn-primary:hover { background: var(--pink-light); transform: translateY(-2px); }
 .btn-ghost { font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--white); background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 1rem 2.5rem; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.3s; }
 .btn-ghost:hover { border-color: var(--pink); color: var(--pink); }
@@ -560,7 +560,6 @@ nav {
   flex-wrap: wrap;
   gap: 0.6rem 1rem;
   max-width: 100%;
-  margin-bottom: 2.5rem;
   padding: 1rem 2rem;
   background: rgba(214,59,143,0.13);
   border: 1px solid rgba(214,59,143,0.32);

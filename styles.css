@@ -558,12 +558,17 @@ nav {
   border-top: 1px solid rgba(214,59,143,0.12);
 }
 .testimonials-inner {
-  max-width: 780px;
+  max-width: 1100px;
   margin: 0 auto;
   text-align: center;
 }
 .testimonials-header { margin-bottom: 2.5rem; }
 .testimonials-header .pink-rule { margin: 1.2rem auto 0; }
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
 .testimonial-card {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(214,59,143,0.18);
@@ -1017,6 +1022,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .cw-actions .cw-next { min-width: 0; width: 100%; }
   .team-cards { grid-template-columns: 1fr; }
   .credentials-grid { grid-template-columns: 1fr; }
+  .testimonials-grid { grid-template-columns: 1fr; }
   .inquiry-form { grid-template-columns: 1fr; }
   .footer-inner { flex-direction: column; align-items: flex-start; }
   #chat-window { width: calc(100vw - 2rem); right: 1rem; bottom: 5.5rem; }

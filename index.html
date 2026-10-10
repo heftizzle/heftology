@@ -453,21 +453,30 @@
       <h2 class="section-title" id="testimonials-heading">What People Are Saying</h2>
       <div class="pink-rule"></div>
     </div>
-    <div class="testimonials-grid">
-      <div class="testimonial-card">
-        <div class="testimonial-stars" aria-hidden="true">★★★★★</div>
-        <blockquote class="testimonial-quote">
-          "Absolutely the friendliest folks, Excellent Service, Excellent attention to detail. We met Michelle on our initial meeting and she took notes on everything, answered all of our questions and she seemed prepared for everything. She knew exactly what the Mrs and wanted to drink. She knew we wanted to have fun, but not get too hammered and she helped us manage that. Friends wanted to buy us drinks and do shots together and she made sure to pour us the right drink at the right time. Sometimes they were alcohol free, she always made sure we had drinks in our hands that were fresh and water waiting for us if we came off the dance floor. We didn't have one single complaint or issue. Every one said it was the best bar service they have had. Absolute great time, we will book them again for events we host in the future!"
-        </blockquote>
-        <div class="testimonial-author">— Scott B., verified review via <a href="https://www.theknot.com/marketplace/heftology-palmetto-fl-2107759" target="_blank" rel="noopener noreferrer">The Knot</a></div>
+    <!-- To add a review: copy one .testimonial-card into .testimonials-track. Width, snapping and arrows adjust automatically. -->
+    <div class="gallery-shell testimonials-shell">
+      <button type="button" class="gallery-nav gallery-nav--prev" id="testimonial-prev" aria-label="Previous review" disabled>
+        <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="testimonials-track" id="testimonials-track" aria-label="Client reviews" tabindex="0">
+        <div class="testimonial-card">
+          <div class="testimonial-stars" aria-hidden="true">★★★★★</div>
+          <blockquote class="testimonial-quote">
+            "Absolutely the friendliest folks, Excellent Service, Excellent attention to detail. We met Michelle on our initial meeting and she took notes on everything, answered all of our questions and she seemed prepared for everything. She knew exactly what the Mrs and wanted to drink. She knew we wanted to have fun, but not get too hammered and she helped us manage that. Friends wanted to buy us drinks and do shots together and she made sure to pour us the right drink at the right time. Sometimes they were alcohol free, she always made sure we had drinks in our hands that were fresh and water waiting for us if we came off the dance floor. We didn't have one single complaint or issue. Every one said it was the best bar service they have had. Absolute great time, we will book them again for events we host in the future!"
+          </blockquote>
+          <div class="testimonial-author">— Scott B., verified review via <a href="https://www.theknot.com/marketplace/heftology-palmetto-fl-2107759" target="_blank" rel="noopener noreferrer">The Knot</a></div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-stars" aria-hidden="true">★★★★★</div>
+          <blockquote class="testimonial-quote">
+            "We had such an amazing experience with Heftology for our wedding! From start to finish, they were professional, friendly, and incredibly easy to work with. The bartenders were wonderful with our guests, kept everything running smoothly, and helped create such a fun and welcoming atmosphere throughout the night. The drinks were delicious, the service was fantastic, and we truly appreciated how much they took care of so we could focus on enjoying our special day. Our guests had so many great things to say about the bar service! If you’re looking for a mobile bartending service for your wedding or special event, I highly recommend Heftology. They went above and beyond, and we are so grateful they were part of our wedding day! ❤️🥂"
+          </blockquote>
+          <div class="testimonial-author">— Brooke D., verified review via <a href="https://www.theknot.com/marketplace/heftology-palmetto-fl-2107759" target="_blank" rel="noopener noreferrer">The Knot</a></div>
+        </div>
       </div>
-      <div class="testimonial-card">
-        <div class="testimonial-stars" aria-hidden="true">★★★★★</div>
-        <blockquote class="testimonial-quote">
-          "We had such an amazing experience with Heftology for our wedding! From start to finish, they were professional, friendly, and incredibly easy to work with. The bartenders were wonderful with our guests, kept everything running smoothly, and helped create such a fun and welcoming atmosphere throughout the night. The drinks were delicious, the service was fantastic, and we truly appreciated how much they took care of so we could focus on enjoying our special day. Our guests had so many great things to say about the bar service! If you’re looking for a mobile bartending service for your wedding or special event, I highly recommend Heftology. They went above and beyond, and we are so grateful they were part of our wedding day! ❤️🥂"
-        </blockquote>
-        <div class="testimonial-author">— Brooke D., verified review via <a href="https://www.theknot.com/marketplace/heftology-palmetto-fl-2107759" target="_blank" rel="noopener noreferrer">The Knot</a></div>
-      </div>
+      <button type="button" class="gallery-nav gallery-nav--next" id="testimonial-next" aria-label="Next review">
+        <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
     </div>
   </div>
 </section>
@@ -980,11 +989,11 @@ window.addEventListener('DOMContentLoaded', () => {
   showStep(1, { focus: false });
 });
 
-// ─── Photo gallery arrows ───
-window.addEventListener('DOMContentLoaded', () => {
-  const track = document.getElementById('gallery-track');
-  const prev = document.getElementById('gallery-prev');
-  const next = document.getElementById('gallery-next');
+// ─── Scroll decks (photo gallery, testimonials) ───
+function initScrollDeck(trackId, prevId, nextId, itemSelector) {
+  const track = document.getElementById(trackId);
+  const prev = document.getElementById(prevId);
+  const next = document.getElementById(nextId);
   if (!track || !prev || !next) return;
 
   const updateNav = () => {
@@ -994,7 +1003,7 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   const scrollByCard = (dir) => {
-    const items = Array.from(track.querySelectorAll('.gallery-item'));
+    const items = Array.from(track.querySelectorAll(itemSelector));
     if (!items.length) return;
     const current = track.scrollLeft;
     const EPS = 4; // tolerance for snap settling
@@ -1018,6 +1027,11 @@ window.addEventListener('DOMContentLoaded', () => {
     new ResizeObserver(updateNav).observe(track);
   }
   updateNav();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  initScrollDeck('gallery-track', 'gallery-prev', 'gallery-next', '.gallery-item');
+  initScrollDeck('testimonials-track', 'testimonial-prev', 'testimonial-next', '.testimonial-card');
 });
 
 // ─── Photo gallery lightbox ───

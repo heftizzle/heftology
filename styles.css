@@ -604,12 +604,28 @@ nav {
   font-weight: 600;
   color: rgba(255,255,255,0.5);
 }
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+.testimonials-track {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
   gap: 1.25rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.5rem 0 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(214,59,143,0.45) transparent;
+}
+.testimonials-track::-webkit-scrollbar { height: 6px; }
+.testimonials-track::-webkit-scrollbar-thumb {
+  background: rgba(214,59,143,0.45);
+  border-radius: 3px;
 }
 .testimonial-card {
+  flex: 0 0 min(520px, 85%);
+  scroll-snap-align: start;
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(214,59,143,0.18);
   border-radius: 14px;
@@ -934,6 +950,9 @@ footer { background: var(--black); padding: 3rem 2rem; border-top: 1px solid rgb
 @media (min-width: 769px) {
   .gallery-nav { display: inline-flex; }
   .team-photos-inner { padding: 0 3.5rem; }
+  .testimonials-inner { padding: 0 3.5rem; }
+  .testimonials-shell .gallery-nav--prev { left: -3.25rem; }
+  .testimonials-shell .gallery-nav--next { right: -3.25rem; }
 }
 .gallery-item { cursor: zoom-in; }
 .gallery-item:focus-visible {
@@ -1031,6 +1050,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .reveal { opacity: 1 !important; transform: none !important; }
   .gallery-item:hover { transform: none !important; }
   .gallery-track { scroll-behavior: auto; }
+  .testimonials-track { scroll-behavior: auto; }
   .lightbox, .lightbox.is-open { transition: none; }
   .about .team-card:hover .team-card-photo img { transform: none !important; }
 }
@@ -1062,7 +1082,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .cw-actions .cw-next { min-width: 0; width: 100%; }
   .team-cards { grid-template-columns: 1fr; }
   .credentials-grid { grid-template-columns: 1fr; }
-  .testimonials-grid { grid-template-columns: 1fr; }
   .knot-badge { padding: 0.9rem 1.4rem; border-radius: 24px; }
   .knot-badge-score { font-size: 2rem; }
   .knot-badge-stars { font-size: 1.3rem; }

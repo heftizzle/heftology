@@ -133,7 +133,7 @@
     </div>
     <div class="gallery-shell">
       <button type="button" class="gallery-nav gallery-nav--prev" id="gallery-prev" aria-label="Scroll gallery left" disabled>
-        <span aria-hidden="true">‹</span>
+        <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <div class="gallery-track" id="gallery-track" aria-label="Photo gallery" tabindex="0">
         <img class="gallery-item" src="images/team-cheers.jpg" alt="Carissa and Michelle toasting cocktails behind the bar" height="380" decoding="async">
@@ -166,7 +166,7 @@
         <img class="gallery-item" src="images/gallery/gallery-26.jpg" alt="Heftology behind the scenes — photo 26" height="380" loading="lazy">
       </div>
       <button type="button" class="gallery-nav gallery-nav--next" id="gallery-next" aria-label="Scroll gallery right">
-        <span aria-hidden="true">›</span>
+        <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </div>
   </div>
@@ -967,13 +967,25 @@ window.addEventListener('DOMContentLoaded', () => {
     next.disabled = track.scrollLeft >= max - 4;
   };
 
-  const scrollByPage = (dir) => {
-    const amount = Math.max(240, Math.floor(track.clientWidth * 0.85));
-    track.scrollBy({ left: dir * amount, behavior: 'smooth' });
+  const scrollByCard = (dir) => {
+    const items = Array.from(track.querySelectorAll('.gallery-item'));
+    if (!items.length) return;
+    const current = track.scrollLeft;
+    const EPS = 4; // tolerance for snap settling
+
+    let target;
+    if (dir > 0) {
+      target = items.find((el) => el.offsetLeft > current + EPS);
+      target = target ? target.offsetLeft : track.scrollWidth;
+    } else {
+      target = [...items].reverse().find((el) => el.offsetLeft < current - EPS);
+      target = target ? target.offsetLeft : 0;
+    }
+    track.scrollBy({ left: target - current, behavior: 'smooth' });
   };
 
-  prev.addEventListener('click', () => scrollByPage(-1));
-  next.addEventListener('click', () => scrollByPage(1));
+  prev.addEventListener('click', () => scrollByCard(-1));
+  next.addEventListener('click', () => scrollByCard(1));
   track.addEventListener('scroll', updateNav, { passive: true });
   window.addEventListener('resize', updateNav);
   if (typeof ResizeObserver !== 'undefined') {

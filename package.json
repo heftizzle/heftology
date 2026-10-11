@@ -3,6 +3,7 @@
   "private": true,
   "description": "Heftology — Hefta Crafted Cocktails, Tampa Bay",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0"
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@netlify/blobs": "^10.7.13"
   }
 }

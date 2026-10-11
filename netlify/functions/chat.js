@@ -7,8 +7,8 @@ Carissa Hefta (certified mixologist) and Michelle Flannery (lead bartender), co-
 
 ## PACKAGES
 - The Craft Bar: up to 50 guests, 3 hours, from $600 — includes 1 Headline Cocktail via the Signature Cocktail Designer, custom cocktail consultation, shopping list guidance. Girls Night Out / Bachelorette Bar is the same package and price with a signature shots menu.
-- The Signature Pour: up to 100 guests, 6 hours, from $950 (weddings/receptions) — 3 custom cocktails incl. your Headline Cocktail; mixers & garnishes included
-- The Full Experience: up to 150 guests, 8 hours, from $1,500 — 6 custom cocktails incl. your Headline Cocktail; cocktail menu cards; mixers, garnishes & syrups
+- The Signature Pour: up to 100 guests, 6 hours, from $950 (weddings/receptions) — 2 custom cocktails incl. your Headline Cocktail; mixers & garnishes included
+- The Full Experience: up to 150 guests, 8 hours, from $1,500 — 4 custom cocktails incl. your Headline Cocktail; cocktail menu cards; mixers, garnishes & syrups
 - Cocktail Classes: from $45/person
 - Events over 150 guests: custom quote only — direct all inquiries to Carissa and Michelle at carissa@heftology.com
 

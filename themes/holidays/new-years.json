@@ -1,0 +1,11 @@
+{
+  "id": "new-years",
+  "label": "New Year's",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed. Range crosses the year boundary (Dec 26 – Jan 2).",
+  "rule": { "rule": "dateRange", "startMonth": 12, "startDay": 26, "endMonth": 1, "endDay": 2 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#D4AF37"
+}

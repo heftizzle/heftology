@@ -1,0 +1,11 @@
+{
+  "id": "st-patricks",
+  "label": "St. Patrick's Day",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+  "rule": { "rule": "fixedDate", "month": 3, "day": 17, "daysBefore": 10 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#2E8B57"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "cinco-de-mayo",
+  "label": "Cinco de Mayo",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+  "rule": { "rule": "fixedDate", "month": 5, "day": 5, "daysBefore": 7 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#E4572E"
+}

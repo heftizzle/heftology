@@ -92,6 +92,17 @@
   </div>
 </section>
 
+<!-- SEASONAL SPOTLIGHT — filled by themes/theme-loader.js; stays hidden if no theme is active -->
+<section class="seasonal-spotlight" id="seasonal-spotlight" aria-labelledby="seasonal-spotlight-name" hidden>
+  <div class="seasonal-spotlight-inner">
+    <span class="eyebrow seasonal-spotlight-eyebrow">Seasonal Spotlight · <span data-theme-label></span></span>
+    <h2 class="seasonal-spotlight-name" id="seasonal-spotlight-name" data-theme-name></h2>
+    <div class="pink-rule seasonal-spotlight-rule"></div>
+    <p class="seasonal-spotlight-desc" data-theme-desc></p>
+    <dl class="seasonal-spotlight-variants" data-theme-variants hidden></dl>
+  </div>
+</section>
+
 <!-- SERVICES -->
 <section class="services" id="services">
   <div class="services-inner">
@@ -225,12 +236,13 @@
           </div>
           <span class="cocktail-tag">Classic</span>
         </div>
-        <div class="cocktail-item">
+        <!-- Rotating Seasonal — filled by themes/theme-loader.js from the same active theme as the spotlight -->
+        <div class="cocktail-item cocktail-item--seasonal" id="seasonal-menu-card" hidden>
           <div>
-            <div class="cocktail-name">Barrel Bloom</div>
-            <div class="cocktail-desc">Rye whiskey, elderflower, lemon oleo saccharum, lavender bitters</div>
+            <div class="cocktail-name" data-theme-name></div>
+            <div class="cocktail-desc" data-theme-desc></div>
           </div>
-          <span class="cocktail-tag">Seasonal</span>
+          <span class="cocktail-tag" data-theme-label></span>
         </div>
         <div class="cocktail-item">
           <div>
@@ -605,6 +617,8 @@
   </div>
 </div>
 
+<script src="themes/date-rules.js" defer></script>
+<script src="themes/theme-loader.js" defer></script>
 <script>
 let isOpen = false;
 let isTyping = false;

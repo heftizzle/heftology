@@ -1,0 +1,11 @@
+{
+  "id": "kentucky-derby",
+  "label": "Kentucky Derby",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+  "rule": { "rule": "nthWeekday", "month": 5, "weekday": 6, "n": 1, "daysBefore": 7 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#E25C7E"
+}

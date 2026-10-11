@@ -1,0 +1,10 @@
+{
+  "id": "thanksgiving",
+  "label": "Thanksgiving",
+  "priority": 10,
+  "placeholder": false,
+  "rule": { "rule": "nthWeekday", "month": 11, "weekday": 4, "n": 4, "daysBefore": 14 },
+  "drinkName": "Pumpkin Spice Old Fashioned",
+  "drinkDescription": "Spiced rum, pumpkin syrup, Angostura bitters, orange peel.",
+  "accentColor": "#C8742C"
+}

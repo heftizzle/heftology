@@ -1,0 +1,11 @@
+{
+  "id": "winter-late",
+  "label": "Winter",
+  "priority": 1,
+  "placeholder": false,
+  "_comment": "endDay \"last\" resolves to Feb 28 or Feb 29 depending on leap year.",
+  "rule": { "rule": "dateRange", "startMonth": 1, "startDay": 16, "endMonth": 2, "endDay": "last" },
+  "drinkName": "Rosemary Rye",
+  "drinkDescription": "Bulleit Rye, Fresh Cranberry Juice, Rosemary-Infused Simple Syrup, Cinnamon Sugar Rim, Rosemary Sprig & Cranberry Garnish",
+  "accentColor": "#D64550"
+}

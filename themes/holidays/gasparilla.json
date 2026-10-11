@@ -1,0 +1,11 @@
+{
+  "id": "gasparilla",
+  "label": "Gasparilla",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed. SPOT-CHECK YEARLY: rule is the last Saturday of January (matches Jan 25 2025, Jan 31 2026, Jan 30 2027), but organizers occasionally deviate — compare against the officially announced parade date at gasparillapiratefest.com each year.",
+  "rule": { "rule": "nthWeekday", "month": 1, "weekday": 6, "n": -1, "daysBefore": 14 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#C9A227"
+}

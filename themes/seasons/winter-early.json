@@ -1,0 +1,11 @@
+{
+  "id": "winter-early",
+  "label": "Winter",
+  "priority": 1,
+  "placeholder": false,
+  "_comment": "Range crosses the year boundary (Dec 1 – Jan 15).",
+  "rule": { "rule": "dateRange", "startMonth": 12, "startDay": 1, "endMonth": 1, "endDay": 15 },
+  "drinkName": "Tiramisu Martini",
+  "drinkDescription": "Vodka, Kahlua, Baileys Irish Cream, Fresh Espresso, Chocolate Drizzle, Cocoa Dust, Shaved Chocolate Garnish",
+  "accentColor": "#A0704C"
+}

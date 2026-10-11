@@ -1,0 +1,11 @@
+{
+  "id": "easter",
+  "label": "Easter",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+  "rule": { "rule": "easterOffset", "offsetDays": 0, "daysBefore": 7 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#B39DDB"
+}

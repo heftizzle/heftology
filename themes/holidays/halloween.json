@@ -1,0 +1,10 @@
+{
+  "id": "halloween",
+  "label": "Halloween",
+  "priority": 10,
+  "placeholder": false,
+  "rule": { "rule": "dateRange", "startMonth": 10, "startDay": 1, "endMonth": 10, "endDay": 31 },
+  "drinkName": "The Black Widow",
+  "drinkDescription": "Blackberry vodka, activated charcoal syrup, fresh lemon, black sugar rim — served with a gummy spider garnish.",
+  "accentColor": "#FF7518"
+}

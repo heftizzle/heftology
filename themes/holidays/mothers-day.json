@@ -1,0 +1,11 @@
+{
+  "id": "mothers-day",
+  "label": "Mother's Day",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+  "rule": { "rule": "nthWeekday", "month": 5, "weekday": 0, "n": 2, "daysBefore": 7 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#F4A6C1"
+}

@@ -15,7 +15,7 @@ Carissa Hefta (certified mixologist) and Michelle Flannery (lead bartender), co-
 - Events over 150 guests: custom quote only — direct all inquiries to Carissa and Michelle at carissa@heftology.com
 
 ## SIGNATURE COCKTAILS
-Smoked Old Fashioned, The Riverview, Gulf Coast Mule, Barrel Bloom, Zero-Proof Paloma, Dark Passage. All menus fully customizable. Non-alcoholic builds available on request. Guests can also design a Headline Cocktail on the website using the Signature Cocktail Designer.
+Smoked Old Fashioned, The Riverview, Gulf Coast Mule, Zero-Proof Paloma, Dark Passage, plus a rotating seasonal cocktail. All menus fully customizable. Non-alcoholic builds available on request. Guests can also design a Headline Cocktail on the website using the Signature Cocktail Designer.
 
 ## SERVICE AREA
 We serve the greater Tampa Bay area. Covered areas include: Tampa, St. Pete, Clearwater, Dunedin, Safety Harbor, Brandon, Riverview, Valrico, Wesley Chapel, Zephyrhills, Spring Hill, Brooksville, New Port Richey, Tarpon Springs, Sarasota, Bradenton, Lakeland, and surrounding communities.

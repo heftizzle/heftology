@@ -1,0 +1,10 @@
+{
+  "id": "fall",
+  "label": "Fall",
+  "priority": 1,
+  "placeholder": false,
+  "rule": { "rule": "dateRange", "startMonth": 9, "startDay": 1, "endMonth": 11, "endDay": 30 },
+  "drinkName": "Spiced Apple Mule",
+  "drinkDescription": "Maker's Mark, Fresh Apple Cider, House-Made Cinnamon Syrup, Fresh Lime Juice, Ginger Beer, Dehydrated Lime & Cinnamon Stick Garnish",
+  "accentColor": "#D2691E"
+}

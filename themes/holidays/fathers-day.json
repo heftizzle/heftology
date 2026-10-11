@@ -1,0 +1,11 @@
+{
+  "id": "fathers-day",
+  "label": "Father's Day",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+  "rule": { "rule": "nthWeekday", "month": 6, "weekday": 0, "n": 3, "daysBefore": 7 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#6A8FC8"
+}

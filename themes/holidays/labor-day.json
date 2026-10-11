@@ -1,0 +1,11 @@
+{
+  "id": "labor-day",
+  "label": "Labor Day",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+  "rule": { "rule": "nthWeekday", "month": 9, "weekday": 1, "n": 1, "daysBefore": 7 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#5E8DD6"
+}

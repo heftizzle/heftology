@@ -1,0 +1,11 @@
+{
+  "id": "valentines",
+  "label": "Valentine's Day",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed. windowEndOffsetDays: 8 is a one-off for 2027, when the Super Bowl (Feb 7–14 window) lands on Valentine's Day: it ends this window Feb 6 so the two don't overlap. Revisit/revert to 0 in years they don't collide.",
+  "rule": { "rule": "fixedDate", "month": 2, "day": 14, "daysBefore": 10, "windowEndOffsetDays": 8 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#F0306F"
+}

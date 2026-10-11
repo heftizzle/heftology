@@ -1,0 +1,11 @@
+{
+  "id": "mardi-gras",
+  "label": "Mardi Gras",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed. Fat Tuesday = Easter − 47 days.",
+  "rule": { "rule": "easterOffset", "offsetDays": -47, "daysBefore": 14 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#A66BD3"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "super-bowl",
+  "label": "Super Bowl",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed. MANUAL DATE: update every year. 2027-02-14 = Super Bowl LXI, SoFi Stadium (confirmed by the SoFi Stadium press release and Wikipedia). Skipped automatically once more than a year old.",
+  "rule": { "rule": "manual", "date": "2027-02-14", "daysBefore": 7 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#4CAF50"
+}

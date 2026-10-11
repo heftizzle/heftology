@@ -1,0 +1,14 @@
+{
+  "id": "summer",
+  "label": "Summer",
+  "priority": 1,
+  "placeholder": false,
+  "rule": { "rule": "dateRange", "startMonth": 6, "startDay": 1, "endMonth": 8, "endDay": 31 },
+  "drinkName": "Red & White Sangria",
+  "drinkDescription": "",
+  "variants": [
+    { "label": "Red", "description": "Red Wine, Lambrusco, Malibu Rum, Fresh Lime Juice, Lemon & Lime Slices, Orange Wheel Garnish" },
+    { "label": "White", "description": "White Wine, Moscato, Malibu Rum, Fresh Lime Juice, Lemon & Lime Slices, Orange Wheel Garnish" }
+  ],
+  "accentColor": "#F4A261"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "spring",
+  "label": "Spring",
+  "priority": 1,
+  "placeholder": false,
+  "rule": { "rule": "dateRange", "startMonth": 3, "startDay": 1, "endMonth": 5, "endDay": 31 },
+  "drinkName": "Strawberry Lemonade",
+  "drinkDescription": "Vodka, Fresh Lemon Juice, House-Made Simple Syrup, Strawberry Garnish",
+  "accentColor": "#F26B8A"
+}

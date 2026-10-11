@@ -96,6 +96,20 @@ nav {
 .service-desc { font-size: 1rem; font-weight: 300; line-height: 1.7; color: var(--grey); }
 .service-price { font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--pink); margin-top: 1.5rem; }
 
+/* ─── SEASONAL SPOTLIGHT (accent layer; --theme-accent is set per theme by themes/theme-loader.js) ─── */
+.seasonal-spotlight { --theme-accent: var(--pink); position: relative; overflow: hidden; padding: 5rem 2rem; background: var(--black); border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); text-align: center; animation: fadeUp 0.8s ease both; }
+.seasonal-spotlight[hidden] { display: none; }
+.seasonal-spotlight::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 55% 75% at 50% 50%, var(--theme-accent) 0%, transparent 70%); opacity: 0.1; pointer-events: none; }
+.seasonal-spotlight-inner { position: relative; max-width: 760px; margin: 0 auto; }
+.seasonal-spotlight-eyebrow { color: var(--theme-accent); }
+.seasonal-spotlight-name { font-family: 'Montserrat', sans-serif; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; line-height: 1.1; text-transform: uppercase; color: var(--white); }
+.seasonal-spotlight-rule { margin: 1.2rem auto; background: var(--theme-accent); box-shadow: 0 0 10px var(--theme-accent); }
+.seasonal-spotlight-desc { font-size: 1rem; font-weight: 300; line-height: 1.8; color: var(--grey); }
+.seasonal-spotlight-variants { margin: 0; display: grid; gap: 0.9rem; font-size: 1rem; font-weight: 300; line-height: 1.7; color: var(--grey); }
+.seasonal-spotlight-variants[hidden] { display: none; }
+.seasonal-spotlight-variants dt { font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--theme-accent); }
+.seasonal-spotlight-variants dd { margin: 0; }
+
 /* ─── MENU ─── */
 .menu { padding: 8rem 2rem; background: var(--black); position: relative; }
 .menu::before { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 40%; background: radial-gradient(ellipse at right center, rgba(214,59,143,0.05) 0%, transparent 70%); pointer-events: none; }
@@ -110,6 +124,8 @@ nav {
 .cocktail-name { font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--white); margin-bottom: 0.25rem; }
 .cocktail-desc { font-size: 0.82rem; font-weight: 300; line-height: 1.5; color: var(--grey); }
 .cocktail-tag { font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--black); background: var(--pink); padding: 0.2rem 0.5rem; white-space: nowrap; }
+.cocktail-item--seasonal[hidden] { display: none; }
+.cocktail-item--seasonal .cocktail-tag { background: var(--theme-accent, var(--pink)); }
 
 /* ─── SIGNATURE COCKTAIL DESIGNER ─── */
 .cocktail-widget { padding: 8rem 2rem; background: linear-gradient(180deg, var(--black) 0%, var(--black-mid) 55%, var(--black) 100%); }
@@ -1052,6 +1068,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .gallery-track { scroll-behavior: auto; }
   .testimonials-track { scroll-behavior: auto; }
   .lightbox, .lightbox.is-open { transition: none; }
+  .seasonal-spotlight { animation: none; }
   .about .team-card:hover .team-card-photo img { transform: none !important; }
 }
 
@@ -1072,6 +1089,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .nav-links li { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.06); }
   .nav-links a { display: block; padding: 0.85rem 0; }
   .gallery-track { height: 260px; }
+  .seasonal-spotlight { padding: 3.5rem 1.25rem; }
   .menu-layout { grid-template-columns: 1fr; gap: 3rem; }
   .menu-sticky { position: static; }
   .cocktail-widget-card { padding: 1.75rem 1.25rem; }

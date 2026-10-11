@@ -1,0 +1,11 @@
+{
+  "id": "christmas",
+  "label": "Christmas",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+  "rule": { "rule": "dateRange", "startMonth": 12, "startDay": 1, "endMonth": 12, "endDay": 25 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#E74C3C"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "july-4th",
+  "label": "Fourth of July",
+  "priority": 10,
+  "placeholder": true,
+  "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+  "rule": { "rule": "fixedDate", "month": 7, "day": 4, "daysBefore": 14 },
+  "drinkName": "Coming Soon",
+  "drinkDescription": "",
+  "accentColor": "#5B8FD0"
+}

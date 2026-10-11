@@ -1,0 +1,27 @@
+{
+  "_comment": "Order matters: when two active themes share a priority, the one listed first wins. See themes/date-rules.js for the rule schema.",
+  "themes": [
+    "holidays/valentines.json",
+    "holidays/st-patricks.json",
+    "holidays/cinco-de-mayo.json",
+    "holidays/july-4th.json",
+    "holidays/halloween.json",
+    "holidays/thanksgiving.json",
+    "holidays/christmas.json",
+    "holidays/new-years.json",
+    "holidays/mothers-day.json",
+    "holidays/fathers-day.json",
+    "holidays/memorial-day.json",
+    "holidays/labor-day.json",
+    "holidays/kentucky-derby.json",
+    "holidays/easter.json",
+    "holidays/mardi-gras.json",
+    "holidays/super-bowl.json",
+    "holidays/gasparilla.json",
+    "seasons/spring.json",
+    "seasons/summer.json",
+    "seasons/fall.json",
+    "seasons/winter-early.json",
+    "seasons/winter-late.json"
+  ]
+}

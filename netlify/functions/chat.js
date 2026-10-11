@@ -1,4 +1,6 @@
+const crypto = require("crypto");
 const Anthropic = require("@anthropic-ai/sdk");
+const { connectLambda, getStore } = require("@netlify/blobs");
 
 const SYSTEM_PROMPT = `You are the booking assistant for Heftology — Hefta Crafted Cocktails, a mobile bartending and private mixology service in the greater Tampa Bay area, FL.
 
@@ -50,7 +52,10 @@ Warm, professional, enthusiastic about craft cocktails. Replies should be 2–3 
 
 const RATE_LIMIT_MAX = 20;
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
-const rateLimitByIp = new Map();
+const RATE_LIMIT_STORE = "chat-rate-limit";
+// Blobs edge reads can lag writes by up to ~60s, so a per-instance copy is merged in to
+// catch rapid repeats; it is also the only limiter if Blobs is unreachable.
+const memoryRateLimit = new Map(); // key -> number[] (timestamps)
 
 function getClientIp(event) {
   const h = event.headers || {};
@@ -69,16 +74,48 @@ function getClientIp(event) {
   return "unknown";
 }
 
-function checkRateLimit(ip) {
-  const now = Date.now();
-  const windowStart = now - RATE_LIMIT_WINDOW_MS;
-  const stamps = (rateLimitByIp.get(ip) || []).filter((t) => t > windowStart);
-  if (stamps.length >= RATE_LIMIT_MAX) {
-    rateLimitByIp.set(ip, stamps);
-    return false;
+function rateLimitKey(ip) {
+  return crypto.createHash("sha256").update(ip).digest("hex");
+}
+
+function openRateLimitStore(event) {
+  try {
+    connectLambda(event);
+    return getStore(RATE_LIMIT_STORE);
+  } catch (err) {
+    console.error("Rate limit store unavailable, using in-memory fallback:", err.message);
+    return null;
   }
-  stamps.push(now);
-  rateLimitByIp.set(ip, stamps);
+}
+
+// Returns true if this request is allowed (and records it), false if over the limit.
+async function consumeRateLimit(store, key, now) {
+  let stored = [];
+  if (store) {
+    try {
+      stored = (await store.get(key, { type: "json" })) || [];
+    } catch (err) {
+      console.error("Rate limit read failed, using in-memory fallback:", err.message);
+      store = null;
+    }
+  }
+
+  const inWindow = (list) =>
+    (Array.isArray(list) ? list : []).filter((t) => typeof t === "number" && now - t < RATE_LIMIT_WINDOW_MS);
+  const fromStore = inWindow(stored);
+  const fromMemory = inWindow(memoryRateLimit.get(key));
+  const recent = fromMemory.length > fromStore.length ? fromMemory : fromStore;
+  if (recent.length >= RATE_LIMIT_MAX) return false;
+
+  recent.push(now);
+  memoryRateLimit.set(key, recent);
+  if (store) {
+    try {
+      await store.setJSON(key, recent);
+    } catch (err) {
+      console.error("Rate limit write failed, using in-memory fallback:", err.message);
+    }
+  }
   return true;
 }
 
@@ -115,8 +152,8 @@ exports.handler = async (event) => {
   }
 
   try {
-    const ip = getClientIp(event);
-    if (!checkRateLimit(ip)) {
+    const store = openRateLimitStore(event);
+    if (!(await consumeRateLimit(store, rateLimitKey(getClientIp(event)), Date.now()))) {
       return {
         statusCode: 429,
         headers,

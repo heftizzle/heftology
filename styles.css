@@ -84,7 +84,7 @@ nav {
 .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--pink), transparent); margin: 0 auto; animation: pulseDown 2s ease infinite; }
 
 /* ─── SHARED ─── */
-.eyebrow { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.4em; text-transform: uppercase; color: var(--pink); display: block; margin-bottom: 0.8rem; }
+.eyebrow { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.4em; text-transform: uppercase; color: #F060AA; display: block; margin-bottom: 0.8rem; }
 .section-title { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 900; line-height: 1.05; text-transform: uppercase; color: var(--white); }
 .pink-rule { width: 50px; height: 3px; background: var(--pink); box-shadow: 0 0 10px rgba(214,59,143,0.5); margin: 1.2rem 0; }
 
@@ -124,7 +124,7 @@ nav {
 .menu-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 5rem; align-items: start; }
 .menu-sticky { position: sticky; top: 8rem; }
 .menu-body { font-size: 1rem; font-weight: 300; line-height: 1.8; color: var(--grey); margin-top: 1rem; }
-.menu-note { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; color: rgba(214,59,143,0.6); margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(214,59,143,0.15); }
+.menu-note { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; color: #F060AA; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(214,59,143,0.15); }
 .cocktail-list { display: flex; flex-direction: column; }
 .cocktail-item { padding: 1.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; transition: padding-left 0.3s; }
 .cocktail-item:hover { padding-left: 0.6rem; }
@@ -188,7 +188,7 @@ nav {
 .cocktail-widget-field textarea {
   background: transparent; border: none; outline: none;
   font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 300;
-  color: var(--white); resize: none; padding: 0.4rem 0;
+  color: var(--white); resize: none; padding: 0.4rem 0; min-height: 44px;
 }
 .cocktail-widget-submit {
   width: 100%;
@@ -402,11 +402,11 @@ nav {
 }
 .credentials-eyebrow {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.67rem;
   font-weight: 700;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: rgba(214,59,143,0.85);
+  color: #F060AA;
   margin-bottom: 0.6rem;
 }
 .credentials-title {
@@ -493,9 +493,9 @@ nav {
   display: inline-block;
   background: rgba(214,59,143,0.13);
   border: 1px solid rgba(214,59,143,0.32);
-  color: rgba(214,59,143,0.95);
+  color: #F060AA;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.67rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -701,7 +701,7 @@ nav {
 .form-field:focus-within { background: var(--dark-grey); }
 .form-field.full { grid-column: 1/-1; }
 .form-field label { font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--pink); }
-.form-field input, .form-field select, .form-field textarea { background: transparent; border: none; outline: none; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 300; color: var(--white); resize: none; padding: 0; }
+.form-field input, .form-field select, .form-field textarea { background: transparent; border: none; outline: none; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 300; color: var(--white); resize: none; padding: 0; min-height: 44px; }
 .form-field input::placeholder, .form-field textarea::placeholder { color: rgba(255,255,255,0.15); }
 .form-field select option { background: #1a1520; color: #fff; }
 .form-submit { width: 100%; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--black); background: var(--pink); border: none; margin-top: 1px; padding: 1.2rem; cursor: pointer; display: block; transition: all 0.3s; box-shadow: 0 0 20px rgba(214,59,143,0.3); }
@@ -715,12 +715,13 @@ footer { background: var(--black); padding: 3rem 2rem; border-top: 1px solid rgb
 .footer-logo-text span { color: var(--pink); }
 .footer-tagline { font-family: 'Dancing Script', cursive; font-size: 0.9rem; color: var(--grey); margin-top: 0.2rem; }
 .footer-links { display: flex; gap: 2rem; list-style: none; flex-wrap: wrap; }
-.footer-links a { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.3s; }
+.footer-links a { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.3s; display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.15rem; }
 .footer-links a:hover { color: var(--pink); }
 .footer-social-row { justify-content: center; padding-top: 0.5rem; }
 .footer-instagram {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: 0.65rem;
   text-decoration: none;
   color: rgba(255,255,255,0.45);
@@ -735,7 +736,8 @@ footer { background: var(--black); padding: 3rem 2rem; border-top: 1px solid rgb
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
-.footer-copy { width: 100%; font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.15); text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.04); }
+a[href^="mailto:"] { display: inline-flex; align-items: center; min-height: 44px; }
+.footer-copy { width: 100%; font-family: 'Rajdhani', sans-serif; font-size: 0.67rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.46); text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.04); }
 
 /* ─── ANIMATIONS ─── */
 @keyframes fadeDown { from { opacity:0; transform:translateY(-20px);} to { opacity:1; transform:translateY(0);} }

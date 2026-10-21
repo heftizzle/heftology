@@ -33,6 +33,8 @@ const DAILY_LIMIT = 150;
 const DAILY_STORE = "cocktail-daily-budget";
 const DAILY_CAPACITY_MESSAGE =
   "We're at capacity today. Please book at heftology.com/#booking.";
+const MAX_BODY_BYTES = 8000;
+const MAX_FIELD_CHARS = 400;
 // Pending slots live only in memory so simultaneous calls can't all pass before a write.
 // The same map is the limiter when Blobs is unreachable, and it covers the lag before a write is visible.
 const memoryRateLimit = new Map(); // key -> { submissions: number[], lockedUntil: number|null, pending: number }
@@ -295,6 +297,14 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: "Method Not Allowed" }) };
   }
 
+  if (Buffer.byteLength(event.body || "", "utf8") > MAX_BODY_BYTES) {
+    return {
+      statusCode: 400,
+      headers: corsHeaders,
+      body: JSON.stringify({ error: "Request is too large." }),
+    };
+  }
+
   let body = {};
   if (event.body) {
     try {
@@ -321,6 +331,14 @@ exports.handler = async (event) => {
     const preferences = safeString(body.preferences);
     const month = safeString(body.month);
     const venue = safeString(body.venue);
+    const fields = [theme, colors, preferences, month, venue];
+    if (fields.some((field) => field.length > MAX_FIELD_CHARS)) {
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: "That field is too long." }),
+      };
+    }
 
     if (!theme || !colors || !preferences || !month || !venue) {
       return {

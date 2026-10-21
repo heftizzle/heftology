@@ -61,6 +61,10 @@ const DAILY_LIMIT = 400;
 const DAILY_STORE = "chat-daily-budget";
 const DAILY_CAPACITY_MESSAGE =
   "We're at capacity today. Please book at heftology.com/#booking.";
+const MAX_BODY_BYTES = 24000;
+const MAX_MESSAGES = 10;
+const MAX_MESSAGE_CHARS = 2000;
+const TOO_LONG_MESSAGE = "That message is too long. Please shorten it to 2,000 characters.";
 // Blobs edge reads can lag writes by up to ~60s, so a per-instance copy is merged in to
 // catch rapid repeats; it is also the only limiter if Blobs is unreachable.
 const memoryRateLimit = new Map(); // key -> number[] (timestamps)
@@ -248,11 +252,46 @@ function normalizeMessages(messages) {
     .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
     .map((m) => ({ role: m.role, content: m.content.trim() }))
     .filter((m) => m.content.length > 0)
-    .slice(-10);
+    .slice(-MAX_MESSAGES);
 
   // Anthropic requires the conversation to start with a user turn
   while (cleaned.length && cleaned[0].role !== "user") cleaned.shift();
   return cleaned;
+}
+
+function validateChatInput(event) {
+  if (Buffer.byteLength(event.body || "", "utf8") > MAX_BODY_BYTES) {
+    return { error: "Request is too large." };
+  }
+  let messages;
+  try {
+    ({ messages } = JSON.parse(event.body || "{}"));
+  } catch {
+    return { error: "invalid JSON" };
+  }
+  if (!messages || !Array.isArray(messages)) {
+    return { error: "messages array required" };
+  }
+  if (messages.length > MAX_MESSAGES) {
+    return { error: "Please send no more than 10 messages." };
+  }
+  for (const message of messages) {
+    if (!message || typeof message !== "object" || Array.isArray(message)) {
+      return { error: "Each message needs a user or assistant role." };
+    }
+    if (message.role !== "user" && message.role !== "assistant") {
+      return { error: "Each message needs a user or assistant role." };
+    }
+    if (typeof message.content !== "string") {
+      return { error: "Each message needs text content." };
+    }
+    if (message.content.trim().length > MAX_MESSAGE_CHARS) {
+      return { error: TOO_LONG_MESSAGE };
+    }
+  }
+  const normalized = normalizeMessages(messages);
+  if (!normalized.length) return { error: "At least one user message is required" };
+  return { messages: normalized };
 }
 
 exports.filterReplyUrls = filterReplyUrls;
@@ -277,20 +316,11 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers, body: JSON.stringify({ error: "Method Not Allowed" }) };
   }
 
-  let messages;
-  try {
-    ({ messages } = JSON.parse(event.body || "{}"));
-  } catch {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ error: "invalid JSON" }),
-    };
+  const parsed = validateChatInput(event);
+  if (parsed.error) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: parsed.error }) };
   }
-
-  if (!messages || !Array.isArray(messages)) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: "messages array required" }) };
-  }
+  const normalized = parsed.messages;
 
   const budget = await checkDailyBudget(event, Date.now());
   if (!budget.ok) {
@@ -309,11 +339,6 @@ exports.handler = async (event) => {
         headers,
         body: JSON.stringify({ error: "Too many messages. Please try again later or email carissa@heftology.com." }),
       };
-    }
-
-    const normalized = normalizeMessages(messages);
-    if (!normalized.length) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: "At least one user message is required" }) };
     }
 
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });

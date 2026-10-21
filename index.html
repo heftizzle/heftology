@@ -639,7 +639,7 @@
     <button type="button" class="quick-reply" onclick="sendQuick('Do you do zero-proof cocktails?')">N/A Options</button>
   </div>
   <div class="chat-input-row">
-    <input id="chat-input" type="text" placeholder="Ask about booking, menu, pricing…" onkeydown="if(event.key==='Enter')sendMessage()">
+    <input id="chat-input" type="text" maxlength="2000" placeholder="Ask about booking, menu, pricing…" onkeydown="if(event.key==='Enter')sendMessage()">
     <button type="button" id="chat-send" onclick="sendMessage()" aria-label="Send">➤</button>
   </div>
 </div>
@@ -802,12 +802,17 @@ async function doSend(text) {
     const res = await fetch('/.netlify/functions/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: chatHistory })
+      body: JSON.stringify({ messages: chatHistory.slice(-10) })
     });
     const data = await res.json().catch(() => ({}));
     removeTyping();
     isTyping = false;
     if (!res.ok) {
+      if (res.status === 400 && /too long/i.test(data.error || "")) {
+        chatHistory.pop();
+        appendBotMessage("That message is a bit long. Please shorten it and try again.");
+        return;
+      }
       const errMsg = data.error || "Something went wrong. Please email carissa@heftology.com and we will get back to you within 24 hours!";
       appendBotMessage(errMsg);
       return;

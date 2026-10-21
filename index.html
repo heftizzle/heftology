@@ -296,6 +296,7 @@
 
     <div class="cocktail-widget-card reveal" id="cocktail-widget">
       <form class="cocktail-widget-form" id="cocktail-widget-form">
+        <input class="hp-field" tabindex="-1" autocomplete="off" name="hp_field" aria-hidden="true">
         <div class="cw-progress" aria-label="Cocktail designer progress">
           <div class="cw-progress-bar" data-step="1" aria-hidden="true"></div>
           <div class="cw-progress-bar" data-step="2" aria-hidden="true"></div>
@@ -536,6 +537,8 @@
       </div>
       <form id="booking-form" name="booking" method="POST" netlify action="/thank-you.html">
       <input type="hidden" name="form-name" value="booking">
+      <input class="hp-field" tabindex="-1" autocomplete="off" name="hp_field" aria-hidden="true">
+      <input type="hidden" name="subject" id="booking-subject" value="New event inquiry">
       <div class="inquiry-form">
         <div class="form-field">
           <label for="field-name">Name</label>
@@ -688,9 +691,24 @@ if (bookingSection && "IntersectionObserver" in window) {
 let isOpen = false;
 let isTyping = false;
 let chatHistory = [];
+const loadedAt = Date.now();
 
 // -- Init --
 window.addEventListener('DOMContentLoaded', () => {
+  const bookingForm = document.getElementById('booking-form');
+  if (bookingForm) {
+    bookingForm.addEventListener('submit', () => {
+      const subject = document.getElementById('booking-subject');
+      const honeypot = bookingForm.querySelector('[name="hp_field"]');
+      const elapsedMs = Date.now() - loadedAt;
+      const filled = honeypot && String(honeypot.value || '').trim();
+      const tooFast = Number.isFinite(elapsedMs) && elapsedMs < 1500;
+      if (subject && (filled || tooFast)) {
+        const base = subject.value.replace(/\s*\[possible bot\]\s*/g, '').trim() || 'New event inquiry';
+        subject.value = base + ' [possible bot]';
+      }
+    });
+  }
   const welcome = "Hey there! 🍸 Welcome to Heftology. I can answer quick questions about services, pricing, BYOB, the menu, and our service area (greater Tampa Bay) — or point you to the booking form. What can I mix up for you?";
   appendBotMessage(welcome);
   // Do not seed chatHistory with the welcome assistant turn — Anthropic requires user-first history.
@@ -1012,6 +1030,8 @@ window.addEventListener('DOMContentLoaded', () => {
       month: String(fd.get('month') || '').trim(),
       venue: String(fd.get('venue') || '').trim(),
       preferences: String(fd.get('preferences') || '').trim(),
+      hp_field: String(fd.get('hp_field') || ''),
+      elapsedMs: Date.now() - loadedAt,
     };
 
     if (!payload.theme || !payload.colors || !payload.month || !payload.venue || !payload.preferences) {

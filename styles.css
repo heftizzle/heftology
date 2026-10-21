@@ -1140,3 +1140,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .cw-btn-grid-2 { grid-template-columns: 1fr; }
   .section-title { font-size: clamp(1.4rem, 6vw, 2rem); }
 }
+
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

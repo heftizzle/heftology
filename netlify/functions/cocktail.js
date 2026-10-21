@@ -35,6 +35,28 @@ const DAILY_CAPACITY_MESSAGE =
   "We're at capacity today. Please book at heftology.com/#booking.";
 const MAX_BODY_BYTES = 8000;
 const MAX_FIELD_CHARS = 400;
+const MIN_ELAPSED_MS = 1500;
+const QUIET_COCKTAIL = {
+  name: "The House Welcome",
+  tagline: "A signature pour for the evening.",
+  ingredients: ["2 oz spirit of your choice", "1 oz fresh citrus", "1/2 oz simple syrup", "Sparkling water"],
+  garnish: "Citrus peel",
+  glass: "Coupe",
+  method: "Shake and strain",
+  colorNote: "A warm blush that suits the room.",
+  presenter: "Carissa",
+  heftologyNote: "We can refine this together when you book.",
+};
+
+function quietBotSignal(body) {
+  if (!body || typeof body !== "object") return false;
+  if (typeof body.hp_field === "string" ? body.hp_field.trim() : body.hp_field) return true;
+  if (!Object.prototype.hasOwnProperty.call(body, "elapsedMs") || body.elapsedMs === null || body.elapsedMs === "") {
+    return false;
+  }
+  const elapsed = typeof body.elapsedMs === "number" ? body.elapsedMs : Number(body.elapsedMs);
+  return Number.isFinite(elapsed) && elapsed < MIN_ELAPSED_MS;
+}
 // Pending slots live only in memory so simultaneous calls can't all pass before a write.
 // The same map is the limiter when Blobs is unreachable, and it covers the lag before a write is visible.
 const memoryRateLimit = new Map(); // key -> { submissions: number[], lockedUntil: number|null, pending: number }
@@ -323,6 +345,14 @@ exports.handler = async (event) => {
         body: JSON.stringify({ error: "invalid JSON" }),
       };
     }
+  }
+
+  if (quietBotSignal(body)) {
+    return {
+      statusCode: 200,
+      headers: corsHeaders,
+      body: JSON.stringify({ cocktail: QUIET_COCKTAIL }),
+    };
   }
 
   try {

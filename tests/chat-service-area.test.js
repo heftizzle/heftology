@@ -35,13 +35,28 @@ const distantAt = area.indexOf("For a very distant place");
 const distant = distantAt >= 0 ? area.slice(distantAt) : "";
 check("very distant places are probably outside our range", distant.includes("probably outside our range"), true);
 check(
-  "very distant places invite an email in case an exception is possible",
-  distant.includes("Invite them to email Carissa or Michelle") && distant.includes("in case an exception is possible"),
+  "very distant places invite an email to carissa@heftology.com",
+  distant.includes("Invite them to email carissa@heftology.com"),
   true
 );
 check(
-  "very distant places are not described as might still be possible",
-  distant.includes("Do not say it might still be possible"),
+  "very distant places never say an exception might be possible",
+  distant.includes("Never say an exception might be possible") && !distant.includes("in case an exception is possible"),
+  true
+);
+check(
+  "very distant means more than about two hours' drive from the Tampa Bay area",
+  distant.includes("anywhere more than about two hours' drive from the Tampa Bay area") &&
+    distant.includes("far South Florida") &&
+    distant.includes("the Keys") &&
+    distant.includes("the Panhandle") &&
+    distant.includes("North Florida") &&
+    distant.includes("out of state"),
+  true
+);
+check(
+  "nearby places outside the list stay case by case",
+  area.includes("within about two hours' drive of the Tampa Bay area") && area.includes("case by case"),
   true
 );
 check("prompt does not name Cape Coral", prompt.includes("Cape Coral"), false);

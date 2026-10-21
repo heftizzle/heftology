@@ -29,9 +29,14 @@ const RATE_LIMIT_MAX = 3;
 const LOCK_HOURS = 72;
 const RATE_LIMIT_LOCK_MS = LOCK_HOURS * 60 * 60 * 1000;
 const RATE_LIMIT_STORE = "cocktail-rate-limit";
+const DAILY_LIMIT = 150;
+const DAILY_STORE = "cocktail-daily-budget";
+const DAILY_CAPACITY_MESSAGE =
+  "We're at capacity today. Please book at heftology.com/#booking.";
 // Pending slots live only in memory so simultaneous calls can't all pass before a write.
 // The same map is the limiter when Blobs is unreachable, and it covers the lag before a write is visible.
 const memoryRateLimit = new Map(); // key -> { submissions: number[], lockedUntil: number|null, pending: number }
+const memoryDaily = new Map(); // UTC day -> successful model calls
 
 const LOCK_MESSAGE =
   "Looks like you're on a roll! You can try the cocktail designer again in about 3 days. Let's make it official — book a free consultation at heftology.com/#booking and Carissa and Michelle will craft the perfect menu for your event.";
@@ -58,13 +63,62 @@ function rateLimitKey(ip) {
   return crypto.createHash("sha256").update(ip).digest("hex");
 }
 
-function openRateLimitStore(event) {
+function openStore(event, name, label) {
   try {
     connectLambda(event);
-    return getStore(RATE_LIMIT_STORE);
+    return getStore(name);
   } catch (err) {
-    console.error("Rate limit store unavailable, using in-memory fallback:", err.message);
+    console.error(label + " store unavailable, using in-memory fallback:", err.message);
     return null;
+  }
+}
+
+function openRateLimitStore(event) {
+  return openStore(event, RATE_LIMIT_STORE, "Rate limit");
+}
+
+function utcDay(now) {
+  return new Date(now).toISOString().slice(0, 10);
+}
+
+async function readDailyCount(store, day) {
+  let fromStore = 0;
+  let live = store;
+  if (live) {
+    try {
+      const rec = await live.get(day, { type: "json" });
+      fromStore = rec && typeof rec.count === "number" ? rec.count : 0;
+    } catch (err) {
+      console.error("Daily budget read failed, using in-memory fallback:", err.message);
+      live = null;
+    }
+  }
+  return { count: Math.max(fromStore, memoryDaily.get(day) || 0), store: live };
+}
+
+async function checkDailyBudget(event, now) {
+  const day = utcDay(now);
+  const opened = openStore(event, DAILY_STORE, "Daily budget");
+  const { count, store } = await readDailyCount(opened, day);
+  if (count >= DAILY_LIMIT) {
+    console.log(JSON.stringify({ event: "daily_budget_exhausted" }));
+    return { ok: false };
+  }
+  return { ok: true, store, day };
+}
+
+async function recordDailySuccess(store, day) {
+  const nextMemory = (memoryDaily.get(day) || 0) + 1;
+  memoryDaily.set(day, nextMemory);
+  if (!store) return;
+  try {
+    const rec = await store.get(day, { type: "json" });
+    const stored = rec && typeof rec.count === "number" ? rec.count : 0;
+    const count = Math.max(stored + 1, nextMemory);
+    memoryDaily.set(day, count);
+    await store.setJSON(day, { count });
+  } catch (err) {
+    console.error("Daily budget write failed, using in-memory fallback:", err.message);
   }
 }
 
@@ -276,6 +330,15 @@ exports.handler = async (event) => {
       };
     }
 
+    const budget = await checkDailyBudget(event, Date.now());
+    if (!budget.ok) {
+      return {
+        statusCode: 503,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: DAILY_CAPACITY_MESSAGE }),
+      };
+    }
+
     const store = openRateLimitStore(event);
     const gate = await beginRateLimit(store, rateLimitKey(getClientIp(event)), Date.now());
     if (!gate.ok) {
@@ -318,6 +381,7 @@ exports.handler = async (event) => {
       }
 
       await gate.commit(Date.now());
+      await recordDailySuccess(budget.store, budget.day);
       return {
         statusCode: 200,
         headers: corsHeaders,

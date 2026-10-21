@@ -15,7 +15,7 @@ const SECRET = "do-not-log-this-phrase";
 const IP = "203.0.113.77";
 
 let createCalls = 0;
-let failNext = false;
+let nextError = null;
 const sdkPath = require.resolve("@anthropic-ai/sdk");
 require.cache[sdkPath] = {
   id: sdkPath,
@@ -26,9 +26,10 @@ require.cache[sdkPath] = {
       this.messages = {
         create: async () => {
           createCalls += 1;
-          if (failNext) {
-            failNext = false;
-            throw new Error(`sdk blew up with ${SECRET}`);
+          if (nextError) {
+            const err = nextError;
+            nextError = null;
+            throw err;
           }
           return {
             content: [{ type: "text", text: '{"name":"Logged Pour"}' }],
@@ -74,6 +75,7 @@ function requestLogs() {
     .filter((row) => row && (row.event === "chat" || row.event === "cocktail"));
 }
 
+const previousSalt = process.env.RATE_LIMIT_SALT;
 delete process.env.RATE_LIMIT_SALT;
 const chat = require(chatPath);
 const cocktail = require(cocktailPath);
@@ -101,14 +103,21 @@ const cocktail = require(cocktailPath);
   check("invalid json status", bad.statusCode, 400);
   check("invalid json tokens are null", [badLog && badLog.inputTokens, badLog && badLog.outputTokens], [null, null]);
 
-  failNext = true;
+  const chatErr = new Error(`sdk blew up with ${SECRET}`);
+  chatErr.name = "AuthenticationError";
+  chatErr.status = 401;
+  nextError = chatErr;
   const crashed = await chat.handler({
     httpMethod: "POST",
     headers: { "x-nf-client-connection-ip": "203.0.113.78" },
     body: JSON.stringify({ messages: [{ role: "user", content: SECRET }] }),
   });
+  const crashLog = requestLogs().filter((row) => row.event === "chat" && row.status === 500).pop();
   check("model failure status", crashed.statusCode, 500);
-  check("model failure tokens are null", requestLogs().filter((row) => row.status === 500)[0].inputTokens, null);
+  check("model failure tokens are null", crashLog && crashLog.inputTokens, null);
+  check("chat 500 logs error name", crashLog && crashLog.errorName, "AuthenticationError");
+  check("chat 500 logs numeric error status", crashLog && crashLog.errorStatus, 401);
+  check("chat 200 omits error name", Object.prototype.hasOwnProperty.call(chatLog, "errorName"), false);
 
   const quiet = await cocktail.handler({
     httpMethod: "POST",
@@ -129,11 +138,28 @@ const cocktail = require(cocktailPath);
   check("design status", design.statusCode, 200);
   check("design tokens", [designLog.inputTokens, designLog.outputTokens], [11, 4]);
 
+  const designErr = new Error(`sdk blew up with ${SECRET}`);
+  designErr.name = "APIError";
+  designErr.status = `status ${SECRET}`;
+  nextError = designErr;
+  const designCrash = await cocktail.handler({
+    httpMethod: "POST",
+    headers: { "x-nf-client-connection-ip": "198.51.100.9" },
+    body: JSON.stringify({ theme: SECRET, colors: "gold", preferences: "citrus", month: "July", venue: "beach" }),
+  });
+  const designCrashLog = requestLogs().filter((row) => row.event === "cocktail" && row.status === 500).pop();
+  check("design failure status", designCrash.statusCode, 500);
+  check("design 500 logs error name", designCrashLog && designCrashLog.errorName, "APIError");
+  check("design 500 omits non-numeric error status", Object.prototype.hasOwnProperty.call(designCrashLog || {}, "errorStatus"), false);
+
   const dumped = logs.concat(errors).join("\n");
   check("log omits the message", dumped.includes(SECRET), false);
   check("log omits the raw IP", dumped.includes(IP), false);
+  check("log omits the error message", dumped.includes("sdk blew up"), false);
 
   const failed = results.filter((line) => line.startsWith("FAIL"));
+  if (previousSalt === undefined) delete process.env.RATE_LIMIT_SALT;
+  else process.env.RATE_LIMIT_SALT = previousSalt;
   console.log = console.error = () => {};
   process.stdout.write(`${results.join("\n")}\n\n${results.length - failed.length}/${results.length} passed\n`);
   process.exit(failed.length ? 1 : 0);

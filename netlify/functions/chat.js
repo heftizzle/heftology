@@ -306,15 +306,20 @@ function validateChatInput(event) {
 
 exports.filterReplyUrls = filterReplyUrls;
 
-function respond(eventName, started, ip, statusCode, headers, body, usage) {
-  console.log(JSON.stringify({
+function respond(eventName, started, ip, statusCode, headers, body, usage, err) {
+  const line = {
     event: eventName,
     status: statusCode,
     latencyMs: Date.now() - started,
     inputTokens: usage && typeof usage.input_tokens === "number" ? usage.input_tokens : null,
     outputTokens: usage && typeof usage.output_tokens === "number" ? usage.output_tokens : null,
     ipHash: rateLimitKey(ip),
-  }));
+  };
+  if (statusCode === 500 && err && typeof err === "object") {
+    if (typeof err.name === "string") line.errorName = err.name;
+    if (typeof err.status === "number") line.errorStatus = err.status;
+  }
+  console.log(JSON.stringify(line));
   return { statusCode, headers, body };
 }
 
@@ -322,8 +327,8 @@ exports.handler = async (event) => {
   const started = Date.now();
   const ip = getClientIp(event);
   const headers = { "Content-Type": "application/json" };
-  const send = (statusCode, responseHeaders, body, usage) =>
-    respond("chat", started, ip, statusCode, responseHeaders, body, usage);
+  const send = (statusCode, responseHeaders, body, usage, err) =>
+    respond("chat", started, ip, statusCode, responseHeaders, body, usage, err);
 
   if (event.httpMethod === "OPTIONS") {
     return send(204, {
@@ -378,8 +383,8 @@ exports.handler = async (event) => {
       JSON.stringify({ reply: reply || "Sorry, I could not get a response. Please email carissa@heftology.com directly." }),
       response.usage
     );
-  } catch {
+  } catch (err) {
     console.error("Chat function error");
-    return send(500, headers, JSON.stringify({ error: "Internal server error" }));
+    return send(500, headers, JSON.stringify({ error: "Internal server error" }), null, err);
   }
 };

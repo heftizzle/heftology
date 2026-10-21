@@ -318,15 +318,20 @@ function corsHeadersFor(event) {
   return corsHeaders;
 }
 
-function respond(eventName, started, ip, statusCode, headers, body, usage) {
-  console.log(JSON.stringify({
+function respond(eventName, started, ip, statusCode, headers, body, usage, err) {
+  const line = {
     event: eventName,
     status: statusCode,
     latencyMs: Date.now() - started,
     inputTokens: usage && typeof usage.input_tokens === "number" ? usage.input_tokens : null,
     outputTokens: usage && typeof usage.output_tokens === "number" ? usage.output_tokens : null,
     ipHash: rateLimitKey(ip),
-  }));
+  };
+  if (statusCode === 500 && err && typeof err === "object") {
+    if (typeof err.name === "string") line.errorName = err.name;
+    if (typeof err.status === "number") line.errorStatus = err.status;
+  }
+  console.log(JSON.stringify(line));
   return { statusCode, headers, body };
 }
 
@@ -334,8 +339,8 @@ exports.handler = async (event) => {
   const started = Date.now();
   const ip = getClientIp(event);
   const corsHeaders = corsHeadersFor(event);
-  const send = (statusCode, body, usage) =>
-    respond("cocktail", started, ip, statusCode, corsHeaders, body, usage);
+  const send = (statusCode, body, usage, err) =>
+    respond("cocktail", started, ip, statusCode, corsHeaders, body, usage, err);
 
   if (event.httpMethod === "OPTIONS") {
     return send(204, "");
@@ -425,9 +430,9 @@ exports.handler = async (event) => {
       await gate.release();
       throw err;
     }
-  } catch {
+  } catch (err) {
     console.error("Cocktail function error");
-    return send(500, JSON.stringify({ error: "Internal server error" }));
+    return send(500, JSON.stringify({ error: "Internal server error" }), null, err);
   }
 };
 

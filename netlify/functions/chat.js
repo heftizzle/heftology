@@ -34,10 +34,10 @@ For a very distant place, far outside the covered list, say it is probably outsi
 - Do not negotiate or offer exceptions to this policy — direct any disputes to Carissa and Michelle at carissa@heftology.com
 
 ## CONTACT & BOOKING
-- Email: carissa@heftology.com (reaches Carissa and Michelle)
+- Email only carissa@heftology.com. That address reaches Carissa and Michelle. Never give any other email address.
 - Booking form: https://heftology.com/#booking
 - Response time: typically within 24 hours
-- The ONLY links you may ever give are https://heftology.com/#booking and the email carissa@heftology.com. Never invent other URLs or pages.
+- The ONLY links you may ever give are https://heftology.com/#booking and the email carissa@heftology.com. Never invent other URLs, pages, or email addresses.
 
 ## RULES — FOLLOW THESE WITHOUT EXCEPTION
 1. Never confirm availability for any date — always direct to Carissa and Michelle
@@ -49,7 +49,7 @@ For a very distant place, far outside the covered list, say it is probably outsi
 7. Stay on topic — only discuss Heftology services, events, cocktails, and booking. If asked about anything unrelated, politely redirect
 8. Never confirm an event is booked or locked in — every conversation ends with a handoff to Carissa and Michelle
 9. Never negotiate, create exceptions, or override any policy — Carissa and Michelle handle all exceptions
-10. The ONLY links you may ever give are https://heftology.com/#booking and the email carissa@heftology.com. Never invent other URLs or pages.
+10. The ONLY links you may ever give are https://heftology.com/#booking and the email carissa@heftology.com. Email only carissa@heftology.com. Never invent other URLs, pages, or email addresses.
 
 ## TONE
 Warm, professional, enthusiastic about craft cocktails. Replies should be 2–3 sentences max. Always end with a nudge toward https://heftology.com/#booking or carissa@heftology.com.`;
@@ -124,22 +124,31 @@ async function consumeRateLimit(store, key, now) {
 }
 
 const DISALLOWED_LINK_TEXT = "the booking form on our website";
+const ALLOWED_EMAIL = "carissa@heftology.com";
 
-// Homepage, with or without a fragment, and mailto:carissa@heftology.com.
-// Any other URL is replaced. Do not log the reply text.
+// Allowed: https://heftology.com/ with an optional fragment, and mailto:carissa@heftology.com.
+// Every other URL or email is replaced. Do not log the reply text.
+function splitTrailingPunctuation(token) {
+  const match = String(token).match(/^(.*?)([.,!?;:,]+)$/);
+  if (!match || !match[1]) return { core: String(token), trailing: "" };
+  return { core: match[1], trailing: match[2] };
+}
+
+function isAllowedEmail(value) {
+  return String(value).trim().toLowerCase() === ALLOWED_EMAIL;
+}
+
 function isAllowedUrl(raw) {
-  let value = String(raw).trim().replace(/^<|>$/g, "");
-  if (/^mailto:/i.test(value)) {
-    const rest = value.slice("mailto:".length);
+  const { core } = splitTrailingPunctuation(String(raw).trim().replace(/^<|>$/g, ""));
+  if (/^mailto:/i.test(core)) {
+    const rest = core.slice("mailto:".length);
     const address = rest.split(/[?#]/)[0];
-    return address.toLowerCase() === "carissa@heftology.com" && rest === address;
+    return isAllowedEmail(address) && rest.toLowerCase() === address.toLowerCase();
   }
-  if (/^www\./i.test(value)) value = "https://" + value;
-  else if (/^heftology\.com(?:[/#?]|$)/i.test(value)) value = "https://" + value;
 
   let url;
   try {
-    url = new URL(value);
+    url = new URL(core);
   } catch {
     return false;
   }
@@ -147,24 +156,36 @@ function isAllowedUrl(raw) {
   if (url.hostname !== "heftology.com") return false;
   if (url.username || url.password || url.port || url.search) return false;
 
-  const afterScheme = value.replace(/^https:\/\//i, "");
-  if (afterScheme.toLowerCase().indexOf("heftology.com") !== 0) return false;
+  const afterScheme = core.replace(/^https:\/\//i, "");
+  if (!afterScheme.toLowerCase().startsWith("heftology.com")) return false;
   const afterHost = afterScheme.slice("heftology.com".length);
   return /^(?:\/)?(?:#[^\s]*)?$/.test(afterHost);
 }
 
+function replaceDisallowed(token) {
+  const { core, trailing } = splitTrailingPunctuation(token);
+  return (isAllowedUrl(core) ? core : DISALLOWED_LINK_TEXT) + trailing;
+}
+
 function filterReplyUrls(text) {
   if (typeof text !== "string" || !text) return text;
-  const withoutMarkdown = text.replace(/\[([^\]]*)\]\(([^)\s]+)\)/g, (match, _label, href) =>
-    isAllowedUrl(href) ? match : DISALLOWED_LINK_TEXT
+
+  const withoutMarkdown = text.replace(/!?\[([^\]]*)\]\(\s*([^)\s]+)\s*\)/g, (match, label, href) => {
+    if (isAllowedUrl(href)) return match;
+    const visible = filterReplyUrls(label).trim();
+    if (!visible || visible === DISALLOWED_LINK_TEXT) return DISALLOWED_LINK_TEXT;
+    return `${visible} ${DISALLOWED_LINK_TEXT}`;
+  });
+
+  // Scheme, www, bare heftology.com, and any other host that has a path.
+  // The lookbehind skips the host inside an email address.
+  const withoutUrls = withoutMarkdown.replace(
+    /(?<![@\w])(?:https?:\/\/[^\s<>\[\]()'"]+|mailto:[^\s<>\[\]()'"]+|www\.[a-z0-9-]+(?:\.[a-z0-9-]+)+(?![\w.])(?:\/[^\s<>\[\]()'"]*)?|heftology\.com(?![\w.])(?:\/[^\s<>\[\]()'"]*)?|(?:[a-z0-9-]+\.)+[a-z]{2,}(?![\w.])\/[^\s<>\[\]()'"]*)/gi,
+    (match) => replaceDisallowed(match)
   );
-  return withoutMarkdown.replace(
-    /\b(?:https?:\/\/|mailto:|www\.|heftology\.com\/)[^\s<>\[\]()'"]+/gi,
-    (match) => {
-      const trimmed = match.replace(/[.,!?;:]+$/g, "");
-      const trailing = match.slice(trimmed.length);
-      return (isAllowedUrl(trimmed) ? trimmed : DISALLOWED_LINK_TEXT) + trailing;
-    }
+
+  return withoutUrls.replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, (match) =>
+    isAllowedEmail(match) ? match : DISALLOWED_LINK_TEXT
   );
 }
 

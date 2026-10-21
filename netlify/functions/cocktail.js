@@ -83,8 +83,18 @@ function getClientIp(event) {
   return "unknown";
 }
 
+let warnedUnsaltedHash = false;
+
 function rateLimitKey(ip) {
-  return crypto.createHash("sha256").update(ip).digest("hex");
+  const salt = process.env.RATE_LIMIT_SALT;
+  if (typeof salt === "string" && salt.length > 0) {
+    return crypto.createHmac("sha256", salt).update(String(ip)).digest("hex");
+  }
+  if (!warnedUnsaltedHash) {
+    warnedUnsaltedHash = true;
+    console.log(JSON.stringify({ event: "ip_hash_unsalted" }));
+  }
+  return crypto.createHash("sha256").update(String(ip)).digest("hex");
 }
 
 function openStore(event, name, label) {

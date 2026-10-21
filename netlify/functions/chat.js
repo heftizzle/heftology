@@ -306,49 +306,53 @@ function validateChatInput(event) {
 
 exports.filterReplyUrls = filterReplyUrls;
 
+function respond(eventName, started, ip, statusCode, headers, body, usage) {
+  console.log(JSON.stringify({
+    event: eventName,
+    status: statusCode,
+    latencyMs: Date.now() - started,
+    inputTokens: usage && typeof usage.input_tokens === "number" ? usage.input_tokens : null,
+    outputTokens: usage && typeof usage.output_tokens === "number" ? usage.output_tokens : null,
+    ipHash: rateLimitKey(ip),
+  }));
+  return { statusCode, headers, body };
+}
+
 exports.handler = async (event) => {
+  const started = Date.now();
+  const ip = getClientIp(event);
   const headers = { "Content-Type": "application/json" };
+  const send = (statusCode, responseHeaders, body, usage) =>
+    respond("chat", started, ip, statusCode, responseHeaders, body, usage);
 
   if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 204,
-      headers: {
-        ...headers,
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-      },
-      body: "",
-    };
+    return send(204, {
+      ...headers,
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+    }, "");
   }
 
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: "Method Not Allowed" }) };
+    return send(405, headers, JSON.stringify({ error: "Method Not Allowed" }));
   }
 
   const parsed = validateChatInput(event);
   if (parsed.error) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: parsed.error }) };
+    return send(400, headers, JSON.stringify({ error: parsed.error }));
   }
   const normalized = parsed.messages;
 
   const budget = await checkDailyBudget(event, Date.now());
   if (!budget.ok) {
-    return {
-      statusCode: 503,
-      headers,
-      body: JSON.stringify({ error: DAILY_CAPACITY_MESSAGE }),
-    };
+    return send(503, headers, JSON.stringify({ error: DAILY_CAPACITY_MESSAGE }));
   }
 
   try {
     const store = openRateLimitStore(event);
-    if (!(await consumeRateLimit(store, rateLimitKey(getClientIp(event)), Date.now()))) {
-      return {
-        statusCode: 429,
-        headers,
-        body: JSON.stringify({ error: "Too many messages. Please try again later or email carissa@heftology.com." }),
-      };
+    if (!(await consumeRateLimit(store, rateLimitKey(ip), Date.now()))) {
+      return send(429, headers, JSON.stringify({ error: "Too many messages. Please try again later or email carissa@heftology.com." }));
     }
 
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -368,17 +372,14 @@ exports.handler = async (event) => {
         .trim()
     );
 
-    return {
-      statusCode: 200,
+    return send(
+      200,
       headers,
-      body: JSON.stringify({ reply: reply || "Sorry, I could not get a response. Please email carissa@heftology.com directly." }),
-    };
-  } catch (err) {
-    console.error("Chat function error:", err);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: "Internal server error" }),
-    };
+      JSON.stringify({ reply: reply || "Sorry, I could not get a response. Please email carissa@heftology.com directly." }),
+      response.usage
+    );
+  } catch {
+    console.error("Chat function error");
+    return send(500, headers, JSON.stringify({ error: "Internal server error" }));
   }
 };

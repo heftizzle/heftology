@@ -318,23 +318,35 @@ function corsHeadersFor(event) {
   return corsHeaders;
 }
 
+function respond(eventName, started, ip, statusCode, headers, body, usage) {
+  console.log(JSON.stringify({
+    event: eventName,
+    status: statusCode,
+    latencyMs: Date.now() - started,
+    inputTokens: usage && typeof usage.input_tokens === "number" ? usage.input_tokens : null,
+    outputTokens: usage && typeof usage.output_tokens === "number" ? usage.output_tokens : null,
+    ipHash: rateLimitKey(ip),
+  }));
+  return { statusCode, headers, body };
+}
+
 exports.handler = async (event) => {
+  const started = Date.now();
+  const ip = getClientIp(event);
   const corsHeaders = corsHeadersFor(event);
+  const send = (statusCode, body, usage) =>
+    respond("cocktail", started, ip, statusCode, corsHeaders, body, usage);
 
   if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 204, headers: corsHeaders, body: "" };
+    return send(204, "");
   }
 
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: "Method Not Allowed" }) };
+    return send(405, JSON.stringify({ error: "Method Not Allowed" }));
   }
 
   if (Buffer.byteLength(event.body || "", "utf8") > MAX_BODY_BYTES) {
-    return {
-      statusCode: 400,
-      headers: corsHeaders,
-      body: JSON.stringify({ error: "Request is too large." }),
-    };
+    return send(400, JSON.stringify({ error: "Request is too large." }));
   }
 
   let body = {};
@@ -342,27 +354,15 @@ exports.handler = async (event) => {
     try {
       body = JSON.parse(event.body);
     } catch {
-      return {
-        statusCode: 400,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: "invalid JSON" }),
-      };
+      return send(400, JSON.stringify({ error: "invalid JSON" }));
     }
     if (!body || typeof body !== "object" || Array.isArray(body)) {
-      return {
-        statusCode: 400,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: "invalid JSON" }),
-      };
+      return send(400, JSON.stringify({ error: "invalid JSON" }));
     }
   }
 
   if (quietBotSignal(body)) {
-    return {
-      statusCode: 200,
-      headers: corsHeaders,
-      body: JSON.stringify({ cocktail: QUIET_COCKTAIL }),
-    };
+    return send(200, JSON.stringify({ cocktail: QUIET_COCKTAIL }));
   }
 
   try {
@@ -373,38 +373,22 @@ exports.handler = async (event) => {
     const venue = safeString(body.venue);
     const fields = [theme, colors, preferences, month, venue];
     if (fields.some((field) => field.length > MAX_FIELD_CHARS)) {
-      return {
-        statusCode: 400,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: "That field is too long." }),
-      };
+      return send(400, JSON.stringify({ error: "That field is too long." }));
     }
 
     if (!theme || !colors || !preferences || !month || !venue) {
-      return {
-        statusCode: 400,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: "theme, colors, preferences, month, and venue are required" }),
-      };
+      return send(400, JSON.stringify({ error: "theme, colors, preferences, month, and venue are required" }));
     }
 
     const budget = await checkDailyBudget(event, Date.now());
     if (!budget.ok) {
-      return {
-        statusCode: 503,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: DAILY_CAPACITY_MESSAGE }),
-      };
+      return send(503, JSON.stringify({ error: DAILY_CAPACITY_MESSAGE }));
     }
 
     const store = openRateLimitStore(event);
-    const gate = await beginRateLimit(store, rateLimitKey(getClientIp(event)), Date.now());
+    const gate = await beginRateLimit(store, rateLimitKey(ip), Date.now());
     if (!gate.ok) {
-      return {
-        statusCode: 429,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: gate.reason === "busy" ? BUSY_MESSAGE : LOCK_MESSAGE }),
-      };
+      return send(429, JSON.stringify({ error: gate.reason === "busy" ? BUSY_MESSAGE : LOCK_MESSAGE }));
     }
 
     try {
@@ -428,34 +412,22 @@ exports.handler = async (event) => {
       let cocktail;
       try {
         cocktail = JSON.parse(clean);
-      } catch (parseErr) {
+      } catch {
         await gate.release();
-        console.error("Cocktail JSON parse error:", parseErr, clean.slice(0, 200));
-        return {
-          statusCode: 502,
-          headers: corsHeaders,
-          body: JSON.stringify({ error: "Could not craft that cocktail. Please try again." }),
-        };
+        console.error("Cocktail JSON parse error");
+        return send(502, JSON.stringify({ error: "Could not craft that cocktail. Please try again." }));
       }
 
       await gate.commit(Date.now());
       await recordDailySuccess(budget.store, budget.day);
-      return {
-        statusCode: 200,
-        headers: corsHeaders,
-        body: JSON.stringify({ cocktail }),
-      };
+      return send(200, JSON.stringify({ cocktail }), response.usage);
     } catch (err) {
       await gate.release();
       throw err;
     }
-  } catch (err) {
-    console.error("Cocktail function error:", err);
-    return {
-      statusCode: 500,
-      headers: corsHeaders,
-      body: JSON.stringify({ error: "Internal server error" }),
-    };
+  } catch {
+    console.error("Cocktail function error");
+    return send(500, JSON.stringify({ error: "Internal server error" }));
   }
 };
 

@@ -1,4 +1,4 @@
-// Run from the repo root: node netlify/functions/cocktail.rate-limit.test.js
+// Run from the repo root: node tests/cocktail.rate-limit.test.js
 // Covers the 72-hour lock: 1st/2nd/3rd allowed, 4th blocked, day 2 blocked,
 // day 3 allowed, a failed API call not counting, and a different IP unaffected.
 const path = require("path");
@@ -53,7 +53,7 @@ require.cache[blobsPath] = {
   },
 };
 
-const cocktail = require(path.join(__dirname, "cocktail.js"));
+const cocktail = require(path.join(__dirname, "..", "netlify", "functions", "cocktail.js"));
 const handler = cocktail.handler;
 const LOCK_MS = cocktail.LOCK_HOURS * 60 * 60 * 1000;
 const valid = { theme: "t", colors: "c", preferences: "p", month: "July", venue: "beach" };

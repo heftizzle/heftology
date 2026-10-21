@@ -215,13 +215,23 @@ async function beginRateLimit(store, key, now) {
 
 exports.LOCK_HOURS = LOCK_HOURS;
 
-exports.handler = async (event) => {
+const ALLOWED_ORIGINS = new Set(["https://heftology.com", "https://www.heftology.com"]);
+
+function corsHeadersFor(event) {
+  const headers = event.headers || {};
+  const origin = headers.origin || headers.Origin || "";
   const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Content-Type": "application/json",
+    Vary: "Origin",
   };
+  if (ALLOWED_ORIGINS.has(origin)) corsHeaders["Access-Control-Allow-Origin"] = origin;
+  return corsHeaders;
+}
+
+exports.handler = async (event) => {
+  const corsHeaders = corsHeadersFor(event);
 
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: corsHeaders, body: "" };
@@ -231,9 +241,28 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: "Method Not Allowed" }) };
   }
 
+  let body = {};
+  if (event.body) {
+    try {
+      body = JSON.parse(event.body);
+    } catch {
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: "invalid JSON" }),
+      };
+    }
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: "invalid JSON" }),
+      };
+    }
+  }
+
   try {
-    const body = event.body ? JSON.parse(event.body) : {};
-    const theme = safeString(body.theme);
+    const theme = safeString(body && body.theme);
     const colors = safeString(body.colors);
     const preferences = safeString(body.preferences);
     const month = safeString(body.month);

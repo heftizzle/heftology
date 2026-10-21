@@ -1,5 +1,6 @@
 :root {
   --pink:       #D63B8F;
+  --gold:       #F2B84B;
   --pink-light: #F060AA;
   --pink-dark:  #A02870;
   --white:      #FFFFFF;
@@ -596,7 +597,7 @@ nav {
   color: var(--white);
 }
 .knot-badge-stars {
-  color: var(--pink);
+  color: var(--gold);
   font-size: 1.6rem;
   letter-spacing: 0.12em;
   line-height: 1;

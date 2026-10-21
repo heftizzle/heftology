@@ -12,7 +12,7 @@ Heftology serves the **greater Tampa Bay area**, within about 90 minutes of our 
 
 **Beyond that list:** an event may still be possible. Travel cost is decided case by case, and Carissa or Michelle confirm it. Never promise a date and never quote a travel fee.
 
-**Very distant requests:** probably outside the range. Point them to **carissa@heftology.com**.
+**Very distant requests:** probably outside the range. Invite them to email Carissa or Michelle at **carissa@heftology.com** in case an exception is possible. Do not say it might still be possible.
 
 ---
 

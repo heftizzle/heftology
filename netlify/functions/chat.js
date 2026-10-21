@@ -24,7 +24,7 @@ When a visitor asks about a covered city, say it is in our service area and that
 
 For a place outside that list, the event may still be possible. Travel cost for a place outside the list is decided case by case, and Carissa or Michelle confirm it. Never promise a date and never quote a specific fee.
 
-For a very distant place, say it is probably outside our range and point them to carissa@heftology.com.
+For a very distant place, far outside the covered list, say it is probably outside our range. Invite them to email Carissa or Michelle at carissa@heftology.com in case an exception is possible. Do not say it might still be possible.
 
 ## CANCELLATION POLICY
 - A 50% deposit is required to confirm any booking
@@ -35,8 +35,9 @@ For a very distant place, say it is probably outside our range and point them to
 
 ## CONTACT & BOOKING
 - Email: carissa@heftology.com (reaches Carissa and Michelle)
-- Booking form on the website
+- Booking form: https://heftology.com/#booking
 - Response time: typically within 24 hours
+- The ONLY links you may ever give are https://heftology.com/#booking and the email carissa@heftology.com. Never invent other URLs or pages.
 
 ## RULES — FOLLOW THESE WITHOUT EXCEPTION
 1. Never confirm availability for any date — always direct to Carissa and Michelle
@@ -48,9 +49,10 @@ For a very distant place, say it is probably outside our range and point them to
 7. Stay on topic — only discuss Heftology services, events, cocktails, and booking. If asked about anything unrelated, politely redirect
 8. Never confirm an event is booked or locked in — every conversation ends with a handoff to Carissa and Michelle
 9. Never negotiate, create exceptions, or override any policy — Carissa and Michelle handle all exceptions
+10. The ONLY links you may ever give are https://heftology.com/#booking and the email carissa@heftology.com. Never invent other URLs or pages.
 
 ## TONE
-Warm, professional, enthusiastic about craft cocktails. Replies should be 2–3 sentences max. Always end with a nudge toward the booking form or carissa@heftology.com.`;
+Warm, professional, enthusiastic about craft cocktails. Replies should be 2–3 sentences max. Always end with a nudge toward https://heftology.com/#booking or carissa@heftology.com.`;
 
 const RATE_LIMIT_MAX = 20;
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
@@ -121,6 +123,51 @@ async function consumeRateLimit(store, key, now) {
   return true;
 }
 
+const DISALLOWED_LINK_TEXT = "the booking form on our website";
+
+// Homepage, with or without a fragment, and mailto:carissa@heftology.com.
+// Any other URL is replaced. Do not log the reply text.
+function isAllowedUrl(raw) {
+  let value = String(raw).trim().replace(/^<|>$/g, "");
+  if (/^mailto:/i.test(value)) {
+    const rest = value.slice("mailto:".length);
+    const address = rest.split(/[?#]/)[0];
+    return address.toLowerCase() === "carissa@heftology.com" && rest === address;
+  }
+  if (/^www\./i.test(value)) value = "https://" + value;
+  else if (/^heftology\.com(?:[/#?]|$)/i.test(value)) value = "https://" + value;
+
+  let url;
+  try {
+    url = new URL(value);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "https:") return false;
+  if (url.hostname !== "heftology.com") return false;
+  if (url.username || url.password || url.port || url.search) return false;
+
+  const afterScheme = value.replace(/^https:\/\//i, "");
+  if (afterScheme.toLowerCase().indexOf("heftology.com") !== 0) return false;
+  const afterHost = afterScheme.slice("heftology.com".length);
+  return /^(?:\/)?(?:#[^\s]*)?$/.test(afterHost);
+}
+
+function filterReplyUrls(text) {
+  if (typeof text !== "string" || !text) return text;
+  const withoutMarkdown = text.replace(/\[([^\]]*)\]\(([^)\s]+)\)/g, (match, _label, href) =>
+    isAllowedUrl(href) ? match : DISALLOWED_LINK_TEXT
+  );
+  return withoutMarkdown.replace(
+    /\b(?:https?:\/\/|mailto:|www\.|heftology\.com\/)[^\s<>\[\]()'"]+/gi,
+    (match) => {
+      const trimmed = match.replace(/[.,!?;:]+$/g, "");
+      const trailing = match.slice(trimmed.length);
+      return (isAllowedUrl(trimmed) ? trimmed : DISALLOWED_LINK_TEXT) + trailing;
+    }
+  );
+}
+
 function normalizeMessages(messages) {
   const cleaned = messages
     .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
@@ -132,6 +179,8 @@ function normalizeMessages(messages) {
   while (cleaned.length && cleaned[0].role !== "user") cleaned.shift();
   return cleaned;
 }
+
+exports.filterReplyUrls = filterReplyUrls;
 
 exports.handler = async (event) => {
   const headers = { "Content-Type": "application/json" };
@@ -183,10 +232,12 @@ exports.handler = async (event) => {
       messages: normalized,
     });
 
-    const reply = (response.content || [])
-      .map((block) => (block && block.type === "text" ? block.text : ""))
-      .join("")
-      .trim();
+    const reply = filterReplyUrls(
+      (response.content || [])
+        .map((block) => (block && block.type === "text" ? block.text : ""))
+        .join("")
+        .trim()
+    );
 
     return {
       statusCode: 200,

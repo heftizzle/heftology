@@ -94,9 +94,9 @@ nav {
 .services-header { text-align: center; margin-bottom: 4rem; }
 .services-header .pink-rule { margin: 1.2rem auto; }
 .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; background: rgba(214,59,143,0.1); border: 1px solid rgba(214,59,143,0.1); }
-.service-card { background: var(--black); padding: 2.5rem 2rem; transition: all 0.4s; position: relative; overflow: hidden; }
+.service-card { background: var(--black); padding: 2.5rem 2rem; transition: all 0.4s; position: relative; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 10px 24px rgba(0,0,0,0.28); }
 .service-card::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(to right, transparent, var(--pink), transparent); transform: scaleX(0); transition: transform 0.4s; }
-.service-card:hover { background: var(--dark-grey); }
+.service-card:hover { background: var(--dark-grey); transform: translateY(-2px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 16px 32px rgba(0,0,0,0.4); }
 .service-card:hover::before { transform: scaleX(1); }
 .service-icon { font-size: 1.8rem; margin-bottom: 1rem; display: block; }
 .service-name { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; color: var(--white); margin-bottom: 0.8rem; }
@@ -126,8 +126,8 @@ nav {
 .menu-body { font-size: 1rem; font-weight: 300; line-height: 1.8; color: var(--grey); margin-top: 1rem; }
 .menu-note { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; color: #F060AA; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(214,59,143,0.15); }
 .cocktail-list { display: flex; flex-direction: column; }
-.cocktail-item { padding: 1.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; transition: padding-left 0.3s; }
-.cocktail-item:hover { padding-left: 0.6rem; }
+.cocktail-item { padding: 1.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; transition: padding-left 0.3s, transform 0.3s, box-shadow 0.3s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 20px rgba(0,0,0,0.22); }
+.cocktail-item:hover { padding-left: 0.6rem; transform: translateY(-2px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 14px 28px rgba(0,0,0,0.36); }
 .cocktail-name { font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--white); margin-bottom: 0.25rem; }
 .cocktail-desc { font-size: 0.82rem; font-weight: 300; line-height: 1.5; color: var(--grey); }
 .cocktail-tag { font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--black); background: var(--pink); padding: 0.2rem 0.5rem; white-space: nowrap; }
@@ -654,12 +654,14 @@ nav {
   border-radius: 14px;
   padding: 2.25rem 1.75rem 2rem;
   text-align: left;
-  transition: border-color 0.3s, background 0.3s, transform 0.3s;
+  transition: border-color 0.3s, background 0.3s, transform 0.3s, box-shadow 0.3s;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 10px 24px rgba(0,0,0,0.28);
 }
 .testimonial-card:hover {
   border-color: rgba(214,59,143,0.4);
   background: rgba(214,59,143,0.05);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 16px 32px rgba(0,0,0,0.4);
 }
 .testimonial-stars {
   color: var(--pink);
@@ -1080,6 +1082,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   }
   .reveal { opacity: 1 !important; transform: none !important; }
   .gallery-item:hover { transform: none !important; }
+  .service-card:hover, .cocktail-item:hover, .testimonial-card:hover { transform: none !important; }
   .gallery-track { scroll-behavior: auto; }
   .testimonials-track { scroll-behavior: auto; }
   .lightbox, .lightbox.is-open { transition: none; }

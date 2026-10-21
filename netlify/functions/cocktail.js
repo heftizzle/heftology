@@ -215,13 +215,23 @@ async function beginRateLimit(store, key, now) {
 
 exports.LOCK_HOURS = LOCK_HOURS;
 
-exports.handler = async (event) => {
+const ALLOWED_ORIGINS = new Set(["https://heftology.com", "https://www.heftology.com"]);
+
+function corsHeadersFor(event) {
+  const headers = event.headers || {};
+  const origin = headers.origin || headers.Origin || "";
   const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Content-Type": "application/json",
+    Vary: "Origin",
   };
+  if (ALLOWED_ORIGINS.has(origin)) corsHeaders["Access-Control-Allow-Origin"] = origin;
+  return corsHeaders;
+}
+
+exports.handler = async (event) => {
+  const corsHeaders = corsHeadersFor(event);
 
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: corsHeaders, body: "" };

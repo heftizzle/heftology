@@ -752,10 +752,11 @@ footer { background: var(--black); padding: 3rem 2rem; border-top: 1px solid rgb
 }
 #chat-toggle:hover { background: var(--pink-light); transform: scale(1.08); }
 #chat-toggle .chat-icon {
-  height: 28px;
-  width: auto;
+  width: 50%;
+  height: auto;
   display: block;
   object-fit: contain;
+  filter: brightness(0);
 }
 #chat-toggle .chat-close { display: none; font-size: 1.2rem; color: var(--black); }
 #chat-toggle.open .chat-icon { display: none; }

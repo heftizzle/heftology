@@ -8,11 +8,11 @@ Public marketing site for **Heftology — Hefta Crafted Cocktails**: mobile mixo
 
 ### Service area (copy alignment)
 
-Heftology serves the **greater Tampa Bay area**. Marketing copy in `index.html` and the chat assistant system prompt in `netlify/functions/chat.js` should stay aligned. Covered locations include Tampa, St. Pete, Clearwater, Dunedin, Safety Harbor, Brandon, Riverview, Valrico, Wesley Chapel, Zephyrhills, Spring Hill, Brooksville, New Port Richey, Tarpon Springs, Sarasota, Bradenton, Lakeland, and surrounding communities.
+Heftology serves the **greater Tampa Bay area**, within about 90 minutes of our base. Marketing copy in `index.html` and the chat assistant system prompt in `netlify/functions/chat.js` should stay aligned. Covered locations include Tampa, St. Pete, Clearwater, Dunedin, Safety Harbor, Brandon, Riverview, Valrico, Wesley Chapel, Zephyrhills, Spring Hill, Brooksville, New Port Richey, Tarpon Springs, Sarasota, Bradenton, Ruskin, Lakeland, and surrounding communities.
 
-**Always outside service area** (impractical real-world drive times, regardless of map distance): Orlando, Ocala, Port Charlotte, and anywhere further — politely decline and wish them well finding a local bartender.
+**Beyond that list:** an event may still be possible. Travel cost is decided case by case, and Carissa or Michelle confirm it. Never promise a date and never quote a travel fee.
 
-**City not on either list:** hand off to **carissa@heftology.com** — Carissa and Michelle decide edge cases.
+**Very distant requests:** probably outside the range. Point them to **carissa@heftology.com**.
 
 ---
 

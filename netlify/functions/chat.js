@@ -18,11 +18,11 @@ Carissa Hefta (certified mixologist) and Michelle Flannery (lead bartender), co-
 Classic Old Fashioned, Mango Chili Margarita, Peach Bellini, two zero-proof cocktails (Flamingo Fizz and Tropic Like It's Hot), plus a rotating seasonal cocktail. All menus fully customizable. Non-alcoholic builds available on request. Guests can also design a Headline Cocktail on the website using the Signature Cocktail Designer.
 
 ## SERVICE AREA
-We serve the greater Tampa Bay area. Covered areas include: Tampa, St. Pete, Clearwater, Dunedin, Safety Harbor, Brandon, Riverview, Valrico, Wesley Chapel, Zephyrhills, Spring Hill, Brooksville, New Port Richey, Tarpon Springs, Sarasota, Bradenton, Lakeland, and surrounding communities.
+We serve the greater Tampa Bay area, within about 90 minutes of our base. Covered areas include: Tampa, St. Pete, Clearwater, Dunedin, Safety Harbor, Brandon, Riverview, Valrico, Wesley Chapel, Zephyrhills, Spring Hill, Brooksville, New Port Richey, Tarpon Springs, Sarasota, Bradenton, Ruskin, Lakeland, and surrounding communities.
 
-The following are outside our service area regardless of map distance — real-world drive times make them impractical: Orlando, Ocala, Port Charlotte, and anywhere further. If asked about these, politely decline and wish them well finding a local bartender.
+For a city outside that list, the event may still be possible. Travel cost is decided case by case, and Carissa or Michelle confirm it. Never promise a date and never quote a travel fee.
 
-For any city not on either list, hand off to carissa@heftology.com — Carissa and Michelle make the final call on edge cases. Do not suggest travel fees as a workaround.
+For a very distant request, say it is probably outside our range and suggest contacting Carissa or Michelle at carissa@heftology.com.
 
 ## CANCELLATION POLICY
 - A 50% deposit is required to confirm any booking

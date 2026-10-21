@@ -26,11 +26,16 @@ function safeString(v) {
 }
 
 const RATE_LIMIT_MAX = 3;
-const RATE_LIMIT_WINDOW_MS = 72 * 60 * 60 * 1000; // 3 days
+const LOCK_HOURS = 72;
+const RATE_LIMIT_LOCK_MS = LOCK_HOURS * 60 * 60 * 1000;
 const RATE_LIMIT_STORE = "cocktail-rate-limit";
-// Blobs edge reads can lag writes by up to ~60s, so a per-instance copy is merged in to
-// catch rapid repeats; it is also the only limiter if Blobs is unreachable.
-const memoryRateLimit = new Map(); // key -> number[] (timestamps)
+// Pending slots live only in memory so simultaneous calls can't all pass before a write.
+// The same map is the limiter when Blobs is unreachable, and it covers the lag before a write is visible.
+const memoryRateLimit = new Map(); // key -> { submissions: number[], lockedUntil: number|null, pending: number }
+
+const LOCK_MESSAGE =
+  "Looks like you're on a roll! You can try the cocktail designer again in about 3 days. Let's make it official — book a free consultation at heftology.com/#booking and Carissa and Michelle will craft the perfect menu for your event.";
+const BUSY_MESSAGE = "We're still finishing your last design. Please wait a moment and try again.";
 
 function getClientIp(event) {
   const h = event.headers || {};
@@ -63,36 +68,152 @@ function openRateLimitStore(event) {
   }
 }
 
-// Returns true if this request is allowed (and records it), false if over the limit.
-async function consumeRateLimit(store, key, now) {
-  let stored = [];
-  if (store) {
-    try {
-      stored = (await store.get(key, { type: "json" })) || [];
-    } catch (err) {
-      console.error("Rate limit read failed, using in-memory fallback:", err.message);
-      store = null;
-    }
-  }
-
-  const inWindow = (list) =>
-    (Array.isArray(list) ? list : []).filter((t) => typeof t === "number" && now - t < RATE_LIMIT_WINDOW_MS);
-  const fromStore = inWindow(stored);
-  const fromMemory = inWindow(memoryRateLimit.get(key));
-  const recent = fromMemory.length > fromStore.length ? fromMemory : fromStore;
-  if (recent.length >= RATE_LIMIT_MAX) return false;
-
-  recent.push(now);
-  memoryRateLimit.set(key, recent);
-  if (store) {
-    try {
-      await store.setJSON(key, recent);
-    } catch (err) {
-      console.error("Rate limit write failed, using in-memory fallback:", err.message);
-    }
-  }
-  return true;
+function emptyRecord() {
+  return { submissions: [], lockedUntil: null, pending: 0 };
 }
+
+function getMemoryRecord(key) {
+  let rec = memoryRateLimit.get(key);
+  if (!rec) {
+    rec = emptyRecord();
+    memoryRateLimit.set(key, rec);
+  }
+  return rec;
+}
+
+// Accepts the current { submissions, lockedUntil } shape and the previous timestamp-array shape.
+function normalizeRecord(raw) {
+  if (Array.isArray(raw)) {
+    const submissions = raw.filter((t) => typeof t === "number").sort((a, b) => a - b);
+    const lockedUntil =
+      submissions.length >= RATE_LIMIT_MAX ? submissions[RATE_LIMIT_MAX - 1] + RATE_LIMIT_LOCK_MS : null;
+    return { submissions: submissions.slice(0, RATE_LIMIT_MAX), lockedUntil };
+  }
+  if (raw && typeof raw === "object") {
+    const submissions = Array.isArray(raw.submissions)
+      ? raw.submissions.filter((t) => typeof t === "number").sort((a, b) => a - b)
+      : [];
+    return {
+      submissions,
+      lockedUntil: typeof raw.lockedUntil === "number" ? raw.lockedUntil : null,
+    };
+  }
+  return { submissions: [], lockedUntil: null };
+}
+
+// A finished lock is deleted. One or two successes that never became a lock are deleted
+// LOCK_HOURS after the first of them, so they don't count forever.
+function expireRecord(rec, now) {
+  if (rec.lockedUntil && now >= rec.lockedUntil) {
+    rec.submissions = [];
+    rec.lockedUntil = null;
+    return true;
+  }
+  if (rec.lockedUntil) return false;
+  if (rec.submissions.length && now - rec.submissions[0] >= RATE_LIMIT_LOCK_MS) {
+    rec.submissions = [];
+    return true;
+  }
+  return false;
+}
+
+async function readStoredRecord(store, key) {
+  if (!store) return { record: null, store };
+  try {
+    const raw = await store.get(key, { type: "json" });
+    return { record: raw ? normalizeRecord(raw) : null, store };
+  } catch (err) {
+    console.error("Rate limit read failed, using in-memory fallback:", err.message);
+    return { record: null, store: null };
+  }
+}
+
+async function writeRecord(store, key, rec) {
+  if (!store) return;
+  try {
+    await store.setJSON(key, { submissions: rec.submissions.slice(), lockedUntil: rec.lockedUntil || null });
+  } catch (err) {
+    console.error("Rate limit write failed, using in-memory fallback:", err.message);
+  }
+}
+
+async function deleteRecord(store, key) {
+  if (!store || typeof store.delete !== "function") return;
+  try {
+    await store.delete(key);
+  } catch (err) {
+    console.error("Rate limit delete failed, using in-memory fallback:", err.message);
+  }
+}
+
+// Reserves a pending slot before the API call. commit() records a success; release() gives the slot back.
+async function beginRateLimit(store, key, now) {
+  const mem = getMemoryRecord(key);
+  if (expireRecord(mem, now)) {
+    // Keep pending. Stored copy is removed once we know which store to talk to.
+  }
+
+  if (mem.lockedUntil && now < mem.lockedUntil) {
+    return { ok: false, reason: "locked" };
+  }
+  if (mem.submissions.length + mem.pending >= RATE_LIMIT_MAX) {
+    return { ok: false, reason: "busy" };
+  }
+  mem.pending += 1;
+
+  const loaded = await readStoredRecord(store, key);
+  store = loaded.store;
+  const stored = loaded.record;
+  if (stored) {
+    const storedExpired = expireRecord(stored, now);
+    if (storedExpired) await deleteRecord(store, key);
+
+    if (stored.lockedUntil && now < stored.lockedUntil) {
+      mem.submissions = stored.submissions.slice();
+      mem.lockedUntil = stored.lockedUntil;
+      mem.pending = Math.max(0, mem.pending - 1);
+      return { ok: false, reason: "locked" };
+    }
+    if (!mem.lockedUntil && stored.submissions.length > mem.submissions.length) {
+      mem.submissions = stored.submissions.slice();
+      mem.lockedUntil = stored.lockedUntil;
+    }
+  } else if (expireRecord(mem, now)) {
+    await deleteRecord(store, key);
+  }
+
+  if (mem.lockedUntil && now < mem.lockedUntil) {
+    mem.pending = Math.max(0, mem.pending - 1);
+    return { ok: false, reason: "locked" };
+  }
+  if (mem.submissions.length + mem.pending > RATE_LIMIT_MAX) {
+    mem.pending = Math.max(0, mem.pending - 1);
+    return { ok: false, reason: "busy" };
+  }
+
+  let settled = false;
+  return {
+    ok: true,
+    async commit(at) {
+      if (settled) return;
+      settled = true;
+      mem.pending = Math.max(0, mem.pending - 1);
+      mem.submissions.push(at);
+      mem.submissions.sort((a, b) => a - b);
+      if (mem.submissions.length >= RATE_LIMIT_MAX) {
+        mem.lockedUntil = at + RATE_LIMIT_LOCK_MS;
+      }
+      await writeRecord(store, key, mem);
+    },
+    async release() {
+      if (settled) return;
+      settled = true;
+      mem.pending = Math.max(0, mem.pending - 1);
+    },
+  };
+}
+
+exports.LOCK_HOURS = LOCK_HOURS;
 
 exports.handler = async (event) => {
   const corsHeaders = {
@@ -127,52 +248,56 @@ exports.handler = async (event) => {
     }
 
     const store = openRateLimitStore(event);
-    const allowed = await consumeRateLimit(store, rateLimitKey(getClientIp(event)), Date.now());
-    if (!allowed) {
+    const gate = await beginRateLimit(store, rateLimitKey(getClientIp(event)), Date.now());
+    if (!gate.ok) {
       return {
         statusCode: 429,
         headers: corsHeaders,
-        body: JSON.stringify({
-          error:
-            "Looks like you're on a roll! Let's make it official — book a free consultation at heftology.com/#booking and Carissa and Michelle will craft the perfect menu for your event.",
-        }),
+        body: JSON.stringify({ error: gate.reason === "busy" ? BUSY_MESSAGE : LOCK_MESSAGE }),
       };
     }
 
-    const userMessage = `Event theme: ${theme}\nColor palette: ${colors}\nDrink preferences: ${preferences}\nMonth of event: ${month}\nVenue type: ${venue}`;
-
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-    const response = await client.messages.create({
-      model: process.env.COCKTAIL_MODEL || process.env.CLAUDE_MODEL || "claude-haiku-4-5-20251001",
-      max_tokens: 700,
-      system: HEFTOLOGY_PROMPT,
-      messages: [{ role: "user", content: userMessage }],
-    });
-
-    const raw = (response.content || [])
-      .map((c) => (typeof c?.text === "string" ? c.text : ""))
-      .join("")
-      .trim();
-
-    // Best-effort cleanup if the model wraps JSON (shouldn't, per prompt).
-    const clean = raw.replace(/```json|```/gi, "").trim();
-    let cocktail;
     try {
-      cocktail = JSON.parse(clean);
-    } catch (parseErr) {
-      console.error("Cocktail JSON parse error:", parseErr, clean.slice(0, 200));
-      return {
-        statusCode: 502,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: "Could not craft that cocktail. Please try again." }),
-      };
-    }
+      const userMessage = `Event theme: ${theme}\nColor palette: ${colors}\nDrink preferences: ${preferences}\nMonth of event: ${month}\nVenue type: ${venue}`;
 
-    return {
-      statusCode: 200,
-      headers: corsHeaders,
-      body: JSON.stringify({ cocktail }),
-    };
+      const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      const response = await client.messages.create({
+        model: process.env.COCKTAIL_MODEL || process.env.CLAUDE_MODEL || "claude-haiku-4-5-20251001",
+        max_tokens: 700,
+        system: HEFTOLOGY_PROMPT,
+        messages: [{ role: "user", content: userMessage }],
+      });
+
+      const raw = (response.content || [])
+        .map((c) => (typeof c?.text === "string" ? c.text : ""))
+        .join("")
+        .trim();
+
+      // Best-effort cleanup if the model wraps JSON (shouldn't, per prompt).
+      const clean = raw.replace(/```json|```/gi, "").trim();
+      let cocktail;
+      try {
+        cocktail = JSON.parse(clean);
+      } catch (parseErr) {
+        await gate.release();
+        console.error("Cocktail JSON parse error:", parseErr, clean.slice(0, 200));
+        return {
+          statusCode: 502,
+          headers: corsHeaders,
+          body: JSON.stringify({ error: "Could not craft that cocktail. Please try again." }),
+        };
+      }
+
+      await gate.commit(Date.now());
+      return {
+        statusCode: 200,
+        headers: corsHeaders,
+        body: JSON.stringify({ cocktail }),
+      };
+    } catch (err) {
+      await gate.release();
+      throw err;
+    }
   } catch (err) {
     console.error("Cocktail function error:", err);
     return {

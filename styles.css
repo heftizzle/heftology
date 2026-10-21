@@ -26,6 +26,12 @@ img, video, iframe {
   max-width: 100%;
   height: auto;
 }
+.nav-logo picture,
+.hero-logo-heading picture,
+.team-card-photo picture,
+.team-mud picture { display: block; }
+.team-card-photo picture,
+.team-mud picture { width: 100%; height: 100%; }
 
 /* ─── NAV ─── */
 nav {
@@ -918,6 +924,11 @@ footer { background: var(--black); padding: 3rem 2rem; border-top: 1px solid rgb
 .gallery-track::-webkit-scrollbar-thumb {
   background: rgba(214,59,143,0.45);
   border-radius: 3px;
+}
+.gallery-track picture {
+  height: 100%;
+  flex-shrink: 0;
+  display: block;
 }
 .gallery-item {
   height: 100%;

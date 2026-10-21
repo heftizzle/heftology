@@ -151,6 +151,21 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers, body: JSON.stringify({ error: "Method Not Allowed" }) };
   }
 
+  let messages;
+  try {
+    ({ messages } = JSON.parse(event.body || "{}"));
+  } catch {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: "invalid JSON" }),
+    };
+  }
+
+  if (!messages || !Array.isArray(messages)) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: "messages array required" }) };
+  }
+
   try {
     const store = openRateLimitStore(event);
     if (!(await consumeRateLimit(store, rateLimitKey(getClientIp(event)), Date.now()))) {
@@ -159,12 +174,6 @@ exports.handler = async (event) => {
         headers,
         body: JSON.stringify({ error: "Too many messages. Please try again later or email carissa@heftology.com." }),
       };
-    }
-
-    const { messages } = JSON.parse(event.body || "{}");
-
-    if (!messages || !Array.isArray(messages)) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: "messages array required" }) };
     }
 
     const normalized = normalizeMessages(messages);

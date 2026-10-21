@@ -241,9 +241,28 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: "Method Not Allowed" }) };
   }
 
+  let body = {};
+  if (event.body) {
+    try {
+      body = JSON.parse(event.body);
+    } catch {
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: "invalid JSON" }),
+      };
+    }
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: "invalid JSON" }),
+      };
+    }
+  }
+
   try {
-    const body = event.body ? JSON.parse(event.body) : {};
-    const theme = safeString(body.theme);
+    const theme = safeString(body && body.theme);
     const colors = safeString(body.colors);
     const preferences = safeString(body.preferences);
     const month = safeString(body.month);

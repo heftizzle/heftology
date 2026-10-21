@@ -26,6 +26,12 @@ img, video, iframe {
   max-width: 100%;
   height: auto;
 }
+.nav-logo picture,
+.hero-logo-heading picture,
+.team-card-photo picture,
+.team-mud picture { display: block; }
+.team-card-photo picture,
+.team-mud picture { width: 100%; height: 100%; }
 
 /* ─── NAV ─── */
 nav {
@@ -78,7 +84,7 @@ nav {
 .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--pink), transparent); margin: 0 auto; animation: pulseDown 2s ease infinite; }
 
 /* ─── SHARED ─── */
-.eyebrow { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.4em; text-transform: uppercase; color: var(--pink); display: block; margin-bottom: 0.8rem; }
+.eyebrow { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.4em; text-transform: uppercase; color: #F060AA; display: block; margin-bottom: 0.8rem; }
 .section-title { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 900; line-height: 1.05; text-transform: uppercase; color: var(--white); }
 .pink-rule { width: 50px; height: 3px; background: var(--pink); box-shadow: 0 0 10px rgba(214,59,143,0.5); margin: 1.2rem 0; }
 
@@ -88,9 +94,9 @@ nav {
 .services-header { text-align: center; margin-bottom: 4rem; }
 .services-header .pink-rule { margin: 1.2rem auto; }
 .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; background: rgba(214,59,143,0.1); border: 1px solid rgba(214,59,143,0.1); }
-.service-card { background: var(--black); padding: 2.5rem 2rem; transition: all 0.4s; position: relative; overflow: hidden; }
+.service-card { background: var(--black); padding: 2.5rem 2rem; transition: all 0.4s; position: relative; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 10px 24px rgba(0,0,0,0.28); }
 .service-card::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(to right, transparent, var(--pink), transparent); transform: scaleX(0); transition: transform 0.4s; }
-.service-card:hover { background: var(--dark-grey); }
+.service-card:hover { background: var(--dark-grey); transform: translateY(-2px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 16px 32px rgba(0,0,0,0.4); }
 .service-card:hover::before { transform: scaleX(1); }
 .service-icon { font-size: 1.8rem; margin-bottom: 1rem; display: block; }
 .service-name { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; color: var(--white); margin-bottom: 0.8rem; }
@@ -118,10 +124,10 @@ nav {
 .menu-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 5rem; align-items: start; }
 .menu-sticky { position: sticky; top: 8rem; }
 .menu-body { font-size: 1rem; font-weight: 300; line-height: 1.8; color: var(--grey); margin-top: 1rem; }
-.menu-note { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; color: rgba(214,59,143,0.6); margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(214,59,143,0.15); }
+.menu-note { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; color: #F060AA; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(214,59,143,0.15); }
 .cocktail-list { display: flex; flex-direction: column; }
-.cocktail-item { padding: 1.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; transition: padding-left 0.3s; }
-.cocktail-item:hover { padding-left: 0.6rem; }
+.cocktail-item { padding: 1.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; transition: padding-left 0.3s, transform 0.3s, box-shadow 0.3s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 20px rgba(0,0,0,0.22); }
+.cocktail-item:hover { padding-left: 0.6rem; transform: translateY(-2px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 14px 28px rgba(0,0,0,0.36); }
 .cocktail-name { font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--white); margin-bottom: 0.25rem; }
 .cocktail-desc { font-size: 0.82rem; font-weight: 300; line-height: 1.5; color: var(--grey); }
 .cocktail-tag { font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--black); background: var(--pink); padding: 0.2rem 0.5rem; white-space: nowrap; }
@@ -182,7 +188,7 @@ nav {
 .cocktail-widget-field textarea {
   background: transparent; border: none; outline: none;
   font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 300;
-  color: var(--white); resize: none; padding: 0.4rem 0;
+  color: var(--white); resize: none; padding: 0.4rem 0; min-height: 44px;
 }
 .cocktail-widget-submit {
   width: 100%;
@@ -396,11 +402,11 @@ nav {
 }
 .credentials-eyebrow {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.67rem;
   font-weight: 700;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: rgba(214,59,143,0.85);
+  color: #F060AA;
   margin-bottom: 0.6rem;
 }
 .credentials-title {
@@ -487,9 +493,9 @@ nav {
   display: inline-block;
   background: rgba(214,59,143,0.13);
   border: 1px solid rgba(214,59,143,0.32);
-  color: rgba(214,59,143,0.95);
+  color: #F060AA;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.67rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -648,12 +654,14 @@ nav {
   border-radius: 14px;
   padding: 2.25rem 1.75rem 2rem;
   text-align: left;
-  transition: border-color 0.3s, background 0.3s, transform 0.3s;
+  transition: border-color 0.3s, background 0.3s, transform 0.3s, box-shadow 0.3s;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 10px 24px rgba(0,0,0,0.28);
 }
 .testimonial-card:hover {
   border-color: rgba(214,59,143,0.4);
   background: rgba(214,59,143,0.05);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 16px 32px rgba(0,0,0,0.4);
 }
 .testimonial-stars {
   color: var(--pink);
@@ -695,7 +703,7 @@ nav {
 .form-field:focus-within { background: var(--dark-grey); }
 .form-field.full { grid-column: 1/-1; }
 .form-field label { font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--pink); }
-.form-field input, .form-field select, .form-field textarea { background: transparent; border: none; outline: none; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 300; color: var(--white); resize: none; padding: 0; }
+.form-field input, .form-field select, .form-field textarea { background: transparent; border: none; outline: none; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 300; color: var(--white); resize: none; padding: 0; min-height: 44px; }
 .form-field input::placeholder, .form-field textarea::placeholder { color: rgba(255,255,255,0.15); }
 .form-field select option { background: #1a1520; color: #fff; }
 .form-submit { width: 100%; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--black); background: var(--pink); border: none; margin-top: 1px; padding: 1.2rem; cursor: pointer; display: block; transition: all 0.3s; box-shadow: 0 0 20px rgba(214,59,143,0.3); }
@@ -709,12 +717,13 @@ footer { background: var(--black); padding: 3rem 2rem; border-top: 1px solid rgb
 .footer-logo-text span { color: var(--pink); }
 .footer-tagline { font-family: 'Dancing Script', cursive; font-size: 0.9rem; color: var(--grey); margin-top: 0.2rem; }
 .footer-links { display: flex; gap: 2rem; list-style: none; flex-wrap: wrap; }
-.footer-links a { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.3s; }
+.footer-links a { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.3s; display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.15rem; }
 .footer-links a:hover { color: var(--pink); }
 .footer-social-row { justify-content: center; padding-top: 0.5rem; }
 .footer-instagram {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: 0.65rem;
   text-decoration: none;
   color: rgba(255,255,255,0.45);
@@ -729,7 +738,8 @@ footer { background: var(--black); padding: 3rem 2rem; border-top: 1px solid rgb
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
-.footer-copy { width: 100%; font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.15); text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.04); }
+a[href^="mailto:"] { display: inline-flex; align-items: center; min-height: 44px; }
+.footer-copy { width: 100%; font-family: 'Rajdhani', sans-serif; font-size: 0.67rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.46); text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.04); }
 
 /* ─── ANIMATIONS ─── */
 @keyframes fadeDown { from { opacity:0; transform:translateY(-20px);} to { opacity:1; transform:translateY(0);} }
@@ -919,6 +929,11 @@ footer { background: var(--black); padding: 3rem 2rem; border-top: 1px solid rgb
   background: rgba(214,59,143,0.45);
   border-radius: 3px;
 }
+.gallery-track picture {
+  height: 100%;
+  flex-shrink: 0;
+  display: block;
+}
 .gallery-item {
   height: 100%;
   width: auto;
@@ -1067,6 +1082,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   }
   .reveal { opacity: 1 !important; transform: none !important; }
   .gallery-item:hover { transform: none !important; }
+  .service-card:hover, .cocktail-item:hover, .testimonial-card:hover { transform: none !important; }
   .gallery-track { scroll-behavior: auto; }
   .testimonials-track { scroll-behavior: auto; }
   .lightbox, .lightbox.is-open { transition: none; }

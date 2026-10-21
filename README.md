@@ -4,7 +4,7 @@ Public marketing site for **Heftology — Hefta Crafted Cocktails**: mobile mixo
 
 **Live repository:** [github.com/heftizzle/heftology](https://github.com/heftizzle/heftology)
 
-**Production domain:** [heftology.com](https://www.heftology.com/) (canonical and social meta tags in `index.html` assume `https://www.heftology.com/`).
+**Production domain:** [heftology.com](https://heftology.com/) (canonical and social meta tags in `index.html` use `https://heftology.com/`).
 
 ### Service area (copy alignment)
 
@@ -104,4 +104,4 @@ This repository is **not open source**. Terms are defined in the dedicated licen
 - **Holder:** **Heftology LLC**, copyright © 2026
 - **Summary:** All rights reserved. No copying, distribution, or use without written permission from Heftology LLC, except as allowed by law.
 
-The [`LICENSE`](LICENSE) file is the authoritative text. Site copy, images, and branding are part of the same proprietary work. For permission or partnership questions, use the contact options on [heftology.com](https://www.heftology.com/) (e.g. [carissa@heftology.com](mailto:carissa@heftology.com)).
+The [`LICENSE`](LICENSE) file is the authoritative text. Site copy, images, and branding are part of the same proprietary work. For permission or partnership questions, use the contact options on [heftology.com](https://heftology.com/) (e.g. [carissa@heftology.com](mailto:carissa@heftology.com)).

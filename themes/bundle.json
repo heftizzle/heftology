@@ -1,0 +1,374 @@
+{
+  "themes": [
+    {
+      "id": "valentines",
+      "label": "Valentine's Day",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed. windowEndOffsetDays: 8 is a one-off for 2027, when the Super Bowl (Feb 7–14 window) lands on Valentine's Day: it ends this window Feb 6 so the two don't overlap. Revisit/revert to 0 in years they don't collide.",
+      "rule": {
+        "rule": "fixedDate",
+        "month": 2,
+        "day": 14,
+        "daysBefore": 10,
+        "windowEndOffsetDays": 8
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#F0306F"
+    },
+    {
+      "id": "st-patricks",
+      "label": "St. Patrick's Day",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+      "rule": {
+        "rule": "fixedDate",
+        "month": 3,
+        "day": 17,
+        "daysBefore": 10
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#2E8B57"
+    },
+    {
+      "id": "cinco-de-mayo",
+      "label": "Cinco de Mayo",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+      "rule": {
+        "rule": "fixedDate",
+        "month": 5,
+        "day": 5,
+        "daysBefore": 7
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#E4572E"
+    },
+    {
+      "id": "july-4th",
+      "label": "Fourth of July",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+      "rule": {
+        "rule": "fixedDate",
+        "month": 7,
+        "day": 4,
+        "daysBefore": 14
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#5B8FD0"
+    },
+    {
+      "id": "halloween",
+      "label": "Halloween",
+      "priority": 10,
+      "placeholder": false,
+      "rule": {
+        "rule": "dateRange",
+        "startMonth": 10,
+        "startDay": 1,
+        "endMonth": 10,
+        "endDay": 31
+      },
+      "drinkName": "The Black Widow",
+      "drinkDescription": "Blackberry vodka, activated charcoal syrup, fresh lemon, black sugar rim — served with a gummy spider garnish.",
+      "accentColor": "#FF7518"
+    },
+    {
+      "id": "thanksgiving",
+      "label": "Thanksgiving",
+      "priority": 10,
+      "placeholder": false,
+      "rule": {
+        "rule": "nthWeekday",
+        "month": 11,
+        "weekday": 4,
+        "n": 4,
+        "daysBefore": 14
+      },
+      "drinkName": "Pumpkin Spice Old Fashioned",
+      "drinkDescription": "Spiced rum, pumpkin syrup, Angostura bitters, orange peel.",
+      "accentColor": "#C8742C"
+    },
+    {
+      "id": "christmas",
+      "label": "Christmas",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+      "rule": {
+        "rule": "dateRange",
+        "startMonth": 12,
+        "startDay": 1,
+        "endMonth": 12,
+        "endDay": 25
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#E74C3C"
+    },
+    {
+      "id": "new-years",
+      "label": "New Year's",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed. Range crosses the year boundary (Dec 26 – Jan 2).",
+      "rule": {
+        "rule": "dateRange",
+        "startMonth": 12,
+        "startDay": 26,
+        "endMonth": 1,
+        "endDay": 2
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#D4AF37"
+    },
+    {
+      "id": "mothers-day",
+      "label": "Mother's Day",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+      "rule": {
+        "rule": "nthWeekday",
+        "month": 5,
+        "weekday": 0,
+        "n": 2,
+        "daysBefore": 7
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#F4A6C1"
+    },
+    {
+      "id": "fathers-day",
+      "label": "Father's Day",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+      "rule": {
+        "rule": "nthWeekday",
+        "month": 6,
+        "weekday": 0,
+        "n": 3,
+        "daysBefore": 7
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#6A8FC8"
+    },
+    {
+      "id": "memorial-day",
+      "label": "Memorial Day",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+      "rule": {
+        "rule": "nthWeekday",
+        "month": 5,
+        "weekday": 1,
+        "n": -1,
+        "daysBefore": 7
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#E0464A"
+    },
+    {
+      "id": "labor-day",
+      "label": "Labor Day",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+      "rule": {
+        "rule": "nthWeekday",
+        "month": 9,
+        "weekday": 1,
+        "n": 1,
+        "daysBefore": 7
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#5E8DD6"
+    },
+    {
+      "id": "kentucky-derby",
+      "label": "Kentucky Derby",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+      "rule": {
+        "rule": "nthWeekday",
+        "month": 5,
+        "weekday": 6,
+        "n": 1,
+        "daysBefore": 7
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#E25C7E"
+    },
+    {
+      "id": "easter",
+      "label": "Easter",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed.",
+      "rule": {
+        "rule": "easterOffset",
+        "offsetDays": 0,
+        "daysBefore": 7
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#B39DDB"
+    },
+    {
+      "id": "mardi-gras",
+      "label": "Mardi Gras",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed. Fat Tuesday = Easter − 47 days.",
+      "rule": {
+        "rule": "easterOffset",
+        "offsetDays": -47,
+        "daysBefore": 14
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#A66BD3"
+    },
+    {
+      "id": "super-bowl",
+      "label": "Super Bowl",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed. MANUAL DATE: update every year. 2027-02-14 = Super Bowl LXI, SoFi Stadium (confirmed by the SoFi Stadium press release and Wikipedia). Skipped automatically once more than a year old.",
+      "rule": {
+        "rule": "manual",
+        "date": "2027-02-14",
+        "daysBefore": 7
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#4CAF50"
+    },
+    {
+      "id": "gasparilla",
+      "label": "Gasparilla",
+      "priority": 10,
+      "placeholder": true,
+      "_comment": "PLACEHOLDER — real recipe must come from Carissa before placeholder: true is removed. SPOT-CHECK YEARLY: rule is the last Saturday of January (matches Jan 25 2025, Jan 31 2026, Jan 30 2027), but organizers occasionally deviate — compare against the officially announced parade date at gasparillapiratefest.com each year.",
+      "rule": {
+        "rule": "nthWeekday",
+        "month": 1,
+        "weekday": 6,
+        "n": -1,
+        "daysBefore": 14
+      },
+      "drinkName": "Coming Soon",
+      "drinkDescription": "",
+      "accentColor": "#C9A227"
+    },
+    {
+      "id": "spring",
+      "label": "Spring",
+      "priority": 1,
+      "placeholder": false,
+      "rule": {
+        "rule": "dateRange",
+        "startMonth": 3,
+        "startDay": 1,
+        "endMonth": 5,
+        "endDay": 31
+      },
+      "drinkName": "Strawberry Lemonade",
+      "drinkDescription": "Vodka, Fresh Lemon Juice, House-Made Simple Syrup, Strawberry Garnish",
+      "accentColor": "#F26B8A"
+    },
+    {
+      "id": "summer",
+      "label": "Summer",
+      "priority": 1,
+      "placeholder": false,
+      "rule": {
+        "rule": "dateRange",
+        "startMonth": 6,
+        "startDay": 1,
+        "endMonth": 8,
+        "endDay": 31
+      },
+      "drinkName": "Red & White Sangria",
+      "drinkDescription": "",
+      "variants": [
+        {
+          "label": "Red",
+          "description": "Red Wine, Lambrusco, Malibu Rum, Fresh Lime Juice, Lemon & Lime Slices, Orange Wheel Garnish"
+        },
+        {
+          "label": "White",
+          "description": "White Wine, Moscato, Malibu Rum, Fresh Lime Juice, Lemon & Lime Slices, Orange Wheel Garnish"
+        }
+      ],
+      "accentColor": "#F4A261"
+    },
+    {
+      "id": "fall",
+      "label": "Fall",
+      "priority": 1,
+      "placeholder": false,
+      "rule": {
+        "rule": "dateRange",
+        "startMonth": 9,
+        "startDay": 1,
+        "endMonth": 11,
+        "endDay": 30
+      },
+      "drinkName": "Spiced Apple Mule",
+      "drinkDescription": "Maker's Mark, Fresh Apple Cider, House-Made Cinnamon Syrup, Fresh Lime Juice, Ginger Beer, Dehydrated Lime & Cinnamon Stick Garnish",
+      "accentColor": "#D2691E"
+    },
+    {
+      "id": "winter-early",
+      "label": "Winter",
+      "priority": 1,
+      "placeholder": false,
+      "_comment": "Range crosses the year boundary (Dec 1 – Jan 15).",
+      "rule": {
+        "rule": "dateRange",
+        "startMonth": 12,
+        "startDay": 1,
+        "endMonth": 1,
+        "endDay": 15
+      },
+      "drinkName": "Tiramisu Martini",
+      "drinkDescription": "Vodka, Kahlua, Baileys Irish Cream, Fresh Espresso, Chocolate Drizzle, Cocoa Dust, Shaved Chocolate Garnish",
+      "accentColor": "#A0704C"
+    },
+    {
+      "id": "winter-late",
+      "label": "Winter",
+      "priority": 1,
+      "placeholder": false,
+      "_comment": "endDay \"last\" resolves to Feb 28 or Feb 29 depending on leap year.",
+      "rule": {
+        "rule": "dateRange",
+        "startMonth": 1,
+        "startDay": 16,
+        "endMonth": 2,
+        "endDay": "last"
+      },
+      "drinkName": "Rosemary Rye",
+      "drinkDescription": "Bulleit Rye, Fresh Cranberry Juice, Rosemary-Infused Simple Syrup, Cinnamon Sugar Rim, Rosemary Sprig & Cranberry Garnish",
+      "accentColor": "#D64550"
+    }
+  ]
+}

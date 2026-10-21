@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /thank-you.html
 
-Sitemap: https://www.heftology.com/sitemap.xml
+Sitemap: https://heftology.com/sitemap.xml

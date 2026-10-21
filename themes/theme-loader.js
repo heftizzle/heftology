@@ -31,18 +31,8 @@
 
   function getActiveTheme() {
     if (!activeThemePromise) {
-      activeThemePromise = fetchJSON('manifest.json')
-        .then((manifest) =>
-          Promise.all(
-            (manifest.themes || []).map((path) =>
-              fetchJSON(path).catch((err) => {
-                console.warn('[themes] Could not load', err.message);
-                return null;
-              })
-            )
-          )
-        )
-        .then((themes) => Rules.pickActiveTheme(themes, themeToday()))
+      activeThemePromise = fetchJSON('bundle.json')
+        .then((bundle) => Rules.pickActiveTheme(bundle.themes || [], themeToday()))
         .catch((err) => {
           console.warn('[themes] Theme engine unavailable:', err.message);
           return null;

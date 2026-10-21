@@ -33,15 +33,19 @@ check("prompt does not charge a covered city for travel", chargesCoveredCity, fa
 
 const distantAt = area.indexOf("For a very distant place");
 const distant = distantAt >= 0 ? area.slice(distantAt) : "";
-check("very distant places are probably outside our range", distant.includes("probably outside our range"), true);
 check(
-  "very distant places invite an email to carissa@heftology.com",
-  distant.includes("Invite them to email carissa@heftology.com"),
+  "very distant replies must begin with That's probably outside our range",
+  distant.includes('the reply must begin with "That\'s probably outside our range"'),
   true
 );
 check(
-  "very distant places never say an exception might be possible",
-  distant.includes("Never say an exception might be possible") && !distant.includes("in case an exception is possible"),
+  "very distant replies then invite an email to carissa@heftology.com",
+  distant.includes("invite an email to carissa@heftology.com"),
+  true
+);
+check(
+  "very distant replies forbid work something out, exception, may still be possible, and reach out to see if",
+  distant.includes('Never use "work something out", "exception", "may still be possible", or "reach out to see if"'),
   true
 );
 check(

@@ -691,7 +691,7 @@ if (bookingSection && "IntersectionObserver" in window) {
 let isOpen = false;
 let isTyping = false;
 let chatHistory = [];
-const loadedAt = Date.now();
+const loadedAt = performance.now();
 
 // -- Init --
 window.addEventListener('DOMContentLoaded', () => {
@@ -700,7 +700,7 @@ window.addEventListener('DOMContentLoaded', () => {
     bookingForm.addEventListener('submit', () => {
       const subject = document.getElementById('booking-subject');
       const honeypot = bookingForm.querySelector('[name="hp_field"]');
-      const elapsedMs = Date.now() - loadedAt;
+      const elapsedMs = performance.now() - loadedAt;
       const filled = honeypot && String(honeypot.value || '').trim();
       const tooFast = Number.isFinite(elapsedMs) && elapsedMs < 1500;
       if (subject && (filled || tooFast)) {
@@ -1031,7 +1031,7 @@ window.addEventListener('DOMContentLoaded', () => {
       venue: String(fd.get('venue') || '').trim(),
       preferences: String(fd.get('preferences') || '').trim(),
       hp_field: String(fd.get('hp_field') || ''),
-      elapsedMs: Date.now() - loadedAt,
+      elapsedMs: performance.now() - loadedAt,
     };
 
     if (!payload.theme || !payload.colors || !payload.month || !payload.venue || !payload.preferences) {

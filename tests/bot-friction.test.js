@@ -86,7 +86,9 @@ function post(body) {
   const page = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
   check("page has no netlify honeypot drop", page.includes("netlify-honeypot"), false);
   check("booking subject can be marked", page.includes("[possible bot]"), true);
-  check("page sends elapsedMs from loadedAt", page.includes("Date.now() - loadedAt"), true);
+  check("page measures elapsed with performance.now", page.includes("const loadedAt = performance.now()"), true);
+  check("booking and cocktail both use that start", page.split("performance.now() - loadedAt").length - 1, 2);
+  check("elapsed is not taken from the wall clock", page.includes("Date.now() - loadedAt"), false);
   const bookingListener = page.slice(page.indexOf("bookingForm.addEventListener"), page.indexOf("const welcome"));
   check("booking listener does not skip the post", bookingListener.includes("preventDefault"), false);
 

@@ -31,6 +31,23 @@ const chargesCoveredCity = travelSentences.some((sentence) => {
 });
 check("prompt does not charge a covered city for travel", chargesCoveredCity, false);
 
+const distantAt = area.indexOf("For a very distant place");
+const distant = distantAt >= 0 ? area.slice(distantAt) : "";
+check("very distant places are probably outside our range", distant.includes("probably outside our range"), true);
+check(
+  "very distant places invite an email in case an exception is possible",
+  distant.includes("Invite them to email Carissa or Michelle") && distant.includes("in case an exception is possible"),
+  true
+);
+check(
+  "very distant places are not described as might still be possible",
+  distant.includes("Do not say it might still be possible"),
+  true
+);
+check("prompt does not name Cape Coral", prompt.includes("Cape Coral"), false);
+check("prompt does not name Miami", prompt.includes("Miami"), false);
+check("prompt does not name Cape Canaveral", prompt.includes("Cape Canaveral"), false);
+
 const failed = results.filter((line) => line.startsWith("FAIL")).length;
 results.forEach((line) => console.log(line));
 console.log(`\n${results.length - failed}/${results.length} passed`);

@@ -106,6 +106,15 @@ function post(body) {
   check("chat page explains an over-long message", page.includes("Please shorten it and try again."), true);
   check("chat page sends only the last 10 messages", page.includes("chatHistory.slice(-10)"), true);
 
+  const encodedHi = Buffer.from(JSON.stringify({ messages: [{ role: "user", content: "Hi" }] })).toString("base64");
+  const decodedChat = await chat.handler({ ...post(encodedHi), isBase64Encoded: true });
+  check("chat base64 body status", decodedChat.statusCode, 200);
+  const encodedBig = Buffer.from("x".repeat(24001)).toString("base64");
+  const beforeBig = records.size;
+  const decodedBig = await chat.handler({ ...post(encodedBig), isBase64Encoded: true });
+  check("chat base64 oversized status", decodedBig.statusCode, 400);
+  check("chat base64 oversized stored nothing new", records.size, beforeBig);
+
   const failed = results.filter((line) => line.startsWith("FAIL"));
   console.log(results.join("\n"));
   console.log(`\n${results.length - failed.length}/${results.length} passed`);

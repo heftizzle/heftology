@@ -83,6 +83,19 @@ function post(body) {
   check("slow empty honeypot still designs", slow.statusCode, 200);
   check("slow empty honeypot called the model", createCalls, 3);
 
+  const tooLong = await cocktail.handler(post({ ...valid, preferences: "p".repeat(401), hp_field: "bot" }));
+  check("over-long field stays a 400", tooLong.statusCode, 400);
+  check("over-long field did not call the model", createCalls, 3);
+
+  const day = new Date().toISOString().slice(0, 10);
+  records.set(day, { count: 150 });
+  const before = createCalls;
+  const full = await cocktail.handler(post({ ...valid, hp_field: "bot", elapsedMs: 100 }));
+  check("honeypot ignores a full day", full.statusCode, 200);
+  check("honeypot did not spend the budget", records.get(day).count, 150);
+  check("full-day honeypot did not call the model", createCalls, before);
+  records.delete(day);
+
   const page = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
   check("page has no netlify honeypot drop", page.includes("netlify-honeypot"), false);
   check("booking subject can be marked", page.includes("[possible bot]"), true);

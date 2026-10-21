@@ -48,6 +48,15 @@ const QUIET_COCKTAIL = {
   heftologyNote: "We can refine this together when you book.",
 };
 
+function readBody(event) {
+  if (!event.body) return { text: "", bytes: 0 };
+  if (event.isBase64Encoded) {
+    const buf = Buffer.from(event.body, "base64");
+    return { text: buf.toString("utf8"), bytes: buf.length };
+  }
+  return { text: event.body, bytes: Buffer.byteLength(event.body, "utf8") };
+}
+
 function quietBotSignal(body) {
   if (!body || typeof body !== "object") return false;
   if (typeof body.hp_field === "string" ? body.hp_field.trim() : body.hp_field) return true;
@@ -134,10 +143,7 @@ async function checkDailyBudget(event, now) {
   const day = utcDay(now);
   const opened = openStore(event, DAILY_STORE, "Daily budget");
   const { count, store } = await readDailyCount(opened, day);
-  if (count >= DAILY_LIMIT) {
-    console.log(JSON.stringify({ event: "daily_budget_exhausted" }));
-    return { ok: false };
-  }
+  if (count >= DAILY_LIMIT) return { ok: false };
   return { ok: true, store, day };
 }
 
@@ -339,8 +345,8 @@ exports.handler = async (event) => {
   const started = Date.now();
   const ip = getClientIp(event);
   const corsHeaders = corsHeadersFor(event);
-  const send = (statusCode, body, usage, err) =>
-    respond("cocktail", started, ip, statusCode, corsHeaders, body, usage, err);
+  const send = (statusCode, body, usage, err, eventName = "cocktail") =>
+    respond(eventName, started, ip, statusCode, corsHeaders, body, usage, err);
 
   if (event.httpMethod === "OPTIONS") {
     return send(204, "");
@@ -350,24 +356,21 @@ exports.handler = async (event) => {
     return send(405, JSON.stringify({ error: "Method Not Allowed" }));
   }
 
-  if (Buffer.byteLength(event.body || "", "utf8") > MAX_BODY_BYTES) {
+  const { text, bytes } = readBody(event);
+  if (bytes > MAX_BODY_BYTES) {
     return send(400, JSON.stringify({ error: "Request is too large." }));
   }
 
   let body = {};
-  if (event.body) {
+  if (text) {
     try {
-      body = JSON.parse(event.body);
+      body = JSON.parse(text);
     } catch {
       return send(400, JSON.stringify({ error: "invalid JSON" }));
     }
     if (!body || typeof body !== "object" || Array.isArray(body)) {
       return send(400, JSON.stringify({ error: "invalid JSON" }));
     }
-  }
-
-  if (quietBotSignal(body)) {
-    return send(200, JSON.stringify({ cocktail: QUIET_COCKTAIL }));
   }
 
   try {
@@ -381,13 +384,17 @@ exports.handler = async (event) => {
       return send(400, JSON.stringify({ error: "That field is too long." }));
     }
 
+    if (quietBotSignal(body)) {
+      return send(200, JSON.stringify({ cocktail: QUIET_COCKTAIL }));
+    }
+
     if (!theme || !colors || !preferences || !month || !venue) {
       return send(400, JSON.stringify({ error: "theme, colors, preferences, month, and venue are required" }));
     }
 
     const budget = await checkDailyBudget(event, Date.now());
     if (!budget.ok) {
-      return send(503, JSON.stringify({ error: DAILY_CAPACITY_MESSAGE }));
+      return send(503, JSON.stringify({ error: DAILY_CAPACITY_MESSAGE }), null, null, "daily_budget_exhausted");
     }
 
     const store = openRateLimitStore(event);

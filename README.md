@@ -70,6 +70,10 @@ npx serve .
    - **`ANTHROPIC_API_KEY`** — required for chat and cocktail functions.
    - **`CLAUDE_MODEL`** (optional) — overrides the default model string in `chat.js` / `cocktail.js`.
    - **`COCKTAIL_MODEL`** (optional) — cocktail-only model override.
+   - **`RESEND_API_KEY`** — Resend API key. If this or `COCKTAIL_EMAIL_TO` is unset, cocktail emails are skipped.
+   - **`COCKTAIL_EMAIL_TO`** — comma-separated recipients, at most 5. Each recipient counts as one email against Resend's free-tier limit of 100 a day, so the effective daily cap is `min(COCKTAIL_EMAIL_DAILY_MAX, floor(100 / recipients))`. Five recipients cap the day at 20 cocktails.
+   - **`COCKTAIL_EMAIL_FROM`** — From header, for example `Display Name <local@domain>`. If unset, emails are skipped.
+   - **`COCKTAIL_EMAIL_DAILY_MAX`** (optional) — cocktails emailed per UTC day. Default 30. With one to three recipients the effective cap stays 30, because `floor(100 / 3)` is 33.
 4. After the first deploy, open **Forms** in the Netlify UI and confirm the **booking** form is detected (it must appear in the deployed HTML with the `netlify` attribute and `form-name` hidden field).
 5. Configure **form notifications** (email, Slack, etc.) under Netlify Forms so inquiries reach the team.
 

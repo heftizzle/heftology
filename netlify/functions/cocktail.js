@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const Anthropic = require("@anthropic-ai/sdk");
 const { connectLambda, getStore } = require("@netlify/blobs");
+const { renderDesignEmail } = require("./lib/design-email");
 
 const HEFTOLOGY_PROMPT = `You are Heftology's signature cocktail designer. Heftology is a Greater Tampa Bay mobile mixology company run by certified mixologists Carissa Hefta and Michelle Flannery.
 
@@ -70,6 +71,11 @@ function quietBotSignal(body) {
 // The same map is the limiter when Blobs is unreachable, and it covers the lag before a write is visible.
 const memoryRateLimit = new Map(); // key -> { submissions: number[], lockedUntil: number|null, pending: number }
 const memoryDaily = new Map(); // UTC day -> successful model calls
+const memoryEmailDaily = new Map(); // UTC day -> cocktail emails attempted
+const EMAIL_TIMEOUT_MS = 2500;
+const EMAIL_STORE = "cocktail-email-daily";
+const EMAIL_DAILY_MAX_DEFAULT = 30;
+const RESEND_URL = "https://api.resend.com/emails";
 
 const LOCK_MESSAGE =
   "Looks like you're on a roll! You can try the cocktail designer again in about 3 days. Let's make it official — book a free consultation at heftology.com/#booking and Carissa and Michelle will craft the perfect menu for your event.";
@@ -159,6 +165,157 @@ async function recordDailySuccess(store, day) {
     await store.setJSON(day, { count });
   } catch (err) {
     console.error("Daily budget write failed, using in-memory fallback:", err.message);
+  }
+}
+
+function parseRecipients(raw) {
+  if (typeof raw !== "string") return [];
+  const seen = [];
+  for (const part of raw.split(",")) {
+    const addr = part.trim();
+    if (!addr || addr.length > 254) continue;
+    if (seen.includes(addr)) continue;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr)) continue;
+    seen.push(addr);
+    if (seen.length >= 5) break;
+  }
+  return seen;
+}
+
+function configuredEmailMax() {
+  const raw = process.env.COCKTAIL_EMAIL_DAILY_MAX;
+  if (raw == null || String(raw).trim() === "") return EMAIL_DAILY_MAX_DEFAULT;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 0) return EMAIL_DAILY_MAX_DEFAULT;
+  return Math.floor(n);
+}
+
+function effectiveEmailCap(recipientCount) {
+  return Math.min(configuredEmailMax(), Math.floor(100 / recipientCount));
+}
+
+function missingEmailConfig(key, from, recipients) {
+  const missing = [];
+  if (typeof key !== "string" || key.length === 0) missing.push("RESEND_API_KEY");
+  if (typeof from !== "string" || from.trim().length === 0) missing.push("COCKTAIL_EMAIL_FROM");
+  if (recipients.length === 0) missing.push("COCKTAIL_EMAIL_TO");
+  return missing;
+}
+
+function logEmail(status, started, extra) {
+  const line = {
+    event: "cocktail_email",
+    status,
+    latencyMs: Date.now() - started,
+  };
+  if (status === "failed" && extra) {
+    if (typeof extra.httpStatus === "number") line.httpStatus = extra.httpStatus;
+    if (typeof extra.errorName === "string" && extra.errorName) line.errorName = extra.errorName;
+  }
+  if (status === "skipped_no_config" && extra && Array.isArray(extra.missing)) {
+    line.missing = extra.missing;
+  }
+  console.log(JSON.stringify(line));
+}
+
+function emailDayKey(day) {
+  return "email:" + day;
+}
+
+async function readEmailCount(store, day) {
+  const key = emailDayKey(day);
+  let fromStore = 0;
+  let live = store;
+  if (live) {
+    try {
+      const rec = await live.get(key, { type: "json" });
+      fromStore = rec && typeof rec.count === "number" ? rec.count : 0;
+    } catch (err) {
+      console.error("Cocktail email read failed, using in-memory fallback:", err.message);
+      live = null;
+    }
+  }
+  return { count: Math.max(fromStore, memoryEmailDaily.get(day) || 0), store: live };
+}
+
+async function recordEmailAttempt(store, day) {
+  const nextMemory = (memoryEmailDaily.get(day) || 0) + 1;
+  memoryEmailDaily.set(day, nextMemory);
+  if (!store) return;
+  const key = emailDayKey(day);
+  try {
+    const rec = await store.get(key, { type: "json" });
+    const stored = rec && typeof rec.count === "number" ? rec.count : 0;
+    const count = Math.max(stored + 1, nextMemory);
+    memoryEmailDaily.set(day, count);
+    await store.setJSON(key, { count });
+  } catch (err) {
+    console.error("Cocktail email write failed, using in-memory fallback:", err.message);
+  }
+}
+
+async function sendDesignEmail(event, ip, inputs, cocktail) {
+  const started = Date.now();
+  try {
+    const key = process.env.RESEND_API_KEY;
+    const from = process.env.COCKTAIL_EMAIL_FROM;
+    const recipients = parseRecipients(process.env.COCKTAIL_EMAIL_TO);
+    const missing = missingEmailConfig(key, from, recipients);
+    if (missing.length) {
+      logEmail("skipped_no_config", started, { missing });
+      return;
+    }
+    const cap = effectiveEmailCap(recipients.length);
+    const day = utcDay(Date.now());
+    const opened = openStore(event, EMAIL_STORE, "Cocktail email");
+    const counted = await readEmailCount(opened, day);
+    if (counted.count >= cap) {
+      logEmail("skipped_cap", started);
+      return;
+    }
+    await recordEmailAttempt(counted.store, day);
+    const rendered = renderDesignEmail({
+      cocktail,
+      input: inputs,
+      ref: rateLimitKey(ip).slice(0, 8),
+      isPreview: process.env.CONTEXT !== "production",
+    });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), EMAIL_TIMEOUT_MS);
+    try {
+      const res = await fetch(RESEND_URL, {
+        method: "POST",
+        signal: controller.signal,
+        headers: {
+          Authorization: "Bearer " + key,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: from.trim(),
+          to: recipients,
+          subject: rendered.subject,
+          text: rendered.text,
+          html: rendered.html,
+        }),
+      });
+      if (res && res.ok) {
+        logEmail("sent", started);
+      } else {
+        const detail = {};
+        if (res && typeof res.status === "number") detail.httpStatus = res.status;
+        logEmail("failed", started, detail);
+      }
+    } catch (err) {
+      const detail = {};
+      if (err && typeof err.name === "string") detail.errorName = err.name;
+      logEmail("failed", started, detail);
+    } finally {
+      clearTimeout(timer);
+    }
+  } catch (err) {
+    const detail = {};
+    if (err && typeof err.name === "string") detail.errorName = err.name;
+    logEmail("failed", started, detail);
   }
 }
 
@@ -407,12 +564,15 @@ exports.handler = async (event) => {
       const userMessage = `Event theme: ${theme}\nColor palette: ${colors}\nDrink preferences: ${preferences}\nMonth of event: ${month}\nVenue type: ${venue}`;
 
       const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-      const response = await client.messages.create({
-        model: process.env.COCKTAIL_MODEL || process.env.CLAUDE_MODEL || "claude-haiku-4-5-20251001",
-        max_tokens: 700,
-        system: HEFTOLOGY_PROMPT,
-        messages: [{ role: "user", content: userMessage }],
-      });
+      const response = await client.messages.create(
+        {
+          model: process.env.COCKTAIL_MODEL || process.env.CLAUDE_MODEL || "claude-haiku-4-5-20251001",
+          max_tokens: 700,
+          system: HEFTOLOGY_PROMPT,
+          messages: [{ role: "user", content: userMessage }],
+        },
+        { signal: AbortSignal.timeout(5000) }
+      );
 
       const raw = (response.content || [])
         .map((c) => (typeof c?.text === "string" ? c.text : ""))
@@ -432,6 +592,11 @@ exports.handler = async (event) => {
 
       await gate.commit(Date.now());
       await recordDailySuccess(budget.store, budget.day);
+      try {
+        await sendDesignEmail(event, ip, { theme, colors, preferences, month, venue }, cocktail);
+      } catch {
+        // A failed email must not change the cocktail the visitor receives.
+      }
       return send(200, JSON.stringify({ cocktail }), response.usage);
     } catch (err) {
       await gate.release();

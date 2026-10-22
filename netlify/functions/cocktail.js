@@ -571,7 +571,7 @@ exports.handler = async (event) => {
           system: HEFTOLOGY_PROMPT,
           messages: [{ role: "user", content: userMessage }],
         },
-        { signal: AbortSignal.timeout(5000) }
+        { signal: AbortSignal.timeout(10000) }
       );
 
       const raw = (response.content || [])

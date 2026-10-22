@@ -370,7 +370,7 @@ function emailLogs() {
   const retried = await handler(ev("10.0.0.31"));
   check("retry inside the deadline status", retried.statusCode, 200);
   check("retry saw a 5xx then success", retryAttempts, [503, 200]);
-  check("retry receives a 5000ms signal", timeoutMs.slice(timeoutsBefore), [5000]);
+  check("retry receives a 10000ms signal", timeoutMs.slice(timeoutsBefore), [10000]);
   check("retry signal is an AbortSignal", retryOptions && retryOptions.signal instanceof AbortSignal, true);
   check("retry keeps max_tokens", retryParams && retryParams.max_tokens, 700);
   check("retry keeps the model id", retryParams && retryParams.model, "claude-haiku-4-5-20251001");
@@ -424,7 +424,7 @@ function emailLogs() {
   check("logs omit the api key", dumped.includes(API_KEY), false);
   check("logs omit recipient addresses", dumped.includes("example.com"), false);
   check("logs omit the from value", dumped.includes(FROM), false);
-  check("every model deadline is 5000ms", timeoutMs.every((ms) => ms === 5000), true);
+  check("every model deadline is 10000ms", timeoutMs.every((ms) => ms === 10000), true);
 
   console.log = originalLog;
   AbortSignal.timeout = realTimeout;

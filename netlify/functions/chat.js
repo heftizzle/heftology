@@ -57,9 +57,18 @@ Warm, professional, enthusiastic about craft cocktails. Replies should be 2–3 
 const RATE_LIMIT_MAX = 20;
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const RATE_LIMIT_STORE = "chat-rate-limit";
+const DAILY_LIMIT = 400;
+const DAILY_STORE = "chat-daily-budget";
+const DAILY_CAPACITY_MESSAGE =
+  "We're at capacity today. Please book at heftology.com/#booking.";
+const MAX_BODY_BYTES = 24000;
+const MAX_MESSAGES = 10;
+const MAX_MESSAGE_CHARS = 2000;
+const TOO_LONG_MESSAGE = "That message is too long. Please shorten it to 2,000 characters.";
 // Blobs edge reads can lag writes by up to ~60s, so a per-instance copy is merged in to
 // catch rapid repeats; it is also the only limiter if Blobs is unreachable.
 const memoryRateLimit = new Map(); // key -> number[] (timestamps)
+const memoryDaily = new Map(); // UTC day -> successful model calls
 
 function getClientIp(event) {
   const h = event.headers || {};
@@ -78,17 +87,73 @@ function getClientIp(event) {
   return "unknown";
 }
 
+let warnedUnsaltedHash = false;
+
 function rateLimitKey(ip) {
-  return crypto.createHash("sha256").update(ip).digest("hex");
+  const salt = process.env.RATE_LIMIT_SALT;
+  if (typeof salt === "string" && salt.length > 0) {
+    return crypto.createHmac("sha256", salt).update(String(ip)).digest("hex");
+  }
+  if (!warnedUnsaltedHash) {
+    warnedUnsaltedHash = true;
+    console.log(JSON.stringify({ event: "ip_hash_unsalted" }));
+  }
+  return crypto.createHash("sha256").update(String(ip)).digest("hex");
+}
+
+function openStore(event, name, label) {
+  try {
+    connectLambda(event);
+    return getStore(name);
+  } catch (err) {
+    console.error(label + " store unavailable, using in-memory fallback:", err.message);
+    return null;
+  }
 }
 
 function openRateLimitStore(event) {
+  return openStore(event, RATE_LIMIT_STORE, "Rate limit");
+}
+
+function utcDay(now) {
+  return new Date(now).toISOString().slice(0, 10);
+}
+
+async function readDailyCount(store, day) {
+  let fromStore = 0;
+  let live = store;
+  if (live) {
+    try {
+      const rec = await live.get(day, { type: "json" });
+      fromStore = rec && typeof rec.count === "number" ? rec.count : 0;
+    } catch (err) {
+      console.error("Daily budget read failed, using in-memory fallback:", err.message);
+      live = null;
+    }
+  }
+  return { count: Math.max(fromStore, memoryDaily.get(day) || 0), store: live };
+}
+
+async function checkDailyBudget(event, now) {
+  const day = utcDay(now);
+  const opened = openStore(event, DAILY_STORE, "Daily budget");
+  const { count, store } = await readDailyCount(opened, day);
+  if (count >= DAILY_LIMIT) return { ok: false };
+  return { ok: true, store, day };
+}
+
+async function recordDailySuccess(store, day) {
+  const nextMemory = (memoryDaily.get(day) || 0) + 1;
+  memoryDaily.set(day, nextMemory);
+  if (!store) return;
   try {
-    connectLambda(event);
-    return getStore(RATE_LIMIT_STORE);
+    const rec = await store.get(day, { type: "json" });
+    const stored = rec && typeof rec.count === "number" ? rec.count : 0;
+    const count = Math.max(stored + 1, nextMemory);
+    memoryDaily.set(day, count);
+    await store.setJSON(day, { count });
   } catch (err) {
-    console.error("Rate limit store unavailable, using in-memory fallback:", err.message);
-    return null;
+    console.error("Daily budget write failed, using in-memory fallback:", err.message);
   }
 }
 
@@ -194,63 +259,112 @@ function normalizeMessages(messages) {
     .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
     .map((m) => ({ role: m.role, content: m.content.trim() }))
     .filter((m) => m.content.length > 0)
-    .slice(-10);
+    .slice(-MAX_MESSAGES);
 
   // Anthropic requires the conversation to start with a user turn
   while (cleaned.length && cleaned[0].role !== "user") cleaned.shift();
   return cleaned;
 }
 
+function readBody(event) {
+  if (!event.body) return { text: "", bytes: 0 };
+  if (event.isBase64Encoded) {
+    const buf = Buffer.from(event.body, "base64");
+    return { text: buf.toString("utf8"), bytes: buf.length };
+  }
+  return { text: event.body, bytes: Buffer.byteLength(event.body, "utf8") };
+}
+
+function validateChatInput(event) {
+  const { text, bytes } = readBody(event);
+  if (bytes > MAX_BODY_BYTES) {
+    return { error: "Request is too large." };
+  }
+  let messages;
+  try {
+    ({ messages } = JSON.parse(text || "{}"));
+  } catch {
+    return { error: "invalid JSON" };
+  }
+  if (!messages || !Array.isArray(messages)) {
+    return { error: "messages array required" };
+  }
+  if (messages.length > MAX_MESSAGES) {
+    return { error: "Please send no more than 10 messages." };
+  }
+  for (const message of messages) {
+    if (!message || typeof message !== "object" || Array.isArray(message)) {
+      return { error: "Each message needs a user or assistant role." };
+    }
+    if (message.role !== "user" && message.role !== "assistant") {
+      return { error: "Each message needs a user or assistant role." };
+    }
+    if (typeof message.content !== "string") {
+      return { error: "Each message needs text content." };
+    }
+    if (message.content.trim().length > MAX_MESSAGE_CHARS) {
+      return { error: TOO_LONG_MESSAGE };
+    }
+  }
+  const normalized = normalizeMessages(messages);
+  if (!normalized.length) return { error: "At least one user message is required" };
+  return { messages: normalized };
+}
+
 exports.filterReplyUrls = filterReplyUrls;
 
+function respond(eventName, started, ip, statusCode, headers, body, usage, err) {
+  const line = {
+    event: eventName,
+    status: statusCode,
+    latencyMs: Date.now() - started,
+    inputTokens: usage && typeof usage.input_tokens === "number" ? usage.input_tokens : null,
+    outputTokens: usage && typeof usage.output_tokens === "number" ? usage.output_tokens : null,
+    ipHash: rateLimitKey(ip),
+  };
+  if (statusCode === 500 && err && typeof err === "object") {
+    if (typeof err.name === "string") line.errorName = err.name;
+    if (typeof err.status === "number") line.errorStatus = err.status;
+  }
+  console.log(JSON.stringify(line));
+  return { statusCode, headers, body };
+}
+
 exports.handler = async (event) => {
+  const started = Date.now();
+  const ip = getClientIp(event);
   const headers = { "Content-Type": "application/json" };
+  const send = (statusCode, responseHeaders, body, usage, err, eventName = "chat") =>
+    respond(eventName, started, ip, statusCode, responseHeaders, body, usage, err);
 
   if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 204,
-      headers: {
-        ...headers,
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-      },
-      body: "",
-    };
+    return send(204, {
+      ...headers,
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+    }, "");
   }
 
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: "Method Not Allowed" }) };
+    return send(405, headers, JSON.stringify({ error: "Method Not Allowed" }));
   }
 
-  let messages;
-  try {
-    ({ messages } = JSON.parse(event.body || "{}"));
-  } catch {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ error: "invalid JSON" }),
-    };
+  const parsed = validateChatInput(event);
+  if (parsed.error) {
+    return send(400, headers, JSON.stringify({ error: parsed.error }));
   }
+  const normalized = parsed.messages;
 
-  if (!messages || !Array.isArray(messages)) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: "messages array required" }) };
+  const budget = await checkDailyBudget(event, Date.now());
+  if (!budget.ok) {
+    return send(503, headers, JSON.stringify({ error: DAILY_CAPACITY_MESSAGE }), null, null, "daily_budget_exhausted");
   }
 
   try {
     const store = openRateLimitStore(event);
-    if (!(await consumeRateLimit(store, rateLimitKey(getClientIp(event)), Date.now()))) {
-      return {
-        statusCode: 429,
-        headers,
-        body: JSON.stringify({ error: "Too many messages. Please try again later or email carissa@heftology.com." }),
-      };
-    }
-
-    const normalized = normalizeMessages(messages);
-    if (!normalized.length) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: "At least one user message is required" }) };
+    if (!(await consumeRateLimit(store, rateLimitKey(ip), Date.now()))) {
+      return send(429, headers, JSON.stringify({ error: "Too many messages. Please try again later or email carissa@heftology.com." }));
     }
 
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -261,6 +375,7 @@ exports.handler = async (event) => {
       system: SYSTEM_PROMPT,
       messages: normalized,
     });
+    await recordDailySuccess(budget.store, budget.day);
 
     const reply = filterReplyUrls(
       (response.content || [])
@@ -269,17 +384,14 @@ exports.handler = async (event) => {
         .trim()
     );
 
-    return {
-      statusCode: 200,
+    return send(
+      200,
       headers,
-      body: JSON.stringify({ reply: reply || "Sorry, I could not get a response. Please email carissa@heftology.com directly." }),
-    };
+      JSON.stringify({ reply: reply || "Sorry, I could not get a response. Please email carissa@heftology.com directly." }),
+      response.usage
+    );
   } catch (err) {
-    console.error("Chat function error:", err);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: "Internal server error" }),
-    };
+    console.error("Chat function error");
+    return send(500, headers, JSON.stringify({ error: "Internal server error" }), null, err);
   }
 };

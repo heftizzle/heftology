@@ -29,9 +29,47 @@ const RATE_LIMIT_MAX = 3;
 const LOCK_HOURS = 72;
 const RATE_LIMIT_LOCK_MS = LOCK_HOURS * 60 * 60 * 1000;
 const RATE_LIMIT_STORE = "cocktail-rate-limit";
+const DAILY_LIMIT = 150;
+const DAILY_STORE = "cocktail-daily-budget";
+const DAILY_CAPACITY_MESSAGE =
+  "We're at capacity today. Please book at heftology.com/#booking.";
+const MAX_BODY_BYTES = 8000;
+const MAX_FIELD_CHARS = 400;
+const MIN_ELAPSED_MS = 1500;
+const QUIET_COCKTAIL = {
+  name: "The House Welcome",
+  tagline: "A signature pour for the evening.",
+  ingredients: ["2 oz spirit of your choice", "1 oz fresh citrus", "1/2 oz simple syrup", "Sparkling water"],
+  garnish: "Citrus peel",
+  glass: "Coupe",
+  method: "Shake and strain",
+  colorNote: "A warm blush that suits the room.",
+  presenter: "Carissa",
+  heftologyNote: "We can refine this together when you book.",
+};
+
+function readBody(event) {
+  if (!event.body) return { text: "", bytes: 0 };
+  if (event.isBase64Encoded) {
+    const buf = Buffer.from(event.body, "base64");
+    return { text: buf.toString("utf8"), bytes: buf.length };
+  }
+  return { text: event.body, bytes: Buffer.byteLength(event.body, "utf8") };
+}
+
+function quietBotSignal(body) {
+  if (!body || typeof body !== "object") return false;
+  if (typeof body.hp_field === "string" ? body.hp_field.trim() : body.hp_field) return true;
+  if (!Object.prototype.hasOwnProperty.call(body, "elapsedMs") || body.elapsedMs === null || body.elapsedMs === "") {
+    return false;
+  }
+  const elapsed = typeof body.elapsedMs === "number" ? body.elapsedMs : Number(body.elapsedMs);
+  return Number.isFinite(elapsed) && elapsed < MIN_ELAPSED_MS;
+}
 // Pending slots live only in memory so simultaneous calls can't all pass before a write.
 // The same map is the limiter when Blobs is unreachable, and it covers the lag before a write is visible.
 const memoryRateLimit = new Map(); // key -> { submissions: number[], lockedUntil: number|null, pending: number }
+const memoryDaily = new Map(); // UTC day -> successful model calls
 
 const LOCK_MESSAGE =
   "Looks like you're on a roll! You can try the cocktail designer again in about 3 days. Let's make it official — book a free consultation at heftology.com/#booking and Carissa and Michelle will craft the perfect menu for your event.";
@@ -54,17 +92,73 @@ function getClientIp(event) {
   return "unknown";
 }
 
+let warnedUnsaltedHash = false;
+
 function rateLimitKey(ip) {
-  return crypto.createHash("sha256").update(ip).digest("hex");
+  const salt = process.env.RATE_LIMIT_SALT;
+  if (typeof salt === "string" && salt.length > 0) {
+    return crypto.createHmac("sha256", salt).update(String(ip)).digest("hex");
+  }
+  if (!warnedUnsaltedHash) {
+    warnedUnsaltedHash = true;
+    console.log(JSON.stringify({ event: "ip_hash_unsalted" }));
+  }
+  return crypto.createHash("sha256").update(String(ip)).digest("hex");
+}
+
+function openStore(event, name, label) {
+  try {
+    connectLambda(event);
+    return getStore(name);
+  } catch (err) {
+    console.error(label + " store unavailable, using in-memory fallback:", err.message);
+    return null;
+  }
 }
 
 function openRateLimitStore(event) {
+  return openStore(event, RATE_LIMIT_STORE, "Rate limit");
+}
+
+function utcDay(now) {
+  return new Date(now).toISOString().slice(0, 10);
+}
+
+async function readDailyCount(store, day) {
+  let fromStore = 0;
+  let live = store;
+  if (live) {
+    try {
+      const rec = await live.get(day, { type: "json" });
+      fromStore = rec && typeof rec.count === "number" ? rec.count : 0;
+    } catch (err) {
+      console.error("Daily budget read failed, using in-memory fallback:", err.message);
+      live = null;
+    }
+  }
+  return { count: Math.max(fromStore, memoryDaily.get(day) || 0), store: live };
+}
+
+async function checkDailyBudget(event, now) {
+  const day = utcDay(now);
+  const opened = openStore(event, DAILY_STORE, "Daily budget");
+  const { count, store } = await readDailyCount(opened, day);
+  if (count >= DAILY_LIMIT) return { ok: false };
+  return { ok: true, store, day };
+}
+
+async function recordDailySuccess(store, day) {
+  const nextMemory = (memoryDaily.get(day) || 0) + 1;
+  memoryDaily.set(day, nextMemory);
+  if (!store) return;
   try {
-    connectLambda(event);
-    return getStore(RATE_LIMIT_STORE);
+    const rec = await store.get(day, { type: "json" });
+    const stored = rec && typeof rec.count === "number" ? rec.count : 0;
+    const count = Math.max(stored + 1, nextMemory);
+    memoryDaily.set(day, count);
+    await store.setJSON(day, { count });
   } catch (err) {
-    console.error("Rate limit store unavailable, using in-memory fallback:", err.message);
-    return null;
+    console.error("Daily budget write failed, using in-memory fallback:", err.message);
   }
 }
 
@@ -230,34 +324,52 @@ function corsHeadersFor(event) {
   return corsHeaders;
 }
 
+function respond(eventName, started, ip, statusCode, headers, body, usage, err) {
+  const line = {
+    event: eventName,
+    status: statusCode,
+    latencyMs: Date.now() - started,
+    inputTokens: usage && typeof usage.input_tokens === "number" ? usage.input_tokens : null,
+    outputTokens: usage && typeof usage.output_tokens === "number" ? usage.output_tokens : null,
+    ipHash: rateLimitKey(ip),
+  };
+  if (statusCode === 500 && err && typeof err === "object") {
+    if (typeof err.name === "string") line.errorName = err.name;
+    if (typeof err.status === "number") line.errorStatus = err.status;
+  }
+  console.log(JSON.stringify(line));
+  return { statusCode, headers, body };
+}
+
 exports.handler = async (event) => {
+  const started = Date.now();
+  const ip = getClientIp(event);
   const corsHeaders = corsHeadersFor(event);
+  const send = (statusCode, body, usage, err, eventName = "cocktail") =>
+    respond(eventName, started, ip, statusCode, corsHeaders, body, usage, err);
 
   if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 204, headers: corsHeaders, body: "" };
+    return send(204, "");
   }
 
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: "Method Not Allowed" }) };
+    return send(405, JSON.stringify({ error: "Method Not Allowed" }));
+  }
+
+  const { text, bytes } = readBody(event);
+  if (bytes > MAX_BODY_BYTES) {
+    return send(400, JSON.stringify({ error: "Request is too large." }));
   }
 
   let body = {};
-  if (event.body) {
+  if (text) {
     try {
-      body = JSON.parse(event.body);
+      body = JSON.parse(text);
     } catch {
-      return {
-        statusCode: 400,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: "invalid JSON" }),
-      };
+      return send(400, JSON.stringify({ error: "invalid JSON" }));
     }
     if (!body || typeof body !== "object" || Array.isArray(body)) {
-      return {
-        statusCode: 400,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: "invalid JSON" }),
-      };
+      return send(400, JSON.stringify({ error: "invalid JSON" }));
     }
   }
 
@@ -267,23 +379,28 @@ exports.handler = async (event) => {
     const preferences = safeString(body.preferences);
     const month = safeString(body.month);
     const venue = safeString(body.venue);
+    const fields = [theme, colors, preferences, month, venue];
+    if (fields.some((field) => field.length > MAX_FIELD_CHARS)) {
+      return send(400, JSON.stringify({ error: "That field is too long." }));
+    }
+
+    if (quietBotSignal(body)) {
+      return send(200, JSON.stringify({ cocktail: QUIET_COCKTAIL }));
+    }
 
     if (!theme || !colors || !preferences || !month || !venue) {
-      return {
-        statusCode: 400,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: "theme, colors, preferences, month, and venue are required" }),
-      };
+      return send(400, JSON.stringify({ error: "theme, colors, preferences, month, and venue are required" }));
+    }
+
+    const budget = await checkDailyBudget(event, Date.now());
+    if (!budget.ok) {
+      return send(503, JSON.stringify({ error: DAILY_CAPACITY_MESSAGE }), null, null, "daily_budget_exhausted");
     }
 
     const store = openRateLimitStore(event);
-    const gate = await beginRateLimit(store, rateLimitKey(getClientIp(event)), Date.now());
+    const gate = await beginRateLimit(store, rateLimitKey(ip), Date.now());
     if (!gate.ok) {
-      return {
-        statusCode: 429,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: gate.reason === "busy" ? BUSY_MESSAGE : LOCK_MESSAGE }),
-      };
+      return send(429, JSON.stringify({ error: gate.reason === "busy" ? BUSY_MESSAGE : LOCK_MESSAGE }));
     }
 
     try {
@@ -307,33 +424,22 @@ exports.handler = async (event) => {
       let cocktail;
       try {
         cocktail = JSON.parse(clean);
-      } catch (parseErr) {
+      } catch {
         await gate.release();
-        console.error("Cocktail JSON parse error:", parseErr, clean.slice(0, 200));
-        return {
-          statusCode: 502,
-          headers: corsHeaders,
-          body: JSON.stringify({ error: "Could not craft that cocktail. Please try again." }),
-        };
+        console.error("Cocktail JSON parse error");
+        return send(502, JSON.stringify({ error: "Could not craft that cocktail. Please try again." }));
       }
 
       await gate.commit(Date.now());
-      return {
-        statusCode: 200,
-        headers: corsHeaders,
-        body: JSON.stringify({ cocktail }),
-      };
+      await recordDailySuccess(budget.store, budget.day);
+      return send(200, JSON.stringify({ cocktail }), response.usage);
     } catch (err) {
       await gate.release();
       throw err;
     }
   } catch (err) {
-    console.error("Cocktail function error:", err);
-    return {
-      statusCode: 500,
-      headers: corsHeaders,
-      body: JSON.stringify({ error: "Internal server error" }),
-    };
+    console.error("Cocktail function error");
+    return send(500, JSON.stringify({ error: "Internal server error" }), null, err);
   }
 };
 

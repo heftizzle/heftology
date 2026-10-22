@@ -563,21 +563,70 @@
             <option value="Other">Other</option>
           </select>
         </div>
-        <div class="form-field">
-          <label for="field-date">Event Date</label>
-          <input id="field-date" name="eventDate" type="date">
+        <div class="form-row-3">
+          <div class="form-field">
+            <label for="field-date">Event Date</label>
+            <input id="field-date" name="eventDate" type="date" required>
+          </div>
+          <div class="form-field">
+            <label for="startTime">Start Time</label>
+            <input id="startTime" name="startTime" type="time" step="900" required aria-describedby="startTime-hint">
+            <p class="form-hint" id="startTime-hint">When you'd like the bar to open.</p>
+          </div>
+          <div class="form-field">
+            <label for="serviceHours">Approx. Service Hours</label>
+            <select id="serviceHours" name="serviceHours" required aria-describedby="serviceHours-hint">
+              <option value="" disabled selected>Select one…</option>
+              <option value="3">3 hours</option>
+              <option value="4">4 hours</option>
+              <option value="5">5 hours</option>
+              <option value="6">6 hours</option>
+              <option value="7">7 hours</option>
+              <option value="8">8 hours</option>
+              <option value="9">9 hours</option>
+              <option value="10">10 hours</option>
+              <option value="11">11 hours</option>
+              <option value="12">12 hours</option>
+              <option value="unsure">Not sure yet</option>
+            </select>
+            <p class="form-hint" id="serviceHours-hint">Approximate bar service time. We'll confirm it in your quote.</p>
+          </div>
         </div>
         <div class="form-field">
           <label for="field-guests">Guest Count</label>
-          <input id="field-guests" name="guests" type="text" placeholder="e.g. 40–60 guests" autocomplete="off">
+          <input id="field-guests" name="guests" type="text" placeholder="e.g. 45" autocomplete="off" required>
         </div>
         <div class="form-field">
-          <label for="field-location">Location / Venue</label>
-          <input id="field-location" name="location" type="text" placeholder="City, venue, or TBD" autocomplete="off" title="Greater Tampa Bay area; questions about coverage — carissa@heftology.com.">
+          <label for="contactPreference">Best Way to Reach You</label>
+          <select id="contactPreference" name="contactPreference" required>
+            <option value="" disabled selected>Select one…</option>
+            <option value="Call">Call</option>
+            <option value="Text">Text</option>
+            <option value="Email">Email</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="field-location">Venue Type</label>
+          <input id="field-location" name="location" type="text" placeholder="Backyard, ballroom, restaurant, etc." autocomplete="off">
+        </div>
+        <div class="form-field">
+          <label for="cityZip">City or ZIP</label>
+          <input id="cityZip" name="cityZip" type="text" placeholder="e.g. Tampa or 33579" required title="Greater Tampa Bay area; questions about coverage — carissa@heftology.com.">
+        </div>
+        <div class="form-field full">
+          <label for="heardAbout">How Did You Hear About Us?</label>
+          <select id="heardAbout" name="heardAbout">
+            <option value="" selected>Select one…</option>
+            <option value="The Knot">The Knot</option>
+            <option value="Instagram">Instagram</option>
+            <option value="Google search">Google search</option>
+            <option value="Friend or family">Friend or family</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
         <div class="form-field full">
           <label for="field-notes">Tell Us More</label>
-          <textarea id="field-notes" name="notes" rows="3" placeholder="Theme, vibe, special requests, questions…"></textarea>
+          <textarea id="field-notes" name="notes" rows="3" placeholder="Best time to reach you, 1-2 custom cocktails?, zero-proof options, anything else we should know."></textarea>
         </div>
       </div>
       <button type="submit" class="form-submit" id="form-submit-btn">Send Inquiry →</button>

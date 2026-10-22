@@ -13,7 +13,7 @@ let now = Date.UTC(2026, 9, 22, 15, 0, 0);
 Date.now = () => now;
 
 const savedEnv = {};
-for (const name of ["RESEND_API_KEY", "COCKTAIL_EMAIL_TO", "COCKTAIL_EMAIL_FROM", "COCKTAIL_EMAIL_DAILY_MAX", "CONTEXT", "COCKTAIL_MODEL", "CLAUDE_MODEL"]) {
+for (const name of ["RESEND_API_KEY", "COCKTAIL_EMAIL_TO", "COCKTAIL_EMAIL_FROM", "COCKTAIL_EMAIL_DAILY_MAX", "COCKTAIL_EMAIL_PREVIEW", "CONTEXT", "COCKTAIL_MODEL", "CLAUDE_MODEL"]) {
   savedEnv[name] = process.env[name];
 }
 
@@ -26,7 +26,8 @@ function setEmailEnv(to = ONE) {
   process.env.RESEND_API_KEY = API_KEY;
   process.env.COCKTAIL_EMAIL_TO = Array.isArray(to) ? to.join(",") : to;
   process.env.COCKTAIL_EMAIL_FROM = FROM;
-  process.env.CONTEXT = "production";
+  delete process.env.COCKTAIL_EMAIL_PREVIEW;
+  delete process.env.CONTEXT;
   delete process.env.COCKTAIL_EMAIL_DAILY_MAX;
   delete process.env.COCKTAIL_MODEL;
   delete process.env.CLAUDE_MODEL;
@@ -279,10 +280,38 @@ function emailLogs() {
   check("rlo stays out of the subject", rloCall.body.subject.includes("\u202E"), false);
   check("rlo theme collapses in the subject", rloCall.body.subject.includes("Rose Gold"), true);
 
+  function previewMarks(body) {
+    return {
+      subject: body.subject.includes("[PREVIEW]"),
+      text: body.text.includes("PREVIEW / TEST SEND"),
+      html: body.html.includes(">PREVIEW</span>"),
+    };
+  }
+  const noLabel = { subject: false, text: false, html: false };
+  delete process.env.COCKTAIL_EMAIL_PREVIEW;
+  delete process.env.CONTEXT;
+  const unlabeled = await handler(ev("10.4.0.1"));
+  check("unset status", unlabeled.statusCode, 200);
+  check("unset has no preview label", previewMarks(fetchCalls[fetchCalls.length - 1].body), noLabel);
+
+  process.env.COCKTAIL_EMAIL_PREVIEW = "1";
+  const flagged = await handler(ev("10.4.0.2"));
+  const flaggedBody = fetchCalls[fetchCalls.length - 1].body;
+  check("preview flag status", flagged.statusCode, 200);
+  check("preview flag labels the mail", previewMarks(flaggedBody), { subject: true, text: true, html: true });
+  check("preview subject prefix", flaggedBody.subject.startsWith("[PREVIEW] "), true);
+
+  for (const [value, ip] of [["0", "10.4.1.1"], ["true", "10.4.1.2"], ["", "10.4.1.3"]]) {
+    process.env.COCKTAIL_EMAIL_PREVIEW = value;
+    await handler(ev(ip));
+    check("value " + JSON.stringify(value) + " has no preview label", previewMarks(fetchCalls[fetchCalls.length - 1].body), noLabel);
+  }
+
+  delete process.env.COCKTAIL_EMAIL_PREVIEW;
   process.env.CONTEXT = "deploy-preview";
-  await handler(ev("10.0.0.13"));
-  check("preview prefix", fetchCalls[fetchCalls.length - 1].body.subject.startsWith("[PREVIEW] "), true);
-  process.env.CONTEXT = "production";
+  await handler(ev("10.4.2.1"));
+  check("context alone has no preview label", previewMarks(fetchCalls[fetchCalls.length - 1].body), noLabel);
+  delete process.env.CONTEXT;
 
   delete process.env.RESEND_API_KEY;
   const beforeMissing = fetchCalls.length;

@@ -278,7 +278,7 @@ async function sendDesignEmail(event, ip, inputs, cocktail) {
       cocktail,
       input: inputs,
       ref: rateLimitKey(ip).slice(0, 8),
-      isPreview: process.env.CONTEXT !== "production",
+      isPreview: process.env.COCKTAIL_EMAIL_PREVIEW === "1",
     });
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), EMAIL_TIMEOUT_MS);

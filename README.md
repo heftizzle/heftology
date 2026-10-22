@@ -74,6 +74,7 @@ npx serve .
    - **`COCKTAIL_EMAIL_TO`** — comma-separated recipients, at most 5. Each recipient counts as one email against Resend's free-tier limit of 100 a day, so the effective daily cap is `min(COCKTAIL_EMAIL_DAILY_MAX, floor(100 / recipients))`. Five recipients cap the day at 20 cocktails.
    - **`COCKTAIL_EMAIL_FROM`** — From header, for example `Display Name <local@domain>`. If unset, emails are skipped.
    - **`COCKTAIL_EMAIL_DAILY_MAX`** (optional) — cocktails emailed per UTC day. Default 30. With one to three recipients the effective cap stays 30, because `floor(100 / 3)` is 33.
+   - **`COCKTAIL_EMAIL_PREVIEW`** — set to `1` to label the email as a preview. Set it to 1 only on the Deploy Previews and Branch deploys contexts in Netlify; leave Production unset. Any other value, or leaving it unset, sends a production email with no preview prefix or badge. `CONTEXT` is not available to functions at runtime and is not used.
 4. After the first deploy, open **Forms** in the Netlify UI and confirm the **booking** form is detected (it must appear in the deployed HTML with the `netlify` attribute and `form-name` hidden field).
 5. Configure **form notifications** (email, Slack, etc.) under Netlify Forms so inquiries reach the team.
 

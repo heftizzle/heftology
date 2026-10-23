@@ -69,6 +69,7 @@ nav {
   margin: 0 auto;
 }
 .hero-eyebrow { font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.4em; text-transform: uppercase; color: var(--grey); margin-top: 1.5rem; opacity: 0; animation: fadeUp 0.9s ease 0.8s forwards; }
+h1.hero-eyebrow { margin-bottom: 0; text-wrap: balance; }
 .hero-divider { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 1.5rem auto; opacity: 0; animation: fadeIn 1s ease 1s forwards; max-width: 400px; }
 .hero-divider::before, .hero-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to var(--d, right), transparent, rgba(214,59,143,0.5)); }
 .hero-divider::before { --d: right; }

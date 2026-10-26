@@ -97,6 +97,7 @@ Both `index.html` and `thank-you.html` use Measurement ID **`G-VBYCDBFFM8`**. Th
 ## Maintenance notes
 
 - Keep **chat** system prompt facts in `netlify/functions/chat.js` aligned with **pricing and packages** on `index.html` so the assistant does not contradict the page.
+- Deposit and cancellation wording lives in two places, the FAQ in index.html and the policy block in netlify/functions/chat.js. Change both together.
 - If you change the primary domain, update **canonical**, **Open Graph**, and **Twitter** image URLs in `index.html` to absolute URLs on that host.
 
 ---

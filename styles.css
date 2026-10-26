@@ -585,6 +585,58 @@ h1.hero-eyebrow { margin-bottom: 0; text-wrap: balance; }
   flex-shrink: 0;
 }
 
+/* ─── FAQ ─── */
+.faq {
+  padding: 5.5rem 2rem;
+  background: var(--black);
+  border-top: 1px solid rgba(214,59,143,0.12);
+}
+.faq-inner {
+  max-width: 820px;
+  margin: 0 auto;
+}
+.faq-header { text-align: center; margin-bottom: 2.5rem; }
+.faq-header .pink-rule { margin: 1.2rem auto 0; }
+.faq-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.faq-list details {
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.faq-list summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 44px;
+  padding: 0.9rem 1.15rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  cursor: pointer;
+  list-style: none;
+}
+.faq-list summary::-webkit-details-marker { display: none; }
+.faq-list summary::after {
+  content: '';
+  flex-shrink: 0;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 2px solid var(--pink);
+  border-bottom: 2px solid var(--pink);
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+.faq-list details[open] summary::after { transform: rotate(225deg); }
+.faq-list details p {
+  margin: 0;
+  padding: 0 1.15rem 1.15rem;
+  color: var(--grey);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
 /* ─── TESTIMONIALS ─── */
 .testimonials {
   padding: 5.5rem 2rem;
@@ -1092,7 +1144,7 @@ body.lightbox-open { overflow: hidden; }
   .lightbox-nav--next { right: calc(50% - 50px); }
 }
 
-a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: 2px solid var(--pink-light);
   outline-offset: 2px;
 }
@@ -1130,6 +1182,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   nav.nav-open .nav-links { display: flex; }
   .nav-links li { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.06); }
   .nav-links a { display: block; padding: 0.85rem 0; }
+  .faq { scroll-margin-top: 3.5rem; }
   .gallery-track { height: 260px; }
   .seasonal-spotlight { padding: 3.5rem 1.25rem; }
   .menu-layout { grid-template-columns: 1fr; gap: 3rem; }

@@ -125,6 +125,12 @@ const designerVenues = [...html.matchAll(/data-target="venue" data-value="([^"]+
 const locationValues = [...form.matchAll(/name="location" value="([^"]+)"/g)].map((item) => item[1]);
 check("designer venues lead the location chips", locationValues.slice(0, designerVenues.length), designerVenues);
 check("office and other follow the designer venues", locationValues.slice(designerVenues.length), ["Office", "Other"]);
+function hiddenEmoji(chunk) {
+  return [...chunk.matchAll(/<span aria-hidden="true">([^<]+)<\/span>/g)].map((item) => item[1]).filter((item) => item !== "✓");
+}
+const designerVenueBlock = html.slice(html.indexOf('aria-labelledby="cw-legend-4"'), html.indexOf('id="cw-legend-5"'));
+const locationBlock = form.slice(form.indexOf('aria-labelledby="venue-label"'), form.indexOf('id="cityZip"'));
+check("designer venue emoji matches the quote builder", hiddenEmoji(designerVenueBlock), hiddenEmoji(locationBlock).slice(0, designerVenues.length));
 check("readme keeps the venue lists in sync", readme.includes("venue lists stay in sync"), true);
 
 check("designer result sends the venue", designer.includes("venue:"), true);

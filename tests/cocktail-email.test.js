@@ -449,11 +449,107 @@ function emailLogs() {
   }
   createImpl = async () => pour();
 
+  now = Date.UTC(2026, 9, 27, 15, 0, 0);
+  const capDay = dayKey();
+  const seven = ["one oz a", "two oz b", "three oz c", "four oz d", "five oz e", "six oz f", "seven oz g"];
+  const keptFive = ["kept 1", "kept 2", "kept 3", "kept 4", "kept 5"];
+  const garnish = "mint sprig stays";
+  function capCount() {
+    return (records.get(capDay) && records.get(capDay).count) || 0;
+  }
+  function submissionCount(ip) {
+    const key = crypto.createHash("sha256").update(ip).digest("hex");
+    const rec = records.get(key);
+    return rec && Array.isArray(rec.submissions) ? rec.submissions.length : 0;
+  }
+
+  let capCalls = 0;
+  createImpl = async () => {
+    capCalls += 1;
+    return pour({ ingredients: ["2 oz gin", "1 oz citrus", "1/2 oz syrup", "soda"], garnish });
+  };
+  const withinBefore = capCount();
+  const within = await handler(ev("10.9.0.1"));
+  const withinBody = JSON.parse(within.body).cocktail;
+  check("five or fewer status", within.statusCode, 200);
+  check("five or fewer makes one call", capCalls, 1);
+  check("five or fewer stays four", withinBody.ingredients, ["2 oz gin", "1 oz citrus", "1/2 oz syrup", "soda"]);
+  check("five or fewer keeps garnish", withinBody.garnish, garnish);
+  check("five or fewer email keeps the fourth", fetchCalls[fetchCalls.length - 1].body.text.includes("soda"), true);
+  check("five or fewer counts once", capCount() - withinBefore, 1);
+  check("five or fewer commits once", submissionCount("10.9.0.1"), 1);
+
+  capCalls = 0;
+  const retryTimeouts = timeoutMs.length;
+  createImpl = async () => {
+    capCalls += 1;
+    if (capCalls === 1) return pour({ name: "Too Many", ingredients: seven, garnish });
+    return pour({ name: "Retried Pour", ingredients: keptFive, garnish });
+  };
+  const retryBefore = capCount();
+  const retriedCap = await handler(ev("10.9.0.2"));
+  const retriedBody = JSON.parse(retriedCap.body).cocktail;
+  const retriedMail = fetchCalls[fetchCalls.length - 1].body.text;
+  check("retry success status", retriedCap.statusCode, 200);
+  check("retry success makes two calls", capCalls, 2);
+  check("retry success uses the second recipe", retriedBody.ingredients, keptFive);
+  check("retry success keeps garnish", retriedBody.garnish, garnish);
+  check("retry success email uses the second recipe", retriedMail.includes("kept 5") && !retriedMail.includes("seven oz g"), true);
+  check("retry success timeout is 6 seconds", timeoutMs.slice(retryTimeouts), [10000, 6000]);
+  check("retry success counts once", capCount() - retryBefore, 1);
+  check("retry success commits once", submissionCount("10.9.0.2"), 1);
+
+  capCalls = 0;
+  createImpl = async () => {
+    capCalls += 1;
+    if (capCalls === 1) return pour({ name: "First Seven", ingredients: seven, garnish });
+    return pour({ name: "Still Seven", ingredients: ["r1", "r2", "r3", "r4", "r5", "r6", "r7"], garnish: "other garnish" });
+  };
+  const stillBefore = capCount();
+  const still = await handler(ev("10.9.0.3"));
+  const stillBody = JSON.parse(still.body).cocktail;
+  const stillMail = fetchCalls[fetchCalls.length - 1].body.text;
+  check("retry still over status", still.statusCode, 200);
+  check("retry still over slices the first five", stillBody.ingredients, seven.slice(0, 5));
+  check("retry still over keeps the first garnish", stillBody.garnish, garnish);
+  check("retry still over email is sliced", stillMail.includes("five oz e") && !stillMail.includes("six oz f") && !stillMail.includes("other garnish"), true);
+  check("retry still over counts once", capCount() - stillBefore, 1);
+
+  capCalls = 0;
+  createImpl = async () => {
+    capCalls += 1;
+    if (capCalls === 1) return pour({ name: "Overflow", ingredients: seven, garnish });
+    throw new Error("retry down");
+  };
+  const throwBefore = capCount();
+  const thrown = await handler(ev("10.9.0.4"));
+  const thrownBody = JSON.parse(thrown.body).cocktail;
+  const thrownMail = fetchCalls[fetchCalls.length - 1].body.text;
+  check("retry throw status", thrown.statusCode, 200);
+  check("retry throw slices to five", thrownBody.ingredients, seven.slice(0, 5));
+  check("retry throw keeps garnish", thrownBody.garnish, garnish);
+  check("retry throw email is sliced", thrownMail.includes("five oz e") && !thrownMail.includes("six oz f"), true);
+  check("retry throw counts once", capCount() - throwBefore, 1);
+  check("retry throw commits once", submissionCount("10.9.0.4"), 1);
+  check("retry throw made two calls", capCalls, 2);
+
+  capCalls = 0;
+  createImpl = async () => {
+    capCalls += 1;
+    now += 5001;
+    return pour({ name: "Late Pour", ingredients: seven, garnish });
+  };
+  const late = await handler(ev("10.9.0.5"));
+  check("late retry is skipped", capCalls, 1);
+  check("late pour is sliced", JSON.parse(late.body).cocktail.ingredients, seven.slice(0, 5));
+  check("late pour stays 200", late.statusCode, 200);
+  createImpl = async () => pour();
+
   const dumped = logs.join("\n");
   check("logs omit the api key", dumped.includes(API_KEY), false);
   check("logs omit recipient addresses", dumped.includes("example.com"), false);
   check("logs omit the from value", dumped.includes(FROM), false);
-  check("every model deadline is 10000ms", timeoutMs.every((ms) => ms === 10000), true);
+  check("model deadlines are 10s or a 6s ingredient retry", timeoutMs.every((ms) => ms === 10000 || ms === 6000), true);
 
   console.log = originalLog;
   AbortSignal.timeout = realTimeout;

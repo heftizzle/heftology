@@ -213,6 +213,21 @@ function nearestSlotIndex(scrollTop, rowHeight, count) {
   return index;
 }
 
+function keptStartTime(typed, nearestSlot) {
+  var value = String(typed || "").slice(0, 5);
+  if (/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value) && value !== nearestSlot) return value;
+  return nearestSlot || "";
+}
+
+function thumbCenter(ratio, trackWidth, inset, thumb) {
+  var width = Number(trackWidth);
+  var pad = Number(inset);
+  var size = Number(thumb);
+  var pct = Number(ratio);
+  if (!Number.isFinite(width) || !Number.isFinite(pad) || !Number.isFinite(size) || !Number.isFinite(pct)) return 0;
+  return pad + size / 2 + pct * (width - pad * 2 - size);
+}
+
 function hoursSummary(start, hours, unsure) {
   if (unsure) return "Not sure yet";
   var length = Number(hours);
@@ -307,17 +322,54 @@ if (typeof document !== "undefined") {
       return String(value).replace(/"/g, '\\"');
     }
 
+    function sliderThumbWidth(input) {
+      var host = window.getComputedStyle(input);
+      var pseudos = ["::-webkit-slider-thumb", "::-moz-range-thumb"];
+      for (var i = 0; i < pseudos.length; i++) {
+        var style = window.getComputedStyle(input, pseudos[i]);
+        if (!style) continue;
+        var width = parseFloat(style.width);
+        var height = parseFloat(style.height);
+        if (!width || !height || width > 64 || height > 64) continue;
+        if (style.width === host.width && style.height === host.height) continue;
+        var border = (parseFloat(style.borderLeftWidth) || 0) + (parseFloat(style.borderRightWidth) || 0);
+        return style.boxSizing === "border-box" ? width : width + border;
+      }
+      return 32;
+    }
+
     function setPct(input) {
       if (!input) return;
       var min = Number(input.min);
       var max = Number(input.max);
       var value = Number(input.value);
       var ratio = max === min ? 0 : (value - min) / (max - min);
-      input.style.setProperty("--pct", (ratio * 100) + "%");
+      var pct = (ratio * 100) + "%";
+      input.style.setProperty("--pct", pct);
       input.style.setProperty("--ratio", String(ratio));
-      if (input.parentElement && input.parentElement.classList.contains("qb-range")) {
-        input.parentElement.style.setProperty("--pct", (ratio * 100) + "%");
-        input.parentElement.style.setProperty("--ratio", String(ratio));
+      var range = input.parentElement;
+      if (!range || !range.classList.contains("qb-range")) return;
+      var style = window.getComputedStyle(input);
+      var inset = (parseFloat(style.borderLeftWidth) || 0) + (parseFloat(style.paddingLeft) || 0);
+      range.style.setProperty("--pct", pct);
+      range.style.setProperty("--ratio", String(ratio));
+      range.style.setProperty("--inset", inset + "px");
+      range.style.setProperty("--thumb", sliderThumbWidth(input) + "px");
+    }
+
+    function showTimeError(on) {
+      var list = document.getElementById("qb-time-list");
+      var roller = form.querySelector(".qb-roller");
+      var error = document.getElementById("qb-time-error");
+      if (roller) roller.classList.toggle("is-invalid", !!on);
+      if (error) error.hidden = !on;
+      if (!list) return;
+      if (on) {
+        list.setAttribute("aria-invalid", "true");
+        list.setAttribute("aria-describedby", "qb-time-error");
+      } else {
+        list.removeAttribute("aria-invalid");
+        list.removeAttribute("aria-describedby");
       }
     }
 
@@ -385,15 +437,21 @@ if (typeof document !== "undefined") {
         var invalid = firstInvalid(steps[i]);
         if (!invalid) continue;
         if (i !== currentStep - 1) showStep(i + 1, { user: true, silent: true });
-        if (invalid.id === "startTime" && form.classList.contains("is-enhanced")) {
+        var timeError = invalid.id === "startTime" && form.classList.contains("is-enhanced");
+        showTimeError(timeError);
+        if (timeError) {
           var startField = invalid.closest(".qb-start");
           var timeList = document.getElementById("qb-time-list");
           if (timeList && startField && !startField.classList.contains("is-exact")) timeList.focus();
           else if (invalid.focus) invalid.focus();
-        } else if (invalid.focus) invalid.focus();
-        showAlert(missingCopy[invalid.name] || "Check that field and try again.");
+          showAlert("");
+        } else {
+          if (invalid.focus) invalid.focus();
+          showAlert(missingCopy[invalid.name] || "Check that field and try again.");
+        }
         return false;
       }
+      showTimeError(false);
       showAlert("");
       return true;
     }
@@ -607,7 +665,7 @@ if (typeof document !== "undefined") {
         opt.setAttribute("aria-selected", "false");
         opt.textContent = slot.label;
         opt.addEventListener("click", function () {
-          arm();
+          noteUserIntent();
           scrollToIndex(index, true);
           commit(index);
         });
@@ -622,6 +680,7 @@ if (typeof document !== "undefined") {
 
       var armed = false;
       var writing = false;
+      var userIntent = false;
       var activeIndex = initial;
       var settleTimer = 0;
       var paintQueued = false;
@@ -666,11 +725,18 @@ if (typeof document !== "undefined") {
         if (hint) hint.hidden = true;
       }
 
+      function noteUserIntent() {
+        userIntent = true;
+        arm();
+      }
+
       function commit(index) {
+        userIntent = false;
         arm();
         showActive(index, true);
+        showTimeError(false);
         var value = slots[index].value;
-        if (startInput.value === value) return;
+        if (String(startInput.value).slice(0, 5) === value) return;
         writing = true;
         startInput.value = value;
         startInput.dispatchEvent(new Event("input", { bubbles: true }));
@@ -687,7 +753,7 @@ if (typeof document !== "undefined") {
 
       function settle() {
         paint();
-        if (!armed) return;
+        if (!armed || !userIntent) return;
         commit(nearestSlotIndex(list.scrollTop, rowHeight(), slots.length));
       }
 
@@ -711,14 +777,14 @@ if (typeof document !== "undefined") {
         settleTimer = window.setTimeout(settle, 120);
       }, { passive: true });
       if (supportsScrollEnd) list.addEventListener("scrollend", settle);
-      list.addEventListener("wheel", function () { arm(); }, { passive: true });
-      list.addEventListener("touchstart", function () { arm(); }, { passive: true });
-      list.addEventListener("pointerdown", function () { arm(); });
+      list.addEventListener("wheel", function () { noteUserIntent(); }, { passive: true });
+      list.addEventListener("touchstart", function () { noteUserIntent(); }, { passive: true });
+      list.addEventListener("pointerdown", function () { noteUserIntent(); });
       list.addEventListener("keydown", function (event) {
         var delta = { ArrowUp: -1, ArrowDown: 1, PageUp: -4, PageDown: 4, Home: "home", End: "end" }[event.key];
         if (delta == null) return;
         event.preventDefault();
-        arm();
+        noteUserIntent();
         var next = activeIndex;
         if (delta === "home") next = 0;
         else if (delta === "end") next = slots.length - 1;
@@ -728,10 +794,13 @@ if (typeof document !== "undefined") {
       });
       startInput.addEventListener("input", function () {
         if (writing || !startInput.value) return;
-        arm();
+        userIntent = false;
         var index = indexForValue(startInput.value);
-        var exact = slots[index] && slots[index].value === String(startInput.value).slice(0, 5);
-        showActive(index, exact);
+        var nearest = slots[index] ? slots[index].value : "";
+        var kept = keptStartTime(startInput.value, nearest);
+        showActive(index, kept === nearest);
+        arm();
+        showTimeError(false);
         list.scrollTop = index * rowHeight();
       });
       if (exactBtn && startField) {
@@ -763,7 +832,7 @@ if (typeof document !== "undefined") {
 
     form.addEventListener("input", onEdit);
     form.addEventListener("change", onEdit);
-    if (backBtn) backBtn.addEventListener("click", function () { showAlert(""); showStep(currentStep - 1, { user: true }); });
+    if (backBtn) backBtn.addEventListener("click", function () { showAlert(""); showTimeError(false); showStep(currentStep - 1, { user: true }); });
     if (nextBtn) {
       nextBtn.addEventListener("click", function () {
         if (!validateThrough(currentStep - 1)) return;
@@ -845,6 +914,8 @@ if (typeof module === "object" && module.exports) {
     formatRollerTime: formatRollerTime,
     startTimeSlots: startTimeSlots,
     nearestSlotIndex: nearestSlotIndex,
+    keptStartTime: keptStartTime,
+    thumbCenter: thumbCenter,
     hoursSummary: hoursSummary,
     decideSelection: decideSelection,
     applyDesignerVenue: applyDesignerVenue,

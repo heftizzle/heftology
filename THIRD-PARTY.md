@@ -32,4 +32,4 @@ These candidates were reviewed and rejected. Versions and sizes are from the pub
 - License: MIT
 - Source: https://motion.dev
 - Size: the `animate()` build that runs without a bundler is about 56 KB gzip. The smaller build is about 3 KB and needs a bundler.
-- Why it was rejected: this site has no build step, and the step change is already a 220ms opacity transition with a reduced-motion override.
+- Why it was rejected: this site has no front-end bundler, and the step change is already a 220ms opacity transition with a reduced-motion override.

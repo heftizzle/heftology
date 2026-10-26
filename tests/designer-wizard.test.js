@@ -76,6 +76,14 @@ check("steps 2 through 5 start hidden", [2, 3, 4, 5].every((step) => new RegExp(
 check("back stays a button", form.includes('<button class="btn-ghost cw-back" id="cw-back" type="button">Back</button>'), true);
 check("next stays a button", form.includes('<button class="btn-primary cw-next" id="cocktail-widget-submit" type="button">Next</button>'), true);
 
+const radioScript = html.slice(html.indexOf("function selectRadio"), html.indexOf("function syncPreferences"));
+const radioStart = html.indexOf('form.querySelectorAll(\'[role="radiogroup"]\')');
+const radioKeys = html.slice(radioStart, html.indexOf('form.querySelectorAll(\'[data-pref]\')', radioStart));
+check("other field focuses only when asked", radioScript.includes("function selectRadio(btn, opts)") && radioScript.includes("if (applied.reveal && input && opts && opts.focusField) input.focus();"), true);
+check("click enter and space focus the other field", radioKeys.includes("selectRadio(btn, { focusField: true })") && radioKeys.includes("event.key === 'Enter' || event.key === ' '"), true);
+check("arrow keys leave focus on the chip", /selectRadio\(next\);\r?\n\s*next\.focus\(\);/.test(radioKeys), true);
+check("arrow keys do not ask to focus the other field", radioKeys.includes("selectRadio(next, { focusField"), false);
+
 const failed = results.filter((line) => line.startsWith("FAIL"));
 console.log(`${results.join("\n")}\n\n${results.length - failed.length}/${results.length} passed`);
 process.exit(failed.length ? 1 : 0);

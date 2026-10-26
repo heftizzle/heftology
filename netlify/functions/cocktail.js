@@ -467,7 +467,14 @@ async function beginRateLimit(store, key, now) {
 const MAX_INGREDIENTS = 5;
 const MODEL_TIMEOUT_MS = 10000;
 const INGREDIENT_RETRY_TIMEOUT_MS = 6000;
-const INGREDIENT_RETRY_BUDGET_MS = 5000;
+const INGREDIENT_RETRY_BUDGET_MS = 9000;
+const INGREDIENT_RETRY_MIN_MS = 2500;
+
+function ingredientRetryTimeout(elapsed) {
+  const remaining = INGREDIENT_RETRY_BUDGET_MS - elapsed;
+  if (remaining < INGREDIENT_RETRY_MIN_MS) return 0;
+  return Math.min(INGREDIENT_RETRY_TIMEOUT_MS, remaining);
+}
 
 function ingredientCount(cocktail) {
   return cocktail && Array.isArray(cocktail.ingredients) ? cocktail.ingredients.length : 0;
@@ -493,6 +500,7 @@ function parseCocktailText(raw) {
 exports.LOCK_HOURS = LOCK_HOURS;
 exports.MAX_INGREDIENTS = MAX_INGREDIENTS;
 exports.limitIngredients = limitIngredients;
+exports.ingredientRetryTimeout = ingredientRetryTimeout;
 
 const ALLOWED_ORIGINS = new Set(["https://heftology.com", "https://www.heftology.com"]);
 
@@ -615,8 +623,8 @@ exports.handler = async (event) => {
 
       let usage = response.usage;
       if (ingredientCount(cocktail) > MAX_INGREDIENTS) {
-        const elapsed = Date.now() - started;
-        if (elapsed > INGREDIENT_RETRY_BUDGET_MS) {
+        const retryTimeout = ingredientRetryTimeout(Date.now() - started);
+        if (!retryTimeout) {
           cocktail = limitIngredients(cocktail);
         } else {
           try {
@@ -634,7 +642,7 @@ exports.handler = async (event) => {
                   },
                 ],
               },
-              { signal: AbortSignal.timeout(INGREDIENT_RETRY_TIMEOUT_MS) }
+              { signal: AbortSignal.timeout(retryTimeout) }
             );
             const revised = parseCocktailText(modelText(retry));
             if (ingredientCount(revised) <= MAX_INGREDIENTS) {

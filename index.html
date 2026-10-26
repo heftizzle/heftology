@@ -1285,7 +1285,7 @@ window.addEventListener('DOMContentLoaded', () => {
     return false;
   }
 
-  function selectRadio(btn) {
+  function selectRadio(btn, opts) {
     const group = btn.closest('[role="radiogroup"]');
     const target = btn.getAttribute('data-target');
     const raw = btn.getAttribute('data-value');
@@ -1301,7 +1301,7 @@ window.addEventListener('DOMContentLoaded', () => {
       radio.classList.toggle('is-selected', on);
       radio.tabIndex = on ? 0 : -1;
     });
-    if (applied.reveal && input) input.focus();
+    if (applied.reveal && input && opts && opts.focusField) input.focus();
     else if (alertEl && applied.value) alertEl.hidden = true;
   }
 
@@ -1339,14 +1339,19 @@ window.addEventListener('DOMContentLoaded', () => {
     const radios = Array.from(group.querySelectorAll('[role="radio"]'));
     radios.forEach((btn, index) => {
       btn.tabIndex = index === 0 ? 0 : -1;
-      btn.addEventListener('click', () => selectRadio(btn));
+      btn.addEventListener('click', () => selectRadio(btn, { focusField: true }));
       btn.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          selectRadio(btn, { focusField: true });
+          return;
+        }
         if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].indexOf(event.key) < 0) return;
         event.preventDefault();
         const current = radios.indexOf(btn);
         const next = radios[designerRadioStep(current, radios.length, event.key)];
         selectRadio(next);
-        if (next.getAttribute('data-value') !== 'Other') next.focus();
+        next.focus();
       });
     });
   });

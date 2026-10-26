@@ -534,22 +534,55 @@ function emailLogs() {
   check("retry throw made two calls", capCalls, 2);
 
   capCalls = 0;
+  const shortTimeouts = timeoutMs.length;
+  const shortBefore = capCount();
   createImpl = async () => {
     capCalls += 1;
-    now += 5001;
+    if (capCalls === 1) {
+      now += 5000;
+      return pour({ name: "Budget Pour", ingredients: seven, garnish });
+    }
+    return pour({ name: "Budget Retry", ingredients: keptFive, garnish });
+  };
+  const short = await handler(ev("10.9.0.5"));
+  check("short budget still retries", capCalls, 2);
+  check("short budget timeout is the time left under 9 seconds", timeoutMs.slice(shortTimeouts), [10000, 4000]);
+  check("short budget uses the retry", JSON.parse(short.body).cocktail.ingredients, keptFive);
+  check("short budget counts once", capCount() - shortBefore, 1);
+
+  capCalls = 0;
+  const edgeTimeouts = timeoutMs.length;
+  createImpl = async () => {
+    capCalls += 1;
+    if (capCalls === 1) {
+      now += 6500;
+      return pour({ name: "Edge Pour", ingredients: seven, garnish });
+    }
+    return pour({ name: "Edge Retry", ingredients: keptFive, garnish });
+  };
+  const edge = await handler(ev("10.9.0.6"));
+  check("2500ms left still retries", capCalls, 2);
+  check("2500ms left uses a 2500ms timeout", timeoutMs.slice(edgeTimeouts), [10000, 2500]);
+  check("2500ms left uses the retry", JSON.parse(edge.body).cocktail.ingredients, keptFive);
+
+  capCalls = 0;
+  createImpl = async () => {
+    capCalls += 1;
+    now += 6501;
     return pour({ name: "Late Pour", ingredients: seven, garnish });
   };
-  const late = await handler(ev("10.9.0.5"));
-  check("late retry is skipped", capCalls, 1);
-  check("late pour is sliced", JSON.parse(late.body).cocktail.ingredients, seven.slice(0, 5));
-  check("late pour stays 200", late.statusCode, 200);
+  const late = await handler(ev("10.9.0.7"));
+  check("retry is skipped when under 2500ms remains", capCalls, 1);
+  check("skipped retry is sliced", JSON.parse(late.body).cocktail.ingredients, seven.slice(0, 5));
+  check("skipped retry stays 200", late.statusCode, 200);
+  check("skipped retry keeps garnish", JSON.parse(late.body).cocktail.garnish, garnish);
   createImpl = async () => pour();
 
   const dumped = logs.join("\n");
   check("logs omit the api key", dumped.includes(API_KEY), false);
   check("logs omit recipient addresses", dumped.includes("example.com"), false);
   check("logs omit the from value", dumped.includes(FROM), false);
-  check("model deadlines are 10s or a 6s ingredient retry", timeoutMs.every((ms) => ms === 10000 || ms === 6000), true);
+  check("model deadlines are 10s or an ingredient retry of 2.5s to 6s", timeoutMs.every((ms) => ms === 10000 || (ms >= 2500 && ms <= 6000)), true);
 
   console.log = originalLog;
   AbortSignal.timeout = realTimeout;

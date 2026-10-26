@@ -185,6 +185,50 @@ function formatTimeLabel(value) {
   return formatClock(hour * 60 + minute);
 }
 
+function formatRollerTime(totalMinutes) {
+  return formatClock(totalMinutes).replace(/ /g, "\u00A0");
+}
+
+function startTimeSlots() {
+  var slots = [];
+  for (var mins = 10 * 60; mins <= 22 * 60; mins += 30) {
+    var hour = Math.floor(mins / 60);
+    var minute = mins % 60;
+    slots.push({
+      value: String(hour).padStart(2, "0") + ":" + String(minute).padStart(2, "0"),
+      label: formatRollerTime(mins)
+    });
+  }
+  return slots;
+}
+
+function nearestSlotIndex(scrollTop, rowHeight, count) {
+  var total = Number(count);
+  if (!total || total < 1) return 0;
+  var height = Number(rowHeight);
+  if (!Number.isFinite(height) || height <= 0) return 0;
+  var index = Math.round(Number(scrollTop) / height);
+  if (!Number.isFinite(index) || index < 0) return 0;
+  if (index > total - 1) return total - 1;
+  return index;
+}
+
+function hoursSummary(start, hours, unsure) {
+  if (unsure) return "Not sure yet";
+  var length = Number(hours);
+  var span = Number.isFinite(length) ? length + (length === 1 ? " hour" : " hours") : "";
+  if (!start) return span;
+  var parts = String(start).split(":");
+  var hour = Number(parts[0]);
+  var minute = Number(parts[1]);
+  if (!Number.isFinite(hour) || !Number.isFinite(minute) || !Number.isFinite(length)) return span;
+  var startMins = hour * 60 + minute;
+  var endMins = startMins + length * 60;
+  var text = formatRollerTime(startMins) + " \u2013 " + formatRollerTime(endMins) + " (" + span + ")";
+  if (endMins >= 24 * 60) text += " (next day)";
+  return text;
+}
+
 function applyDesignerVenue(input) {
   var current = (input && input.current) || "";
   var source = (input && input.source) || "";
@@ -225,7 +269,6 @@ if (typeof document !== "undefined") {
     var cityNote = document.getElementById("city-message");
     var startInput = document.getElementById("startTime");
     var hoursInput = document.getElementById("serviceHours");
-    var hoursReadout = document.getElementById("hours-readout");
     var hoursUnsure = form.querySelector('input[name="serviceHoursUnsure"]');
     var endTime = document.getElementById("end-time");
     var guestsInput = document.getElementById("field-guests");
@@ -269,10 +312,12 @@ if (typeof document !== "undefined") {
       var min = Number(input.min);
       var max = Number(input.max);
       var value = Number(input.value);
-      var pct = max === min ? 0 : ((value - min) / (max - min)) * 100;
-      input.style.setProperty("--pct", pct + "%");
+      var ratio = max === min ? 0 : (value - min) / (max - min);
+      input.style.setProperty("--pct", (ratio * 100) + "%");
+      input.style.setProperty("--ratio", String(ratio));
       if (input.parentElement && input.parentElement.classList.contains("qb-range")) {
-        input.parentElement.style.setProperty("--pct", pct + "%");
+        input.parentElement.style.setProperty("--pct", (ratio * 100) + "%");
+        input.parentElement.style.setProperty("--ratio", String(ratio));
       }
     }
 
@@ -340,21 +385,17 @@ if (typeof document !== "undefined") {
         var invalid = firstInvalid(steps[i]);
         if (!invalid) continue;
         if (i !== currentStep - 1) showStep(i + 1, { user: true, silent: true });
-        if (invalid.focus) invalid.focus();
+        if (invalid.id === "startTime" && form.classList.contains("is-enhanced")) {
+          var startField = invalid.closest(".qb-start");
+          var timeList = document.getElementById("qb-time-list");
+          if (timeList && startField && !startField.classList.contains("is-exact")) timeList.focus();
+          else if (invalid.focus) invalid.focus();
+        } else if (invalid.focus) invalid.focus();
         showAlert(missingCopy[invalid.name] || "Check that field and try again.");
         return false;
       }
       showAlert("");
       return true;
-    }
-
-    function markTimeChips() {
-      var value = startInput ? startInput.value : "";
-      Array.prototype.forEach.call(form.querySelectorAll("[data-time]"), function (chip) {
-        var on = chip.getAttribute("data-time") === value;
-        chip.classList.toggle("is-selected", on);
-        chip.setAttribute("aria-pressed", on ? "true" : "false");
-      });
     }
 
     function setGuests(value, keepEstimate) {
@@ -419,21 +460,20 @@ if (typeof document !== "undefined") {
     function refresh() {
       if (dateReadout) dateReadout.textContent = dateInput && dateInput.value ? formatDateLabel(dateInput.value, "long") : "";
       if (cityNote) cityNote.textContent = cityMessage(cityInput ? cityInput.value : "");
-      markTimeChips();
       var unsure = !!(hoursUnsure && hoursUnsure.checked);
       if (hoursInput) {
         hoursInput.disabled = unsure;
         setPct(hoursInput);
       }
-      if (hoursReadout) hoursReadout.textContent = unsure ? "Not sure yet" : (hoursInput ? hoursInput.value + " hours" : "");
       if (hoursBubble) {
         hoursBubble.hidden = unsure;
         hoursBubble.textContent = (hoursInput ? hoursInput.value : "4") + " hrs";
       }
       if (endTime) {
-        var endLabel = !unsure && hoursInput ? endTimeLabel(startInput ? startInput.value : "", hoursInput.value) : "";
-        endTime.hidden = unsure || !endLabel;
-        endTime.textContent = unsure ? "" : endLabel;
+        var hasStart = !!(startInput && startInput.value);
+        var endLabel = !unsure && hasStart && hoursInput ? endTimeLabel(startInput.value, hoursInput.value) : "";
+        endTime.hidden = !endLabel;
+        endTime.textContent = endLabel;
       }
       var guestCount = guestsInput && guestsInput.value !== "" ? Number(guestsInput.value) : NaN;
       if (guestNote) {
@@ -511,7 +551,6 @@ if (typeof document !== "undefined") {
       if (!receipt) return;
       var unsure = !!(hoursUnsure && hoursUnsure.checked);
       var packageName = selected("packageInterest");
-      var service = unsure ? "Not sure yet" : (hoursInput ? endTimeLabel(startInput ? startInput.value : "", hoursInput.value) : "");
       receipt.replaceChildren(
         receiptGroup("Event", 1, [
           ["Celebration", selected("eventType")],
@@ -520,8 +559,7 @@ if (typeof document !== "undefined") {
           ["City", cityInput ? cityInput.value.trim() : ""]
         ]),
         receiptGroup("Details", 2, [
-          ["Bar opens", formatTimeLabel(fieldValue("startTime"))],
-          ["Service", service],
+          ["Hours", hoursSummary(fieldValue("startTime"), hoursInput ? hoursInput.value : "", unsure)],
           ["Guests", fieldValue("field-guests")]
         ]),
         receiptGroup("Package", 3, [
@@ -546,6 +584,172 @@ if (typeof document !== "undefined") {
       if (target && target.name === "location") locationSource = "user";
       if (target && target === guestsInput && guestsInput.value !== "151") guestEstimate = false;
       refresh();
+    }
+
+    function mountTimeRoller() {
+      var list = document.getElementById("qb-time-list");
+      var hint = document.getElementById("qb-time-hint");
+      var exactBtn = document.getElementById("qb-exact-time");
+      if (!list || !startInput) return;
+      var slots = startTimeSlots();
+      var startField = startInput.closest(".qb-start");
+      var padTop = document.createElement("div");
+      padTop.className = "qb-roller-pad";
+      padTop.setAttribute("aria-hidden", "true");
+      list.appendChild(padTop);
+      var options = [];
+      var initial = 0;
+      slots.forEach(function (slot, index) {
+        var opt = document.createElement("div");
+        opt.className = "qb-roller-option";
+        opt.id = "qb-time-opt-" + index;
+        opt.setAttribute("role", "option");
+        opt.setAttribute("aria-selected", "false");
+        opt.textContent = slot.label;
+        opt.addEventListener("click", function () {
+          arm();
+          scrollToIndex(index, true);
+          commit(index);
+        });
+        list.appendChild(opt);
+        options.push(opt);
+        if (slot.value === "18:00") initial = index;
+      });
+      var padBottom = document.createElement("div");
+      padBottom.className = "qb-roller-pad";
+      padBottom.setAttribute("aria-hidden", "true");
+      list.appendChild(padBottom);
+
+      var armed = false;
+      var writing = false;
+      var activeIndex = initial;
+      var settleTimer = 0;
+      var paintQueued = false;
+      var supportsScrollEnd = "onscrollend" in list;
+
+      function rowHeight() {
+        var height = options[0] ? options[0].offsetHeight : 0;
+        return height || 44;
+      }
+
+      function paint() {
+        var row = rowHeight();
+        var center = list.scrollTop + list.clientHeight / 2;
+        options.forEach(function (opt) {
+          var mid = opt.offsetTop + opt.offsetHeight / 2;
+          var dist = row ? Math.abs(mid - center) / row : 0;
+          opt.style.setProperty("--dist", dist.toFixed(3));
+        });
+      }
+
+      function queuePaint() {
+        if (paintQueued) return;
+        paintQueued = true;
+        window.requestAnimationFrame(function () {
+          paintQueued = false;
+          paint();
+        });
+      }
+
+      function showActive(index, selected) {
+        activeIndex = index;
+        list.setAttribute("aria-activedescendant", options[index].id);
+        options.forEach(function (opt, i) {
+          opt.classList.toggle("is-active", i === index);
+          opt.setAttribute("aria-selected", selected && i === index ? "true" : "false");
+        });
+      }
+
+      function arm() {
+        armed = true;
+        list.classList.remove("is-pending");
+        if (hint) hint.hidden = true;
+      }
+
+      function commit(index) {
+        arm();
+        showActive(index, true);
+        var value = slots[index].value;
+        if (startInput.value === value) return;
+        writing = true;
+        startInput.value = value;
+        startInput.dispatchEvent(new Event("input", { bubbles: true }));
+        startInput.dispatchEvent(new Event("change", { bubbles: true }));
+        writing = false;
+      }
+
+      function scrollToIndex(index, smooth) {
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var top = index * rowHeight();
+        if (smooth && !reduce && list.scrollTo) list.scrollTo({ top: top, behavior: "smooth" });
+        else list.scrollTop = top;
+      }
+
+      function settle() {
+        paint();
+        if (!armed) return;
+        commit(nearestSlotIndex(list.scrollTop, rowHeight(), slots.length));
+      }
+
+      function indexForValue(value) {
+        var parts = String(value || "").split(":");
+        var hour = Number(parts[0]);
+        var minute = Number(parts[1]);
+        if (!Number.isFinite(hour) || !Number.isFinite(minute)) return initial;
+        var index = Math.round((hour * 60 + minute - 10 * 60) / 30);
+        if (index < 0) return 0;
+        if (index > slots.length - 1) return slots.length - 1;
+        return index;
+      }
+
+      list.classList.add("is-pending");
+      showActive(initial, false);
+      list.addEventListener("scroll", function () {
+        queuePaint();
+        if (supportsScrollEnd) return;
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(settle, 120);
+      }, { passive: true });
+      if (supportsScrollEnd) list.addEventListener("scrollend", settle);
+      list.addEventListener("wheel", function () { arm(); }, { passive: true });
+      list.addEventListener("touchstart", function () { arm(); }, { passive: true });
+      list.addEventListener("pointerdown", function () { arm(); });
+      list.addEventListener("keydown", function (event) {
+        var delta = { ArrowUp: -1, ArrowDown: 1, PageUp: -4, PageDown: 4, Home: "home", End: "end" }[event.key];
+        if (delta == null) return;
+        event.preventDefault();
+        arm();
+        var next = activeIndex;
+        if (delta === "home") next = 0;
+        else if (delta === "end") next = slots.length - 1;
+        else next = Math.max(0, Math.min(slots.length - 1, activeIndex + delta));
+        scrollToIndex(next, true);
+        commit(next);
+      });
+      startInput.addEventListener("input", function () {
+        if (writing || !startInput.value) return;
+        arm();
+        var index = indexForValue(startInput.value);
+        var exact = slots[index] && slots[index].value === String(startInput.value).slice(0, 5);
+        showActive(index, exact);
+        list.scrollTop = index * rowHeight();
+      });
+      if (exactBtn && startField) {
+        exactBtn.addEventListener("click", function () {
+          startField.classList.add("is-exact");
+          startInput.focus();
+        });
+      }
+      var startLabel = form.querySelector('label[for="startTime"]');
+      if (startLabel && startField) {
+        startLabel.addEventListener("click", function (event) {
+          if (startField.classList.contains("is-exact")) return;
+          event.preventDefault();
+          list.focus();
+        });
+      }
+      list.scrollTop = initial * rowHeight();
+      paint();
     }
 
     form.classList.add("is-enhanced");
@@ -580,13 +784,7 @@ if (typeof document !== "undefined") {
         setGuests((Number.isFinite(current) ? current : 9) + 1);
       });
     }
-    Array.prototype.forEach.call(form.querySelectorAll("[data-time]"), function (chip) {
-      chip.addEventListener("click", function () {
-        if (startInput) startInput.value = chip.getAttribute("data-time");
-        markTimeChips();
-        refresh();
-      });
-    });
+    mountTimeRoller();
     Array.prototype.forEach.call(form.querySelectorAll("[data-guests]"), function (chip) {
       chip.addEventListener("click", function () {
         var key = chip.getAttribute("data-guests");
@@ -644,6 +842,10 @@ if (typeof module === "object" && module.exports) {
     cityMessage: cityMessage,
     formatDateLabel: formatDateLabel,
     formatTimeLabel: formatTimeLabel,
+    formatRollerTime: formatRollerTime,
+    startTimeSlots: startTimeSlots,
+    nearestSlotIndex: nearestSlotIndex,
+    hoursSummary: hoursSummary,
     decideSelection: decideSelection,
     applyDesignerVenue: applyDesignerVenue,
     clearDesignerVenue: clearDesignerVenue,

@@ -657,22 +657,22 @@
               </fieldset>
               <fieldset class="wz-step" data-step="2" data-name="details" data-label="Details">
                 <legend class="wz-legend" tabindex="-1">How will the event run?</legend>
-                <div class="wz-field">
+                <div class="wz-field qb-start">
                   <label for="startTime">Start Time</label>
-                  <input id="startTime" name="startTime" type="time" step="900" required aria-describedby="startTime-hint" enterkeyhint="next">
+                  <div class="qb-roller">
+                    <div class="qb-roller-frame">
+                      <div class="qb-roller-band" aria-hidden="true"></div>
+                      <div id="qb-time-list" class="qb-roller-list is-pending" role="listbox" aria-label="Start time" aria-orientation="vertical" tabindex="0"></div>
+                    </div>
+                    <p class="qb-roller-hint" id="qb-time-hint">Scroll to choose</p>
+                    <button type="button" class="qb-exact" id="qb-exact-time">Enter an exact time</button>
+                  </div>
+                  <input id="startTime" name="startTime" type="time" step="900" required class="qb-native-time" aria-describedby="startTime-hint" enterkeyhint="next">
                   <p class="form-hint" id="startTime-hint">When you'd like the bar to open.</p>
-                </div>
-                <div class="wz-chips qb-times">
-                  <button type="button" class="wz-chip" data-time="16:00" aria-pressed="false"><span>4&nbsp;PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
-                  <button type="button" class="wz-chip" data-time="17:00" aria-pressed="false"><span>5&nbsp;PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
-                  <button type="button" class="wz-chip" data-time="18:00" aria-pressed="false"><span>6&nbsp;PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
-                  <button type="button" class="wz-chip" data-time="19:00" aria-pressed="false"><span>7&nbsp;PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
-                  <button type="button" class="wz-chip" data-time="20:00" aria-pressed="false"><span>8&nbsp;PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
                 </div>
                 <div class="wz-field">
                   <div class="qb-hours-head">
                     <label for="serviceHours">Service length</label>
-                    <span id="hours-readout">4 hours</span>
                   </div>
                   <div class="qb-range">
                     <span class="qb-bubble" id="hours-bubble">4 hrs</span>

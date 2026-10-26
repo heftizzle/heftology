@@ -66,7 +66,7 @@ check("heard about options", [...heard.matchAll(/<option\b[^>]*>([^<]*)<\/option
   "Select one…", "The Knot", "Instagram", "Google search", "Friend or family", "Other",
 ]);
 check("notes placeholder", form.includes('placeholder="Best time to reach you, 1-2 custom cocktails?, zero-proof options, anything else we should know."'), true);
-check("time chips have no name", [...form.matchAll(/<button\b[^>]*data-time="[^"]+"[^>]*>/g)].every((item) => !/\sname=/.test(item[0])), true);
+check("no start time chips", form.includes("data-time"), false);
 check("guest chips have no name", [...form.matchAll(/<button\b[^>]*data-guests="[^"]+"[^>]*>/g)].every((item) => !/\sname=/.test(item[0])), true);
 
 for (const name of ["theme", "colors", "extras"]) {

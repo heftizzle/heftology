@@ -26,6 +26,7 @@ check("cocktail class event", qb.recommendPackage({ guests: 30, hours: 3, eventT
 
 check("end 18:00 + 4", qb.endTimeLabel("18:00", 4), "Bar open 6:00 PM to 10:00 PM");
 check("end 21:00 + 5", qb.endTimeLabel("21:00", 5), "Bar open 9:00 PM to 2:00 AM (next day)");
+check("end 22:00 + 4", qb.endTimeLabel("22:00", 4), "Bar open 10:00 PM to 2:00 AM (next day)");
 check("end empty start", qb.endTimeLabel("", 4), "4 hours");
 
 check("tampa", qb.matchCoveredCity("tampa"), "Tampa");
@@ -132,6 +133,33 @@ check("designer venue keeps a visitor choice", qb.applyDesignerVenue({ current: 
 check("clear designer venue drops a designer pick", qb.clearDesignerVenue({ current: "Beach", source: "designer" }), { selection: "", source: "" });
 check("clear designer venue keeps a visitor pick", qb.clearDesignerVenue({ current: "Hotel", source: "user" }), { selection: "Hotel", source: "user" });
 check("review time uses the same clock", qb.formatTimeLabel("18:00"), "6:00 PM");
+check("roller 6pm", qb.formatRollerTime(18 * 60), "6:00\u00A0PM");
+check("roller noon", qb.formatRollerTime(12 * 60), "12:00\u00A0PM");
+check("roller 10am", qb.formatRollerTime(10 * 60), "10:00\u00A0AM");
+check("roller label keeps the time on one line", qb.formatRollerTime(18 * 60).includes(" "), false);
+const slots = qb.startTimeSlots();
+check("slot count", slots.length, 25);
+check("slot first", slots[0], { value: "10:00", label: "10:00\u00A0AM" });
+check("slot 6pm", slots[16], { value: "18:00", label: "6:00\u00A0PM" });
+check("slot last", slots[24], { value: "22:00", label: "10:00\u00A0PM" });
+check("slots step 30 minutes", slots.every((slot, index) => {
+  if (!index) return true;
+  const prev = slots[index - 1].value.split(":").map(Number);
+  const next = slot.value.split(":").map(Number);
+  return next[0] * 60 + next[1] - (prev[0] * 60 + prev[1]) === 30;
+}), true);
+check("nearest slot at the top", qb.nearestSlotIndex(0, 44, 25), 0);
+check("nearest slot is 6pm", qb.nearestSlotIndex(16 * 44, 44, 25), 16);
+check("nearest slot rounds down", qb.nearestSlotIndex(16 * 44 + 20, 44, 25), 16);
+check("nearest slot rounds up", qb.nearestSlotIndex(16 * 44 + 22, 44, 25), 17);
+check("nearest slot clamps", qb.nearestSlotIndex(9999, 44, 25), 24);
+check("hours summary", qb.hoursSummary("18:00", 4, false), "6:00\u00A0PM \u2013 10:00\u00A0PM (4 hours)");
+check("hours summary crosses midnight", qb.hoursSummary("22:00", 4, false), "10:00\u00A0PM \u2013 2:00\u00A0AM (4 hours) (next day)");
+check("hours summary unsure", qb.hoursSummary("18:00", 4, true), "Not sure yet");
+check("no time chips", form.includes("data-time"), false);
+check("roller listbox", form.includes('role="listbox" aria-label="Start time"'), true);
+check("exact time button", form.includes(">Enter an exact time</button>"), true);
+check("scroll hint", form.includes(">Scroll to choose</p>"), true);
 
 const builder = fs.readFileSync(path.join(root, "quote-builder.js"), "utf8");
 check("validation stays inline", builder.includes("reportValidity"), false);

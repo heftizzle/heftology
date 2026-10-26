@@ -18,7 +18,7 @@ const form = html.slice(formStart, formEnd);
 const script = html.slice(formEnd);
 
 check("booking form is in the page", formStart > 0 && formEnd > formStart, true);
-check("form posts to thank-you", form.startsWith('<form id="booking-form" name="booking" method="POST" netlify action="/thank-you.html">'), true);
+check("form posts to thank-you", form.startsWith('<form id="booking-form" class="wz-form" name="booking" method="POST" netlify action="/thank-you.html">'), true);
 check("form-name hidden", form.includes('<input type="hidden" name="form-name" value="booking">'), true);
 check("honeypot unchanged", form.includes('<input class="hp-field" tabindex="-1" autocomplete="off" name="hp_field" aria-hidden="true">'), true);
 check("subject hidden", form.includes('<input type="hidden" name="subject" id="booking-subject" value="New event inquiry">'), true);

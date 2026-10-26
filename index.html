@@ -296,83 +296,117 @@
       <p class="cocktail-widget-sub">Tell us your vibe — we’ll draft one custom signature cocktail for your event.</p>
     </header>
 
-    <div class="cocktail-widget-card reveal" id="cocktail-widget">
-      <form class="cocktail-widget-form" id="cocktail-widget-form">
+    <div class="cocktail-widget-card wz-card reveal" id="cocktail-widget">
+      <form class="cocktail-widget-form wz-form" id="cocktail-widget-form">
         <input class="hp-field" tabindex="-1" autocomplete="off" name="hp_field" aria-hidden="true">
-        <div class="cw-progress" aria-label="Cocktail designer progress">
-          <div class="cw-progress-bar" data-step="1" aria-hidden="true"></div>
-          <div class="cw-progress-bar" data-step="2" aria-hidden="true"></div>
-          <div class="cw-progress-bar" data-step="3" aria-hidden="true"></div>
-          <div class="cw-progress-bar" data-step="4" aria-hidden="true"></div>
-          <div class="cw-progress-bar" data-step="5" aria-hidden="true"></div>
+        <div class="wz-progress cw-progress" aria-hidden="true">
+          <div class="wz-progress-track"><div class="wz-progress-fill" id="cw-progress-fill"></div></div>
+          <p class="wz-progress-current" id="cw-step-kicker">Step 1 of 5</p>
         </div>
 
-        <p class="cw-step-kicker" id="cw-step-kicker">Step 1 of 5</p>
-
-        <div class="cw-step" data-step="1">
-          <div class="cocktail-widget-field">
-            <label for="cw-theme">Event Type</label>
+        <div class="cw-steps">
+        <fieldset class="wz-step cw-step" data-step="1">
+          <legend class="wz-legend" id="cw-legend-1" tabindex="-1">What are we celebrating?</legend>
+          <div class="wz-chips qb-compact cw-choices" role="radiogroup" aria-labelledby="cw-legend-1">
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="theme" data-value="Wedding"><span aria-hidden="true">💍</span><span>Wedding</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="theme" data-value="Bridal shower"><span aria-hidden="true">💐</span><span>Bridal shower</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="theme" data-value="Bachelorette"><span aria-hidden="true">💃</span><span>Bachelorette</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="theme" data-value="Birthday"><span aria-hidden="true">🎂</span><span>Birthday</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="theme" data-value="Anniversary"><span aria-hidden="true">🥂</span><span>Anniversary</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="theme" data-value="Corporate event"><span aria-hidden="true">💼</span><span>Corporate event</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="theme" data-value="Holiday party"><span aria-hidden="true">🎄</span><span>Holiday party</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="theme" data-value="Other"><span aria-hidden="true">✨</span><span>Other</span><span class="wz-check" aria-hidden="true">✓</span></button>
+          </div>
+          <div class="wz-field cw-free">
+            <label for="cw-theme">Event type</label>
             <input id="cw-theme" name="theme" type="text" placeholder="e.g. Wedding, Bachelorette, Birthday, Anniversary, Bar Mitzvah…" autocomplete="off" required>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="cw-step" data-step="2" hidden>
-          <div class="cocktail-widget-field">
-            <label for="cw-colors">Color Palette</label>
+        <fieldset class="wz-step cw-step" data-step="2" hidden>
+          <legend class="wz-legend" id="cw-legend-2" tabindex="-1">Pick your colors</legend>
+          <div class="wz-chips qb-compact cw-choices" role="radiogroup" aria-labelledby="cw-legend-2">
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="colors" data-value="Blush &amp; sage"><span class="cw-swatch cw-swatch-blush" aria-hidden="true"></span><span>Blush &amp; sage</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="colors" data-value="Navy &amp; gold"><span class="cw-swatch cw-swatch-navy" aria-hidden="true"></span><span>Navy &amp; gold</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="colors" data-value="Black &amp; white"><span class="cw-swatch cw-swatch-mono" aria-hidden="true"></span><span>Black &amp; white</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="colors" data-value="Tropical"><span class="cw-swatch cw-swatch-tropical" aria-hidden="true"></span><span>Tropical</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="colors" data-value="Jewel tones"><span class="cw-swatch cw-swatch-jewel" aria-hidden="true"></span><span>Jewel tones</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="colors" data-value="Earth tones"><span class="cw-swatch cw-swatch-earth" aria-hidden="true"></span><span>Earth tones</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="colors" data-value="Other"><span class="cw-swatch cw-swatch-other" aria-hidden="true"></span><span>Other</span><span class="wz-check" aria-hidden="true">✓</span></button>
+          </div>
+          <div class="wz-field cw-free">
+            <label for="cw-colors">Color palette</label>
             <input id="cw-colors" name="colors" type="text" placeholder="e.g. Dusty rose &amp; sage, Navy &amp; gold…" autocomplete="off" required>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="cw-step" data-step="3" hidden>
-          <div class="cw-step-label">Month</div>
+        <fieldset class="wz-step cw-step" data-step="3" hidden>
+          <legend class="wz-legend" id="cw-legend-3" tabindex="-1">When's the event?</legend>
           <input id="cw-month" name="month" type="hidden" required>
-          <div class="cw-btn-grid cw-btn-grid-3" role="group" aria-label="Select month">
-            <button type="button" class="cw-choice" data-target="month" data-value="January">January</button>
-            <button type="button" class="cw-choice" data-target="month" data-value="February">February</button>
-            <button type="button" class="cw-choice" data-target="month" data-value="March">March</button>
-            <button type="button" class="cw-choice" data-target="month" data-value="April">April</button>
-            <button type="button" class="cw-choice" data-target="month" data-value="May">May</button>
-            <button type="button" class="cw-choice" data-target="month" data-value="June">June</button>
-            <button type="button" class="cw-choice" data-target="month" data-value="July">July</button>
-            <button type="button" class="cw-choice" data-target="month" data-value="August">August</button>
-            <button type="button" class="cw-choice" data-target="month" data-value="September">September</button>
-            <button type="button" class="cw-choice" data-target="month" data-value="October">October</button>
-            <button type="button" class="cw-choice" data-target="month" data-value="November">November</button>
-            <button type="button" class="cw-choice" data-target="month" data-value="December">December</button>
+          <div class="wz-chips cw-months cw-choices" role="radiogroup" aria-labelledby="cw-legend-3">
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="January">January</button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="February">February</button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="March">March</button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="April">April</button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="May">May</button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="June">June</button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="July">July</button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="August">August</button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="September">September</button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="October">October</button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="November">November</button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="month" data-value="December">December</button>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="cw-step" data-step="4" hidden>
-          <div class="cw-step-label">Venue Type</div>
+        <fieldset class="wz-step cw-step" data-step="4" hidden>
+          <legend class="wz-legend" id="cw-legend-4" tabindex="-1">Where will it be?</legend>
           <input id="cw-venue" name="venue" type="hidden" required>
-          <div class="cw-btn-grid cw-btn-grid-2" role="group" aria-label="Select venue type">
-            <button type="button" class="cw-choice" data-target="venue" data-value="Beach">Beach</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Ballroom">Ballroom</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Hotel">Hotel</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Pool">Pool</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Golf Course">Golf Course</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Home (Indoor)">Home (Indoor)</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Backyard">Backyard</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Rooftop">Rooftop</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Boat / Yacht">Boat / Yacht</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Park / Garden">Park / Garden</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Warehouse / Industrial">Warehouse / Industrial</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Historic Venue">Historic Venue</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Restaurant">Restaurant</button>
-            <button type="button" class="cw-choice" data-target="venue" data-value="Winery / Vineyard">Winery / Vineyard</button>
+          <div class="wz-chips qb-compact cw-venues cw-choices" role="radiogroup" aria-labelledby="cw-legend-4">
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Beach"><span aria-hidden="true">🏖️</span><span>Beach</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Ballroom"><span aria-hidden="true">💃</span><span>Ballroom</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Hotel"><span aria-hidden="true">🏨</span><span>Hotel</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Pool"><span aria-hidden="true">🏊</span><span>Pool</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Golf Course"><span aria-hidden="true">⛳</span><span>Golf Course</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Home (Indoor)"><span aria-hidden="true">🏠</span><span>Home (Indoor)</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Backyard"><span aria-hidden="true">🏡</span><span>Backyard</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Rooftop"><span aria-hidden="true">🌆</span><span>Rooftop</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Boat / Yacht"><span aria-hidden="true">⛵</span><span>Boat / Yacht</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Park / Garden"><span aria-hidden="true">🌳</span><span>Park / Garden</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Warehouse / Industrial"><span aria-hidden="true">🏭</span><span>Warehouse / Industrial</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Historic Venue"><span aria-hidden="true">🏛️</span><span>Historic Venue</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Restaurant"><span aria-hidden="true">🍽️</span><span>Restaurant</span><span class="wz-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="wz-chip" role="radio" aria-checked="false" tabindex="-1" data-target="venue" data-value="Winery / Vineyard"><span aria-hidden="true">🍷</span><span>Winery / Vineyard</span><span class="wz-check" aria-hidden="true">✓</span></button>
           </div>
+        </fieldset>
+
+        <fieldset class="wz-step cw-step" data-step="5" hidden>
+          <legend class="wz-legend" id="cw-legend-5" tabindex="-1">What do you like to drink?</legend>
+          <div class="wz-chips qb-compact cw-drinks" role="group" aria-labelledby="cw-legend-5">
+            <button type="button" class="wz-chip" data-pref="Not too sweet" aria-pressed="false">Not too sweet</button>
+            <button type="button" class="wz-chip" data-pref="Fruity" aria-pressed="false">Fruity</button>
+            <button type="button" class="wz-chip" data-pref="Citrus" aria-pressed="false">Citrus</button>
+            <button type="button" class="wz-chip" data-pref="Spicy" aria-pressed="false">Spicy</button>
+            <button type="button" class="wz-chip" data-pref="Smoky" aria-pressed="false">Smoky</button>
+            <button type="button" class="wz-chip" data-pref="Tequila" aria-pressed="false">Tequila</button>
+            <button type="button" class="wz-chip" data-pref="Whiskey" aria-pressed="false">Whiskey</button>
+            <button type="button" class="wz-chip" data-pref="Vodka" aria-pressed="false">Vodka</button>
+            <button type="button" class="wz-chip" data-pref="Gin" aria-pressed="false">Gin</button>
+            <button type="button" class="wz-chip" data-pref="Rum" aria-pressed="false">Rum</button>
+            <button type="button" class="wz-chip" data-pref="Zero-proof" aria-pressed="false">Zero-proof</button>
+            <button type="button" class="wz-chip" data-pref="No coconut" aria-pressed="false">No coconut</button>
+          </div>
+          <div class="wz-field">
+            <label for="cw-preferences">Drink preferences</label>
+            <textarea id="cw-preferences" name="preferences" rows="3" maxlength="400" placeholder="e.g. Not too sweet, love tequila, spicy, fruity, no coconut…" required></textarea>
+          </div>
+        </fieldset>
         </div>
 
-        <div class="cw-step" data-step="5" hidden>
-          <div class="cocktail-widget-field">
-            <label for="cw-preferences">Drink Preferences</label>
-            <textarea id="cw-preferences" name="preferences" rows="3" placeholder="e.g. Not too sweet, love tequila, spicy, fruity, no coconut…" required></textarea>
-          </div>
-        </div>
-
-        <div class="cw-actions">
-          <button class="btn-ghost cw-back" id="cw-back" type="button">← Back</button>
-          <button class="cocktail-widget-submit cw-next" id="cocktail-widget-submit" type="button">Next →</button>
+        <p class="wz-alert" id="cw-alert" role="alert" hidden>Please complete this step to continue.</p>
+        <div class="wz-actions cw-actions">
+          <button class="btn-ghost cw-back" id="cw-back" type="button">Back</button>
+          <button class="btn-primary cw-next" id="cocktail-widget-submit" type="button">Next</button>
         </div>
         <p class="cocktail-widget-note" id="cocktail-widget-note">Want this built for your guest count and bar setup? Book via the form below or email <a href="mailto:carissa@heftology.com">carissa@heftology.com</a>.</p>
       </form>
@@ -585,7 +619,7 @@
     </div>
   </div>
   <div class="qb-wrap">
-      <form id="booking-form" name="booking" method="POST" netlify action="/thank-you.html">
+      <form id="booking-form" class="wz-form" name="booking" method="POST" netlify action="/thank-you.html">
       <input type="hidden" name="form-name" value="booking">
       <input class="hp-field" tabindex="-1" autocomplete="off" name="hp_field" aria-hidden="true">
       <input type="hidden" name="subject" id="booking-subject" value="New event inquiry">
@@ -1050,8 +1084,17 @@ async function doSend(text) {
 function setWidgetStatus(text, isError = false) {
   const el = document.getElementById('cocktail-widget-status');
   if (!el) return;
+  el.classList.remove('is-mixing');
   el.textContent = text || '';
   el.classList.toggle('error', !!isError);
+}
+
+function setMixingStatus() {
+  const el = document.getElementById('cocktail-widget-status');
+  if (!el) return;
+  el.classList.remove('error');
+  el.classList.add('is-mixing');
+  el.textContent = 'Mixing your cocktail...';
 }
 
 // designer-photo-fns
@@ -1098,37 +1141,25 @@ function renderCocktail(c) {
   const result = document.getElementById('cocktail-widget-result');
   if (!result) return;
   const ingredients = Array.isArray(c.ingredients) ? c.ingredients : [];
+  const meta = [c.garnish, c.glass].filter((item) => String(item || '').trim()).map((item) => `<span class="wz-chip">${escapeHtml(String(item))}</span>`).join('');
   result.innerHTML = `
     <div class="cw-result-header">
       <h3 class="cw-result-name">${escapeHtml(c.name || 'Signature Cocktail')}</h3>
       <p class="cw-result-tagline">${escapeHtml(c.tagline || '')}</p>
     </div>
-    <div class="cw-result-grid">
-      <div class="cw-block">
-        <div class="cw-label">Ingredients</div>
-        <ul class="cw-ingredients">
-          ${ingredients.map((i) => `<li>${escapeHtml(String(i))}</li>`).join('')}
-        </ul>
-      </div>
-      <div class="cw-block">
-        <div class="cw-label">Garnish</div>
-        <div class="cw-value">${escapeHtml(c.garnish || '')}</div>
-        <div class="cw-label" style="margin-top:0.9rem;">Glass</div>
-        <div class="cw-value">${escapeHtml(c.glass || '')}</div>
-      </div>
-      <div class="cw-block full">
-        <div class="cw-label">Method</div>
-        <div class="cw-value">${escapeHtml(c.method || '')}</div>
-      </div>
-      <div class="cw-block full">
-        <div class="cw-label">Color story</div>
-        <div class="cw-value">${escapeHtml(c.colorNote || '')}</div>
-      </div>
-      <div class="cw-block full cw-note">
-        <div class="cw-label">A note from ${escapeHtml(c.presenter || 'Heftology')}</div>
-        <div class="cw-value">“${escapeHtml(c.heftologyNote || '')}”</div>
-      </div>
-    </div>
+    <div class="cw-label">Ingredients</div>
+    <ul class="cw-ingredients">
+      ${ingredients.map((i) => `<li>${escapeHtml(String(i))}</li>`).join('')}
+    </ul>
+    ${meta ? `<div class="cw-result-meta">${meta}</div>` : ''}
+    <div class="cw-label">Method</div>
+    <p class="cw-result-copy">${escapeHtml(c.method || '')}</p>
+    <div class="cw-label">Color story</div>
+    <p class="cw-result-copy">${escapeHtml(c.colorNote || '')}</p>
+    <blockquote class="cw-note">
+      <div class="cw-label">A note from ${escapeHtml(c.presenter || 'Heftology')}</div>
+      <p>“${escapeHtml(c.heftologyNote || '')}”</p>
+    </blockquote>
     <div class="cw-result-actions">
       <a class="btn-primary cw-book" href="#booking">Book this vibe</a>
       <button class="btn-ghost cw-reset" type="button" id="cw-reset">Start over</button>
@@ -1145,38 +1176,103 @@ function renderCocktail(c) {
   }
 }
 
+// designer-wizard-fns
+var DESIGNER_PREFERENCE_MAX = 400;
+
+function designerPhrasePresent(text, label) {
+  return String(text || "").split(/,|\n/).some(function (part) {
+    return part.trim().toLowerCase() === String(label || "").toLowerCase();
+  });
+}
+
+function designerAppendPreference(text, label, max) {
+  var current = String(text || "");
+  var limit = typeof max === "number" ? max : DESIGNER_PREFERENCE_MAX;
+  if (designerPhrasePresent(current, label)) return { value: current, accepted: true };
+  var trimmed = current.replace(/\s+$/, "");
+  var next = trimmed ? trimmed + ", " + label : String(label || "");
+  if (next.length > limit) return { value: current, accepted: false };
+  return { value: next, accepted: true };
+}
+
+function designerRemovePreference(text, label) {
+  var removed = false;
+  var kept = String(text || "").split(/,|\n/).filter(function (part) {
+    if (!removed && part.trim().toLowerCase() === String(label || "").toLowerCase()) {
+      removed = true;
+      return false;
+    }
+    return true;
+  });
+  return kept.map(function (part) { return part.trim(); }).filter(Boolean).join(", ");
+}
+
+function designerApplySingle(target, value) {
+  if ((target === "theme" || target === "colors") && value === "Other") {
+    return { value: "", reveal: true };
+  }
+  return { value: value, reveal: false };
+}
+
+function designerRadioStep(index, count, key) {
+  if (!count) return 0;
+  if (key === "Home") return 0;
+  if (key === "End") return count - 1;
+  if (key === "ArrowLeft" || key === "ArrowUp") return (index - 1 + count) % count;
+  if (key === "ArrowRight" || key === "ArrowDown") return (index + 1) % count;
+  return index;
+}
+// end-designer-wizard-fns
+
 window.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('cocktail-widget-form');
   const submit = document.getElementById('cocktail-widget-submit');
   const back = document.getElementById('cw-back');
   const kicker = document.getElementById('cw-step-kicker');
+  const alertEl = document.getElementById('cw-alert');
   if (!form || !submit) return;
 
   let step = 1;
+  let fadeToken = 0;
   const totalSteps = 5;
   const steps = Array.from(form.querySelectorAll('.cw-step'));
-  const progress = Array.from(form.querySelectorAll('.cw-progress-bar'));
+  const fieldFor = { theme: 'cw-theme', colors: 'cw-colors', month: 'cw-month', venue: 'cw-venue' };
 
   function showStep(n, opts = {}) {
-    const focusField = opts.focus !== false;
-    step = Math.max(1, Math.min(totalSteps, n));
+    const next = Math.max(1, Math.min(totalSteps, n));
+    const incoming = steps[next - 1];
+    const token = ++fadeToken;
     steps.forEach((el) => {
-      const s = Number(el.getAttribute('data-step') || '0');
-      el.hidden = s !== step;
+      if (el === incoming) return;
+      if (el.classList.contains('is-current') || el.classList.contains('is-incoming')) {
+        el.classList.remove('is-current', 'is-incoming');
+        el.classList.add('is-leaving');
+        window.setTimeout(() => el.classList.remove('is-leaving'), 240);
+      }
     });
-    progress.forEach((el) => {
-      const s = Number(el.getAttribute('data-step') || '0');
-      el.classList.toggle('active', s <= step);
-    });
-    if (kicker) kicker.textContent = `Step ${step} of ${totalSteps}`;
-    if (back) back.style.visibility = step === 1 ? 'hidden' : 'visible';
-    submit.textContent = step === totalSteps ? 'Create My Cocktail ✦' : 'Next →';
+    incoming.classList.remove('is-leaving');
+    if (opts.user) {
+      incoming.classList.add('is-incoming');
+      window.requestAnimationFrame(() => {
+        if (token !== fadeToken) return;
+        incoming.classList.remove('is-incoming');
+        incoming.classList.add('is-current');
+      });
+    } else {
+      incoming.classList.add('is-current');
+    }
+    step = next;
+    form.classList.toggle('is-first', step === 1);
+    form.classList.toggle('is-last', step === totalSteps);
+    const fill = document.getElementById('cw-progress-fill');
+    if (fill) fill.style.transform = 'scaleX(' + (step / totalSteps) + ')';
+    if (kicker) kicker.textContent = 'Step ' + step + ' of ' + totalSteps;
+    submit.textContent = step === totalSteps ? 'Design my cocktail' : 'Next';
+    if (alertEl) alertEl.hidden = true;
     setWidgetStatus('');
-
-    if (focusField) {
-      if (step === 1) document.getElementById('cw-theme')?.focus();
-      if (step === 2) document.getElementById('cw-colors')?.focus();
-      if (step === 5) document.getElementById('cw-preferences')?.focus();
+    if (opts.user) {
+      const legend = incoming.querySelector('.wz-legend');
+      if (legend) legend.focus();
     }
   }
 
@@ -1189,43 +1285,97 @@ window.addEventListener('DOMContentLoaded', () => {
     return false;
   }
 
-  function setChoice(target, value) {
-    const inputId = target === 'month' ? 'cw-month' : 'cw-venue';
-    const input = document.getElementById(inputId);
-    if (input) input.value = value;
-    form.querySelectorAll(`.cw-choice[data-target="${target}"]`).forEach((btn) => {
-      btn.classList.toggle('selected', btn.getAttribute('data-value') === value);
-      btn.setAttribute('aria-pressed', btn.getAttribute('data-value') === value ? 'true' : 'false');
+  function selectRadio(btn, opts) {
+    const group = btn.closest('[role="radiogroup"]');
+    const target = btn.getAttribute('data-target');
+    const raw = btn.getAttribute('data-value');
+    if (!group || !target || raw == null) return;
+    const applied = designerApplySingle(target, raw);
+    const input = document.getElementById(fieldFor[target]);
+    if (input) input.value = applied.value;
+    const free = input && input.closest('.cw-free');
+    if (free) free.classList.toggle('is-open', applied.reveal);
+    group.querySelectorAll('[role="radio"]').forEach((radio) => {
+      const on = radio === btn;
+      radio.setAttribute('aria-checked', on ? 'true' : 'false');
+      radio.classList.toggle('is-selected', on);
+      radio.tabIndex = on ? 0 : -1;
+    });
+    if (applied.reveal && input && opts && opts.focusField) input.focus();
+    else if (alertEl && applied.value) alertEl.hidden = true;
+  }
+
+  function syncPreferences() {
+    const prefs = document.getElementById('cw-preferences');
+    const value = prefs ? prefs.value : '';
+    form.querySelectorAll('[data-pref]').forEach((btn) => {
+      const label = btn.getAttribute('data-pref');
+      const on = designerPhrasePresent(value, label);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.classList.toggle('is-selected', on);
+      const fits = designerAppendPreference(value, label, DESIGNER_PREFERENCE_MAX).accepted;
+      if (!on && !fits) btn.setAttribute('aria-disabled', 'true');
+      else btn.removeAttribute('aria-disabled');
     });
   }
 
-  form.querySelectorAll('.cw-choice').forEach((btn) => {
-    btn.setAttribute('aria-pressed', 'false');
-    btn.addEventListener('click', () => {
-      const target = btn.getAttribute('data-target');
-      const value = btn.getAttribute('data-value');
-      if (!target || !value) return;
-      setChoice(target, value);
+  function togglePreference(btn) {
+    if (btn.getAttribute('aria-disabled') === 'true') return;
+    const prefs = document.getElementById('cw-preferences');
+    const label = btn.getAttribute('data-pref');
+    if (!prefs || !label) return;
+    if (btn.getAttribute('aria-pressed') === 'true') {
+      prefs.value = designerRemovePreference(prefs.value, label);
+    } else {
+      const next = designerAppendPreference(prefs.value, label, DESIGNER_PREFERENCE_MAX);
+      if (!next.accepted) return;
+      prefs.value = next.value;
+    }
+    syncPreferences();
+    if (alertEl && String(prefs.value || '').trim()) alertEl.hidden = true;
+  }
+
+  form.querySelectorAll('[role="radiogroup"]').forEach((group) => {
+    const radios = Array.from(group.querySelectorAll('[role="radio"]'));
+    radios.forEach((btn, index) => {
+      btn.tabIndex = index === 0 ? 0 : -1;
+      btn.addEventListener('click', () => selectRadio(btn, { focusField: true }));
+      btn.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          selectRadio(btn, { focusField: true });
+          return;
+        }
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].indexOf(event.key) < 0) return;
+        event.preventDefault();
+        const current = radios.indexOf(btn);
+        const next = radios[designerRadioStep(current, radios.length, event.key)];
+        selectRadio(next);
+        next.focus();
+      });
     });
+  });
+
+  form.querySelectorAll('[data-pref]').forEach((btn) => {
+    btn.addEventListener('click', () => togglePreference(btn));
   });
 
   submit.addEventListener('click', () => {
     if (!validateStep(step)) {
-      setWidgetStatus('Please complete this step to continue.', true);
+      if (alertEl) alertEl.hidden = false;
       return;
     }
     if (step < totalSteps) {
-      showStep(step + 1);
+      showStep(step + 1, { user: true });
       return;
     }
-    // Step 5: submit (keeps existing submit/fetch/render logic intact)
     if (typeof form.requestSubmit === 'function') form.requestSubmit();
     else form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
   });
 
   if (back) {
     back.addEventListener('click', () => {
-      showStep(step - 1);
+      showStep(step - 1, { user: true });
     });
   }
 
@@ -1283,10 +1433,10 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     submit.disabled = true;
-    submit.classList.add('loading');
-    submit.textContent = 'Crafting…';
-    setWidgetStatus('Crafting your signature cocktail…');
-    document.getElementById('cocktail-widget-result')?.setAttribute('hidden', 'true');
+    submit.textContent = 'Design my cocktail';
+    setMixingStatus();
+    const resultPane = document.getElementById('cocktail-widget-result');
+    if (resultPane) resultPane.hidden = true;
 
     try {
       const res = await fetch('/.netlify/functions/cocktail', {
@@ -1308,8 +1458,7 @@ window.addEventListener('DOMContentLoaded', () => {
       );
     } finally {
       submit.disabled = false;
-      submit.classList.remove('loading');
-      submit.textContent = 'Create My Cocktail ✦';
+      submit.textContent = step === totalSteps ? 'Design my cocktail' : 'Next';
     }
   });
 
@@ -1322,19 +1471,34 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     setWidgetStatus('');
     form.reset();
-    form.querySelectorAll('.cw-choice').forEach((btn) => {
-      btn.classList.remove('selected');
-      btn.setAttribute('aria-pressed', 'false');
+    form.querySelectorAll('[role="radio"]').forEach((btn) => {
+      const group = btn.closest('[role="radiogroup"]');
+      const first = group && group.querySelector('[role="radio"]') === btn;
+      btn.classList.remove('is-selected');
+      btn.setAttribute('aria-checked', 'false');
+      btn.tabIndex = first ? 0 : -1;
     });
+    form.querySelectorAll('.cw-free').forEach((field) => field.classList.remove('is-open'));
+    syncPreferences();
     const month = document.getElementById('cw-month');
     const venue = document.getElementById('cw-venue');
     if (month) month.value = '';
     if (venue) venue.value = '';
-    showStep(1);
+    showStep(1, { user: true });
   };
 
-  // init — do not focus #cw-theme on load; focus() scrolls the field into view
-  showStep(1, { focus: false });
+  steps[0].classList.add('is-current');
+  form.classList.add('is-enhanced', 'is-first');
+  steps.forEach((el) => el.removeAttribute('hidden'));
+  form.querySelectorAll('[role="radiogroup"]').forEach((group) => {
+    const first = group.querySelector('[role="radio"]');
+    if (first) first.tabIndex = 0;
+  });
+  const fill = document.getElementById('cw-progress-fill');
+  if (fill) fill.style.transform = 'scaleX(0.2)';
+  syncPreferences();
+  if (prefsInput) prefsInput.addEventListener('input', syncPreferences);
+  // init — do not focus a field on load; focus() scrolls the field into view
 });
 
 // ─── Scroll decks (photo gallery, testimonials) ───

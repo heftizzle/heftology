@@ -9,7 +9,7 @@ When given an event theme, color palette, drink preferences, month, and venue ty
 
 Factor in seasonality heavily — use warm spiced profiles for fall/winter (September–February) and fresh citrus/floral/herbal profiles for spring/summer (March–August). An apple spice drink has no business at a July beach wedding. Also factor in venue: beach/pool = tropical, frozen, heat-resistant; ballroom/hotel = elevated, sophisticated, presentation-forward; golf course = classic, approachable; rooftop = modern, sleek; boat/yacht = nautical, refreshing; backyard/home = casual, crowd-pleasing; warehouse/industrial = bold, unexpected; historic venue = classic with a twist; park/garden = floral, light, botanical; restaurant = refined.
 
-Respond ONLY in this JSON format with no markdown or extra text:
+Respond ONLY in this JSON format with no markdown or extra text. The ingredients array has at most 5 items. Garnish is a separate field and does not count toward those 5.
 {
   "name": "Creative cocktail name tied to the event theme",
   "tagline": "One evocative sentence describing the vibe",
@@ -464,7 +464,43 @@ async function beginRateLimit(store, key, now) {
   };
 }
 
+const MAX_INGREDIENTS = 5;
+const MODEL_TIMEOUT_MS = 10000;
+const INGREDIENT_RETRY_TIMEOUT_MS = 6000;
+const INGREDIENT_RETRY_BUDGET_MS = 9000;
+const INGREDIENT_RETRY_MIN_MS = 2500;
+
+function ingredientRetryTimeout(elapsed) {
+  const remaining = INGREDIENT_RETRY_BUDGET_MS - elapsed;
+  if (remaining < INGREDIENT_RETRY_MIN_MS) return 0;
+  return Math.min(INGREDIENT_RETRY_TIMEOUT_MS, remaining);
+}
+
+function ingredientCount(cocktail) {
+  return cocktail && Array.isArray(cocktail.ingredients) ? cocktail.ingredients.length : 0;
+}
+
+function limitIngredients(cocktail) {
+  if (!cocktail || typeof cocktail !== "object" || !Array.isArray(cocktail.ingredients)) return cocktail;
+  if (cocktail.ingredients.length <= MAX_INGREDIENTS) return cocktail;
+  return Object.assign({}, cocktail, { ingredients: cocktail.ingredients.slice(0, MAX_INGREDIENTS) });
+}
+
+function modelText(response) {
+  return ((response && response.content) || [])
+    .map((part) => (typeof part?.text === "string" ? part.text : ""))
+    .join("")
+    .trim();
+}
+
+function parseCocktailText(raw) {
+  return JSON.parse(String(raw || "").replace(/```json|```/gi, "").trim());
+}
+
 exports.LOCK_HOURS = LOCK_HOURS;
+exports.MAX_INGREDIENTS = MAX_INGREDIENTS;
+exports.limitIngredients = limitIngredients;
+exports.ingredientRetryTimeout = ingredientRetryTimeout;
 
 const ALLOWED_ORIGINS = new Set(["https://heftology.com", "https://www.heftology.com"]);
 
@@ -564,30 +600,61 @@ exports.handler = async (event) => {
       const userMessage = `Event theme: ${theme}\nColor palette: ${colors}\nDrink preferences: ${preferences}\nMonth of event: ${month}\nVenue type: ${venue}`;
 
       const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      const model = process.env.COCKTAIL_MODEL || process.env.CLAUDE_MODEL || "claude-haiku-4-5-20251001";
       const response = await client.messages.create(
         {
-          model: process.env.COCKTAIL_MODEL || process.env.CLAUDE_MODEL || "claude-haiku-4-5-20251001",
+          model,
           max_tokens: 700,
           system: HEFTOLOGY_PROMPT,
           messages: [{ role: "user", content: userMessage }],
         },
-        { signal: AbortSignal.timeout(10000) }
+        { signal: AbortSignal.timeout(MODEL_TIMEOUT_MS) }
       );
 
-      const raw = (response.content || [])
-        .map((c) => (typeof c?.text === "string" ? c.text : ""))
-        .join("")
-        .trim();
-
-      // Best-effort cleanup if the model wraps JSON (shouldn't, per prompt).
-      const clean = raw.replace(/```json|```/gi, "").trim();
+      const raw = modelText(response);
       let cocktail;
       try {
-        cocktail = JSON.parse(clean);
+        cocktail = parseCocktailText(raw);
       } catch {
         await gate.release();
         console.error("Cocktail JSON parse error");
         return send(502, JSON.stringify({ error: "Could not craft that cocktail. Please try again." }));
+      }
+
+      let usage = response.usage;
+      if (ingredientCount(cocktail) > MAX_INGREDIENTS) {
+        const retryTimeout = ingredientRetryTimeout(Date.now() - started);
+        if (!retryTimeout) {
+          cocktail = limitIngredients(cocktail);
+        } else {
+          try {
+            const retry = await client.messages.create(
+              {
+                model,
+                max_tokens: 700,
+                system: HEFTOLOGY_PROMPT,
+                messages: [
+                  { role: "user", content: userMessage },
+                  { role: "assistant", content: raw },
+                  {
+                    role: "user",
+                    content: "That recipe has more than 5 ingredients. Return the same cocktail again as JSON with at most 5 ingredients. Keep garnish as its own field; it does not count toward the 5.",
+                  },
+                ],
+              },
+              { signal: AbortSignal.timeout(retryTimeout) }
+            );
+            const revised = parseCocktailText(modelText(retry));
+            if (ingredientCount(revised) <= MAX_INGREDIENTS) {
+              cocktail = revised;
+              usage = retry.usage;
+            } else {
+              cocktail = limitIngredients(cocktail);
+            }
+          } catch {
+            cocktail = limitIngredients(cocktail);
+          }
+        }
       }
 
       await gate.commit(Date.now());
@@ -597,7 +664,7 @@ exports.handler = async (event) => {
       } catch {
         // A failed email must not change the cocktail the visitor receives.
       }
-      return send(200, JSON.stringify({ cocktail }), response.usage);
+      return send(200, JSON.stringify({ cocktail }), usage);
     } catch (err) {
       await gate.release();
       throw err;

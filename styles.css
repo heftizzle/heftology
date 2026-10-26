@@ -1182,6 +1182,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   nav.nav-open .nav-links { display: flex; }
   .nav-links li { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.06); }
   .nav-links a { display: block; padding: 0.85rem 0; }
+  .faq { scroll-margin-top: 3.5rem; }
   .gallery-track { height: 260px; }
   .seasonal-spotlight { padding: 3.5rem 1.25rem; }
   .menu-layout { grid-template-columns: 1fr; gap: 3rem; }

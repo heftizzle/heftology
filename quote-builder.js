@@ -176,6 +176,31 @@ function formatDateLabel(iso, style) {
   return WEEKDAYS[date.getDay()] + ", " + MONTHS[month - 1] + " " + day + ", " + year;
 }
 
+function formatTimeLabel(value) {
+  if (!value) return "";
+  var parts = String(value).split(":");
+  var hour = Number(parts[0]);
+  var minute = Number(parts[1]);
+  if (!Number.isFinite(hour) || !Number.isFinite(minute)) return "";
+  return formatClock(hour * 60 + minute);
+}
+
+function applyDesignerVenue(input) {
+  var current = (input && input.current) || "";
+  var source = (input && input.source) || "";
+  var incoming = (input && input.incoming) || "";
+  if (source === "user" && current) return { selection: current, source: "user" };
+  if (!incoming) return { selection: current, source: source };
+  return { selection: incoming, source: "designer" };
+}
+
+function clearDesignerVenue(input) {
+  var current = (input && input.current) || "";
+  var source = (input && input.source) || "";
+  if (source !== "designer") return { selection: current, source: source };
+  return { selection: "", source: "" };
+}
+
 function formatDollars(amount) {
   return String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -204,14 +229,17 @@ if (typeof document !== "undefined") {
     var hoursUnsure = form.querySelector('input[name="serviceHoursUnsure"]');
     var endTime = document.getElementById("end-time");
     var guestsInput = document.getElementById("field-guests");
-    var guestsSlider = document.getElementById("guests-slider");
     var guestNote = document.getElementById("guest-note");
+    var guestEstimateNote = document.getElementById("guest-estimate");
+    var hoursBubble = document.getElementById("hours-bubble");
     var packageNote = document.getElementById("package-note");
     var headlineInput = document.getElementById("headlineCocktail");
     var headlineText = document.getElementById("qb-headline-text");
     var headlineLink = document.getElementById("qb-headline-link");
     var receipt = document.getElementById("qb-receipt");
     var packageSource = "auto";
+    var locationSource = "";
+    var guestEstimate = false;
     var currentStep = 1;
 
     var missingCopy = {
@@ -243,6 +271,9 @@ if (typeof document !== "undefined") {
       var value = Number(input.value);
       var pct = max === min ? 0 : ((value - min) / (max - min)) * 100;
       input.style.setProperty("--pct", pct + "%");
+      if (input.parentElement && input.parentElement.classList.contains("qb-range")) {
+        input.parentElement.style.setProperty("--pct", pct + "%");
+      }
     }
 
     function showAlert(message) {
@@ -309,7 +340,7 @@ if (typeof document !== "undefined") {
         var invalid = firstInvalid(steps[i]);
         if (!invalid) continue;
         if (i !== currentStep - 1) showStep(i + 1, { user: true, silent: true });
-        if (invalid.reportValidity) invalid.reportValidity();
+        if (invalid.focus) invalid.focus();
         showAlert(missingCopy[invalid.name] || "Check that field and try again.");
         return false;
       }
@@ -326,20 +357,27 @@ if (typeof document !== "undefined") {
       });
     }
 
-    function syncGuestSlider() {
-      if (!guestsInput || !guestsSlider || guestsInput.value === "") return;
-      var count = Number(guestsInput.value);
-      if (!Number.isFinite(count)) return;
-      var min = Number(guestsSlider.min);
-      var max = Number(guestsSlider.max);
-      guestsSlider.value = String(Math.min(max, Math.max(min, count)));
-      setPct(guestsSlider);
+    function setGuests(value, keepEstimate) {
+      if (!keepEstimate) guestEstimate = false;
+      guestsInput.value = String(Math.min(500, Math.max(1, value)));
+      refresh();
     }
 
-    function setGuests(value) {
-      guestsInput.value = String(Math.min(500, Math.max(1, value)));
-      syncGuestSlider();
-      refresh();
+    function markGuestChips() {
+      var value = guestsInput ? guestsInput.value : "";
+      Array.prototype.forEach.call(form.querySelectorAll("[data-guests]"), function (chip) {
+        var key = chip.getAttribute("data-guests");
+        var on = key === "150+" ? guestEstimate && value === "151" : key === value;
+        chip.classList.toggle("is-selected", on);
+        chip.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    function chooseLocation(decision) {
+      locationSource = decision.source || "";
+      Array.prototype.forEach.call(form.querySelectorAll('input[name="location"]'), function (radio) {
+        radio.checked = !!decision.selection && radio.value === decision.selection;
+      });
     }
 
     function priceLine(value) {
@@ -388,6 +426,10 @@ if (typeof document !== "undefined") {
         setPct(hoursInput);
       }
       if (hoursReadout) hoursReadout.textContent = unsure ? "Not sure yet" : (hoursInput ? hoursInput.value + " hours" : "");
+      if (hoursBubble) {
+        hoursBubble.hidden = unsure;
+        hoursBubble.textContent = (hoursInput ? hoursInput.value : "4") + " hrs";
+      }
       if (endTime) {
         var endLabel = !unsure && hoursInput ? endTimeLabel(startInput ? startInput.value : "", hoursInput.value) : "";
         endTime.hidden = unsure || !endLabel;
@@ -399,6 +441,8 @@ if (typeof document !== "undefined") {
           ? "Over 150 guests is a custom quote. We'll build it with you."
           : "";
       }
+      if (guestEstimateNote) guestEstimateNote.textContent = guestEstimate ? "Enter your best estimate." : "";
+      markGuestChips();
       var hoursValue = hoursInput ? Number(hoursInput.value) : NaN;
       var recommended = recommendPackage({
         guests: guestCount,
@@ -476,7 +520,7 @@ if (typeof document !== "undefined") {
           ["City", cityInput ? cityInput.value.trim() : ""]
         ]),
         receiptGroup("Details", 2, [
-          ["Bar opens", fieldValue("startTime")],
+          ["Bar opens", formatTimeLabel(fieldValue("startTime"))],
           ["Service", service],
           ["Guests", fieldValue("field-guests")]
         ]),
@@ -499,6 +543,8 @@ if (typeof document !== "undefined") {
     function onEdit(event) {
       var target = event.target;
       if (target && target.name === "packageInterest") packageSource = "user";
+      if (target && target.name === "location") locationSource = "user";
+      if (target && target === guestsInput && guestsInput.value !== "151") guestEstimate = false;
       refresh();
     }
 
@@ -508,7 +554,6 @@ if (typeof document !== "undefined") {
       dateInput.min = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
     }
     setPct(hoursInput);
-    setPct(guestsSlider);
     showStep(1);
     refresh();
 
@@ -531,15 +576,8 @@ if (typeof document !== "undefined") {
     }
     if (plus) {
       plus.addEventListener("click", function () {
-        var current = !guestsInput || guestsInput.value === "" ? 0 : Number(guestsInput.value);
-        setGuests((Number.isFinite(current) ? current : 0) + 1);
-      });
-    }
-    if (guestsSlider) {
-      guestsSlider.addEventListener("input", function () {
-        guestsInput.value = guestsSlider.value;
-        setPct(guestsSlider);
-        refresh();
+        var current = !guestsInput || guestsInput.value === "" ? 9 : Number(guestsInput.value);
+        setGuests((Number.isFinite(current) ? current : 9) + 1);
       });
     }
     Array.prototype.forEach.call(form.querySelectorAll("[data-time]"), function (chip) {
@@ -547,6 +585,21 @@ if (typeof document !== "undefined") {
         if (startInput) startInput.value = chip.getAttribute("data-time");
         markTimeChips();
         refresh();
+      });
+    });
+    Array.prototype.forEach.call(form.querySelectorAll("[data-guests]"), function (chip) {
+      chip.addEventListener("click", function () {
+        var key = chip.getAttribute("data-guests");
+        if (key === "150+") {
+          guestEstimate = true;
+          setGuests(151, true);
+          if (guestsInput) {
+            guestsInput.focus();
+            if (guestsInput.select) guestsInput.select();
+          }
+          return;
+        }
+        setGuests(Number(key));
       });
     });
     form.addEventListener("keydown", function (event) {
@@ -563,10 +616,19 @@ if (typeof document !== "undefined") {
     window.addEventListener("designer:result", function (event) {
       var detail = event.detail || {};
       setHeadline(detail.name || "");
+      chooseLocation(applyDesignerVenue({
+        current: selected("location"),
+        source: locationSource,
+        incoming: detail.venue || ""
+      }));
       refresh();
     });
     window.addEventListener("designer:reset", function () {
       setHeadline("");
+      chooseLocation(clearDesignerVenue({
+        current: selected("location"),
+        source: locationSource
+      }));
       refresh();
     });
   };
@@ -581,7 +643,10 @@ if (typeof module === "object" && module.exports) {
     matchCoveredCity: matchCoveredCity,
     cityMessage: cityMessage,
     formatDateLabel: formatDateLabel,
+    formatTimeLabel: formatTimeLabel,
     decideSelection: decideSelection,
+    applyDesignerVenue: applyDesignerVenue,
+    clearDesignerVenue: clearDesignerVenue,
     recommendationSentence: recommendationSentence,
     coveredCities: COVERED_CITIES
   };

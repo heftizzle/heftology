@@ -47,15 +47,16 @@ check("headlineCocktail once", count("headlineCocktail"), 1);
 check("serviceHoursUnsure once", count("serviceHoursUnsure"), 1);
 check("serviceHours once", count("serviceHours"), 1);
 check("eventType is one radio group", count("eventType"), 5);
-check("location is one radio group", count("location"), 5);
+check("location is one radio group", count("location"), 16);
 check("contactPreference is one radio group", count("contactPreference"), 3);
 
 check("start time input", /<input id="startTime" name="startTime" type="time" step="900" required\b/.test(form), true);
 check("start time helper", form.includes('id="startTime-hint">When you\'d like the bar to open.</p>'), true);
-check("service hours is a range", /<input id="serviceHours" name="serviceHours" class="wz-slider" type="range" min="3" max="12" step="1" value="4"/.test(form), true);
+check("service hours is a range", /<input id="serviceHours" name="serviceHours" class="wz-slider qb-hours-slider" type="range" min="3" max="12" step="1" value="4"/.test(form), true);
 check("service hours helper", form.includes('id="serviceHours-hint">Approximate bar service time. We\'ll confirm it in your quote.</p>'), true);
 check("service hours helper has no price", /price|\$/.test(form.slice(form.indexOf('id="serviceHours"'), form.indexOf('id="field-guests"'))), false);
 check("guests number", /<input id="field-guests" name="guests" type="number" inputmode="numeric" min="1" max="500" required\b/.test(form), true);
+check("guests start empty with a 50 placeholder", /id="field-guests"[^>]*placeholder="50"/.test(form) && !/id="field-guests"[^>]*\svalue=/.test(form), true);
 check("city or zip required", /<input id="cityZip" name="cityZip" type="text" placeholder="e\.g\. Tampa or 33579" required\b/.test(form), true);
 
 const heardAt = form.indexOf('<select id="heardAbout"');
@@ -66,6 +67,7 @@ check("heard about options", [...heard.matchAll(/<option\b[^>]*>([^<]*)<\/option
 ]);
 check("notes placeholder", form.includes('placeholder="Best time to reach you, 1-2 custom cocktails?, zero-proof options, anything else we should know."'), true);
 check("time chips have no name", [...form.matchAll(/<button\b[^>]*data-time="[^"]+"[^>]*>/g)].every((item) => !/\sname=/.test(item[0])), true);
+check("guest chips have no name", [...form.matchAll(/<button\b[^>]*data-guests="[^"]+"[^>]*>/g)].every((item) => !/\sname=/.test(item[0])), true);
 
 for (const name of ["theme", "colors", "extras"]) {
   check("booking form has no " + name, new RegExp(`\\sname="${name}"`).test(form), false);

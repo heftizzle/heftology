@@ -103,6 +103,8 @@ check("designer result event", designer.includes("new CustomEvent('designer:resu
 check("designer reset event", designer.includes("new CustomEvent('designer:reset'"), true);
 
 check("step 1 legend", form.includes(">Choose who or what you're celebrating.</legend>"), true);
+check("step 2 legend", form.includes(">How will the event run?</legend>"), true);
+check("booking form has no last night", /last night/i.test(form), false);
 check("next uses btn-primary", form.includes('<button type="button" class="btn-primary" id="qb-next">Next</button>'), true);
 check("send uses btn-primary", form.includes('<button type="submit" class="btn-primary" id="form-submit-btn">Send My Quote Request →</button>'), true);
 check("no recap panel", form.includes("qb-recap"), false);
@@ -110,13 +112,49 @@ check("no recap strip", form.includes("qb-strip"), false);
 check("no step dots", form.includes("wz-dot"), false);
 check("quote builder has no inline svg", /<svg\b/i.test(form), false);
 
-const optionEmoji = ["🎉", "💍", "💼", "🍹", "✨", "🏡", "🏛️", "🍽️", "🏢", "🥂", "🤔", "📞", "💬", "✉️", "✓"];
+const optionEmoji = ["🎉", "💍", "💼", "🍹", "✨", "🏖️", "💃", "🏨", "🏊", "⛳", "🏠", "🏡", "🌆", "⛵", "🌳", "🏭", "🏛️", "🍽️", "🍷", "🏢", "🥂", "🤔", "📞", "💬", "✉️", "✓"];
 const formWithoutHidden = form.replace(/<span\b[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/span>/g, "");
 optionEmoji.forEach((emoji) => {
   check(emoji + " sits in an aria-hidden span", new RegExp('<span\\b[^>]*aria-hidden="true"[^>]*>' + emoji + "</span>").test(form), true);
   check(emoji + " is not duplicated outside that span", formWithoutHidden.includes(emoji), false);
 });
 check("craft bar summary has no extra emoji", form.includes("💅"), false);
+
+const designerVenues = [...html.matchAll(/data-target="venue" data-value="([^"]+)"/g)].map((item) => item[1]);
+const locationValues = [...form.matchAll(/name="location" value="([^"]+)"/g)].map((item) => item[1]);
+check("designer venues lead the location chips", locationValues.slice(0, designerVenues.length), designerVenues);
+check("office and other follow the designer venues", locationValues.slice(designerVenues.length), ["Office", "Other"]);
+check("readme keeps the venue lists in sync", readme.includes("venue lists stay in sync"), true);
+
+check("designer result sends the venue", designer.includes("venue:"), true);
+check("designer venue fills an empty choice", qb.applyDesignerVenue({ current: "", source: "", incoming: "Beach" }), { selection: "Beach", source: "designer" });
+check("designer venue keeps a visitor choice", qb.applyDesignerVenue({ current: "Hotel", source: "user", incoming: "Beach" }), { selection: "Hotel", source: "user" });
+check("clear designer venue drops a designer pick", qb.clearDesignerVenue({ current: "Beach", source: "designer" }), { selection: "", source: "" });
+check("clear designer venue keeps a visitor pick", qb.clearDesignerVenue({ current: "Hotel", source: "user" }), { selection: "Hotel", source: "user" });
+check("review time uses the same clock", qb.formatTimeLabel("18:00"), "6:00 PM");
+
+const builder = fs.readFileSync(path.join(root, "quote-builder.js"), "utf8");
+check("validation stays inline", builder.includes("reportValidity"), false);
+check("fallback date input", /<input id="field-date" name="eventDate" type="date"/.test(form), true);
+check("fallback time input", /<input id="startTime" name="startTime" type="time"/.test(form), true);
+check("fallback hours range", /id="serviceHours"[^>]*type="range"/.test(form), true);
+check("fallback guest number", /id="field-guests"[^>]*type="number"/.test(form), true);
+check("css does not hide the hours slider", /\.wz-slider[^{]*\{[^}]*display:\s*none/.test(css), false);
+check("css does not hide the date input", /#field-date[^{]*\{[^}]*display:\s*none/.test(css), false);
+check("css does not hide the guest number", /#field-guests[^{]*\{[^}]*display:\s*none/.test(css), false);
+
+const scriptUrls = [
+  ...html.matchAll(/<script\b[^>]*\bsrc="(https?:\/\/[^"]+)"/g),
+  ...html.matchAll(/script\.src\s*=\s*"(https?:\/\/[^"]+)"/g),
+].map((item) => item[1]);
+check("remote scripts are tag manager or calendly", scriptUrls.every((url) => (
+  url.includes("googletagmanager.com") || url.includes("assets.calendly.com")
+)), true);
+check("remote script count", scriptUrls.length, 2);
+
+const thirdParty = fs.readFileSync(path.join(root, "THIRD-PARTY.md"), "utf8");
+check("third-party note exists", thirdParty.length > 0, true);
+check("no library is vendored", /no library is vendored/i.test(thirdParty), true);
 
 const failed = results.filter((line) => line.startsWith("FAIL"));
 console.log(`${results.join("\n")}\n\n${results.length - failed.length}/${results.length} passed`);

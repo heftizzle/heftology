@@ -598,12 +598,12 @@
             <div class="qb-steps">
               <fieldset class="wz-step" data-step="1" data-name="event" data-label="Event">
                 <legend class="wz-legend" tabindex="-1">Choose who or what you're celebrating.</legend>
-                <div class="wz-options qb-events">
-                  <label class="wz-option"><input type="radio" name="eventType" value="Private Party" required><span aria-hidden="true">🎉</span><span>Private Party</span><span class="wz-check" aria-hidden="true">✓</span></label>
-                  <label class="wz-option"><input type="radio" name="eventType" value="Wedding / Reception" required><span aria-hidden="true">💍</span><span>Wedding / Reception</span><span class="wz-check" aria-hidden="true">✓</span></label>
-                  <label class="wz-option"><input type="radio" name="eventType" value="Corporate Event" required><span aria-hidden="true">💼</span><span>Corporate Event</span><span class="wz-check" aria-hidden="true">✓</span></label>
-                  <label class="wz-option"><input type="radio" name="eventType" value="Cocktail Class" required><span aria-hidden="true">🍹</span><span>Cocktail Class</span><span class="wz-check" aria-hidden="true">✓</span></label>
-                  <label class="wz-option"><input type="radio" name="eventType" value="Other" required><span aria-hidden="true">✨</span><span>Other</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                <div class="wz-chips qb-compact qb-events">
+                  <label class="wz-chip"><input type="radio" name="eventType" value="Private Party" required><span aria-hidden="true">🎉</span><span>Private Party</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="eventType" value="Wedding / Reception" required><span aria-hidden="true">💍</span><span>Wedding / Reception</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="eventType" value="Corporate Event" required><span aria-hidden="true">💼</span><span>Corporate Event</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="eventType" value="Cocktail Class" required><span aria-hidden="true">🍹</span><span>Cocktail Class</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="eventType" value="Other" required><span aria-hidden="true">✨</span><span>Other</span><span class="wz-check" aria-hidden="true">✓</span></label>
                 </div>
                 <div class="wz-field">
                   <label for="field-date">Event date</label>
@@ -611,10 +611,21 @@
                   <p class="qb-note" id="date-readout"></p>
                 </div>
                 <p class="wz-label" id="venue-label">Where will it be?</p>
-                <div class="wz-chips" role="group" aria-labelledby="venue-label">
-                  <label class="wz-chip"><input type="radio" name="location" value="Backyard / Home"><span aria-hidden="true">🏡</span><span>Backyard / Home</span><span class="wz-check" aria-hidden="true">✓</span></label>
-                  <label class="wz-chip"><input type="radio" name="location" value="Event venue"><span aria-hidden="true">🏛️</span><span>Event venue</span><span class="wz-check" aria-hidden="true">✓</span></label>
-                  <label class="wz-chip"><input type="radio" name="location" value="Restaurant / Bar"><span aria-hidden="true">🍽️</span><span>Restaurant / Bar</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                <div class="wz-chips qb-compact qb-venues" role="group" aria-labelledby="venue-label">
+                  <label class="wz-chip"><input type="radio" name="location" value="Beach"><span aria-hidden="true">🏖️</span><span>Beach</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Ballroom"><span aria-hidden="true">💃</span><span>Ballroom</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Hotel"><span aria-hidden="true">🏨</span><span>Hotel</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Pool"><span aria-hidden="true">🏊</span><span>Pool</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Golf Course"><span aria-hidden="true">⛳</span><span>Golf Course</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Home (Indoor)"><span aria-hidden="true">🏠</span><span>Home (Indoor)</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Backyard"><span aria-hidden="true">🏡</span><span>Backyard</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Rooftop"><span aria-hidden="true">🌆</span><span>Rooftop</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Boat / Yacht"><span aria-hidden="true">⛵</span><span>Boat / Yacht</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Park / Garden"><span aria-hidden="true">🌳</span><span>Park / Garden</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Warehouse / Industrial"><span aria-hidden="true">🏭</span><span>Warehouse / Industrial</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Historic Venue"><span aria-hidden="true">🏛️</span><span>Historic Venue</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Restaurant"><span aria-hidden="true">🍽️</span><span>Restaurant</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Winery / Vineyard"><span aria-hidden="true">🍷</span><span>Winery / Vineyard</span><span class="wz-check" aria-hidden="true">✓</span></label>
                   <label class="wz-chip"><input type="radio" name="location" value="Office"><span aria-hidden="true">🏢</span><span>Office</span><span class="wz-check" aria-hidden="true">✓</span></label>
                   <label class="wz-chip"><input type="radio" name="location" value="Other"><span aria-hidden="true">✨</span><span>Other</span><span class="wz-check" aria-hidden="true">✓</span></label>
                 </div>
@@ -645,48 +656,59 @@
                 </div>
               </fieldset>
               <fieldset class="wz-step" data-step="2" data-name="details" data-label="Details">
-                <legend class="wz-legend" tabindex="-1">How will the night run?</legend>
+                <legend class="wz-legend" tabindex="-1">How will the event run?</legend>
                 <div class="wz-field">
                   <label for="startTime">Start Time</label>
                   <input id="startTime" name="startTime" type="time" step="900" required aria-describedby="startTime-hint" enterkeyhint="next">
                   <p class="form-hint" id="startTime-hint">When you'd like the bar to open.</p>
                 </div>
                 <div class="wz-chips qb-times">
-                  <button type="button" class="wz-chip" data-time="16:00" aria-pressed="false"><span>4 PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
-                  <button type="button" class="wz-chip" data-time="17:00" aria-pressed="false"><span>5 PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
-                  <button type="button" class="wz-chip" data-time="18:00" aria-pressed="false"><span>6 PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
-                  <button type="button" class="wz-chip" data-time="19:00" aria-pressed="false"><span>7 PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
-                  <button type="button" class="wz-chip" data-time="20:00" aria-pressed="false"><span>8 PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
+                  <button type="button" class="wz-chip" data-time="16:00" aria-pressed="false"><span>4&nbsp;PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
+                  <button type="button" class="wz-chip" data-time="17:00" aria-pressed="false"><span>5&nbsp;PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
+                  <button type="button" class="wz-chip" data-time="18:00" aria-pressed="false"><span>6&nbsp;PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
+                  <button type="button" class="wz-chip" data-time="19:00" aria-pressed="false"><span>7&nbsp;PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
+                  <button type="button" class="wz-chip" data-time="20:00" aria-pressed="false"><span>8&nbsp;PM</span><span class="wz-check" aria-hidden="true">✓</span></button>
                 </div>
                 <div class="wz-field">
                   <div class="qb-hours-head">
                     <label for="serviceHours">Service length</label>
                     <span id="hours-readout">4 hours</span>
                   </div>
-                  <input id="serviceHours" name="serviceHours" class="wz-slider" type="range" min="3" max="12" step="1" value="4" aria-describedby="serviceHours-hint end-time">
-                  <div class="wz-ticks" aria-hidden="true"><span>3</span><span>6</span><span>9</span><span>12</span></div>
+                  <div class="qb-range">
+                    <span class="qb-bubble" id="hours-bubble">4 hrs</span>
+                    <input id="serviceHours" name="serviceHours" class="wz-slider qb-hours-slider" type="range" min="3" max="12" step="1" value="4" aria-describedby="serviceHours-hint end-time">
+                    <div class="qb-hour-ticks" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                  </div>
                   <p class="qb-note" id="end-time"></p>
-                  <label class="wz-checkline"><input type="checkbox" name="serviceHoursUnsure" value="Not sure yet"> Not sure yet</label>
+                  <label class="wz-checkline"><input type="checkbox" name="serviceHoursUnsure" value="Not sure yet"><span>Not sure yet</span></label>
                   <p class="form-hint" id="serviceHours-hint">Approximate bar service time. We'll confirm it in your quote.</p>
                 </div>
                 <div class="wz-field">
                   <label for="field-guests">Guest count</label>
                   <div class="wz-stepper">
                     <button type="button" class="wz-stepper-btn" id="guests-minus" aria-label="Fewer guests">−</button>
-                    <input id="field-guests" name="guests" type="number" inputmode="numeric" min="1" max="500" required enterkeyhint="next" aria-describedby="guest-note">
+                    <input id="field-guests" name="guests" type="number" inputmode="numeric" min="1" max="500" required placeholder="50" enterkeyhint="next" aria-describedby="guest-note guest-estimate">
                     <button type="button" class="wz-stepper-btn" id="guests-plus" aria-label="More guests">+</button>
                   </div>
-                  <input id="guests-slider" class="wz-slider" type="range" min="10" max="150" step="5" value="10" aria-label="Guest count slider">
+                  <div class="wz-chips qb-guest-picks" role="group" aria-label="Quick guest counts">
+                    <button type="button" class="wz-chip" data-guests="25" aria-pressed="false">25</button>
+                    <button type="button" class="wz-chip" data-guests="50" aria-pressed="false">50</button>
+                    <button type="button" class="wz-chip" data-guests="75" aria-pressed="false">75</button>
+                    <button type="button" class="wz-chip" data-guests="100" aria-pressed="false">100</button>
+                    <button type="button" class="wz-chip" data-guests="150" aria-pressed="false">150</button>
+                    <button type="button" class="wz-chip" data-guests="150+" aria-pressed="false">150+</button>
+                  </div>
+                  <p class="qb-note" id="guest-estimate"></p>
                   <p class="qb-note" id="guest-note"></p>
                 </div>
               </fieldset>
               <fieldset class="wz-step" data-step="3" data-name="package" data-label="Package">
                 <legend class="wz-legend" tabindex="-1">Pick your bar</legend>
                 <div class="wz-options qb-packages">
-                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="The Craft Bar" data-price="600" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">🥂</span> The Craft Bar <span class="wz-badge" data-for="The Craft Bar" hidden>Our pick</span></span><span class="wz-option-summary">Up to 50 guests · 3 hours · Full bar setup &amp; breakdown · 1 Headline Cocktail via the Designer · Custom cocktail consultation · Shopping list guidance. Girls Night Out / Bachelorette Bar — same package, same price. Add a signature shots menu built for the bride's last night done right.</span><span class="wz-option-price">Starting at $600</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
-                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="The Signature Pour" data-price="950" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">💍</span> The Signature Pour <span class="wz-badge" data-for="The Signature Pour" hidden>Our pick</span></span><span class="wz-option-summary">Up to 100 guests · 6 hours · Full mobile bar setup · 2 custom cocktails incl. your Headline Cocktail · Mixers &amp; garnishes included. Perfect for weddings &amp; receptions.</span><span class="wz-option-price">Starting at $950</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
-                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="The Full Experience" data-price="1500" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">✨</span> The Full Experience <span class="wz-badge" data-for="The Full Experience" hidden>Our pick</span></span><span class="wz-option-summary">Up to 150 guests · 8 hours · 4 custom cocktails incl. your Headline Cocktail · Cocktail menu cards · Mixers, garnishes &amp; syrups · Full setup &amp; breakdown.</span><span class="wz-option-price">Starting at $1,500</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
-                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="Cocktail Class" data-price="45" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">🍹</span> Cocktail Class <span class="wz-badge" data-for="Cocktail Class" hidden>Our pick</span></span><span class="wz-option-summary">Interactive group experiences — your guests learn to craft cocktails alongside a certified mixologist. Great for parties &amp; corporate team events.</span><span class="wz-option-price">Starting at $45/person</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="The Craft Bar" data-price="600" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">🥂</span> The Craft Bar <span class="wz-badge" data-for="The Craft Bar" hidden>Our pick</span></span><span class="wz-option-summary">Up to 50 guests · 3 hours · 1 Headline Cocktail</span><span class="wz-option-price">Starting at $600</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="The Signature Pour" data-price="950" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">💍</span> The Signature Pour <span class="wz-badge" data-for="The Signature Pour" hidden>Our pick</span></span><span class="wz-option-summary">Up to 100 guests · 6 hours · 2 custom cocktails</span><span class="wz-option-price">Starting at $950</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="The Full Experience" data-price="1500" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">✨</span> The Full Experience <span class="wz-badge" data-for="The Full Experience" hidden>Our pick</span></span><span class="wz-option-summary">Up to 150 guests · 8 hours · 4 custom cocktails</span><span class="wz-option-price">Starting at $1,500</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="Cocktail Class" data-price="45" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">🍹</span> Cocktail Class <span class="wz-badge" data-for="Cocktail Class" hidden>Our pick</span></span><span class="wz-option-summary">Per person</span><span class="wz-option-price">Starting at $45/person</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
                   <label class="wz-option wz-option-card wz-option-quiet"><input type="radio" name="packageInterest" value="Not sure, recommend one for me" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">🤔</span> Not sure, recommend one for me <span class="wz-badge" data-for="Not sure, recommend one for me" hidden>Our pick</span></span></span><span class="wz-check" aria-hidden="true">✓</span></label>
                 </div>
                 <p class="qb-note" id="package-note"></p>
@@ -712,7 +734,7 @@
                   <input id="field-phone" name="phone" type="tel" placeholder="(813) 555-0100" autocomplete="tel" required enterkeyhint="next">
                 </div>
                 <p class="wz-label" id="reach-label">Best way to reach you</p>
-                <div class="wz-chips" role="group" aria-labelledby="reach-label">
+                <div class="wz-chips qb-compact" role="group" aria-labelledby="reach-label">
                   <label class="wz-chip"><input type="radio" name="contactPreference" value="Call" required><span aria-hidden="true">📞</span><span>Call</span><span class="wz-check" aria-hidden="true">✓</span></label>
                   <label class="wz-chip"><input type="radio" name="contactPreference" value="Text" required><span aria-hidden="true">💬</span><span>Text</span><span class="wz-check" aria-hidden="true">✓</span></label>
                   <label class="wz-chip"><input type="radio" name="contactPreference" value="Email" required><span aria-hidden="true">✉️</span><span>Email</span><span class="wz-check" aria-hidden="true">✓</span></label>
@@ -1112,7 +1134,7 @@ function renderCocktail(c) {
   `;
   appendDesignerPhoto(result);
   result.hidden = false;
-  window.dispatchEvent(new CustomEvent('designer:result', { detail: { name: c.name || '', tagline: c.tagline || '' } }));
+  window.dispatchEvent(new CustomEvent('designer:result', { detail: { name: c.name || '', tagline: c.tagline || '', venue: (document.getElementById('cw-venue') || {}).value || '' } }));
   const resetBtn = document.getElementById('cw-reset');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {

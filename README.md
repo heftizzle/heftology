@@ -100,6 +100,8 @@ Both `index.html` and `thank-you.html` use Measurement ID **`G-VBYCDBFFM8`**. Th
 - Deposit and cancellation wording lives in two places, the FAQ in index.html and the policy block in netlify/functions/chat.js. Change both together.
 - Starting prices live in the Services cards, `netlify/functions/chat.js`, and the quote builder `data-price` attributes. Change them together.
 - The covered-city list lives in this README, `netlify/functions/chat.js`, and the quote builder datalist. Change them together.
+- The two venue lists stay in sync: every Cocktail Designer venue value leads the quote-builder location chips, in the same order, followed by Office and Other. `tests/quote-builder.test.js` checks that.
+- This site does not vendor a front-end library. If one is added later, copy it into the repo by hand, record it in `THIRD-PARTY.md`, and re-audit the license, size, and update before shipping.
 - The review-step deposit line in the quote builder must match the FAQ: a 50% deposit once details are confirmed, and the balance due 5 days before the event.
 - The `.wz-` components are shared. The Cocktail Designer still has its own styles and will move onto them later.
 - If you change the primary domain, update **canonical**, **Open Graph**, and **Twitter** image URLs in `index.html` to absolute URLs on that host.

@@ -40,6 +40,8 @@ check("index has no 25%", html.includes("25%"), false);
 check("chat has no 25%", chat.includes("25%"), false);
 check("chat balance timing", chat.includes("5 days before"), true);
 check("chat dropped old refund line", chat.includes("full deposit refunded"), false);
+check("index has no full refund", html.includes("full refund"), false);
+check("chat has no full refund", chat.includes("full refund"), false);
 
 const failed = results.filter((line) => line.startsWith("FAIL"));
 console.log(`${results.join("\n")}\n\n${results.length - failed.length}/${results.length} passed`);

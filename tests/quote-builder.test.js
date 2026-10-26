@@ -158,6 +158,9 @@ check("hours summary crosses midnight", qb.hoursSummary("22:00", 4, false), "10:
 check("hours summary unsure", qb.hoursSummary("18:00", 4, true), "Not sure yet");
 check("7:15 PM stays exact", qb.keptStartTime("19:15", "19:30"), "19:15");
 check("4:45 PM stays exact", qb.keptStartTime("16:45", "17:00"), "16:45");
+check("4:45 PM using note", qb.typedTimeNote("16:45", "17:00"), "Using 4:45 PM");
+check("7:15 PM using note", qb.typedTimeNote("19:15", "19:30"), "Using 7:15 PM");
+check("slot time has no using note", qb.typedTimeNote("18:00", "18:00"), "");
 check("7:15 PM review line", qb.hoursSummary("19:15", 4, false), "7:15\u00A0PM \u2013 11:15\u00A0PM (4 hours)");
 check("4:45 PM review line", qb.hoursSummary("16:45", 4, false), "4:45\u00A0PM \u2013 8:45\u00A0PM (4 hours)");
 check("thumb center at 3 hours", qb.thumbCenter(0, 300, 19, 32), 35);

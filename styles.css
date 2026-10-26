@@ -1687,6 +1687,13 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   font-weight: 400;
   opacity: 0.45;
 }
+.qb-roller.is-typed .qb-roller-list { opacity: 0.55; }
+.qb-roller.is-typed .qb-roller-band { opacity: 0.35; }
+.qb-roller.is-typed .qb-roller-option { transform: none; }
+.qb-roller.is-typed .qb-roller-option.is-active {
+  color: rgba(255,255,255,0.55);
+  font-weight: 400;
+}
 .qb-roller-hint {
   margin: 0.45rem 0 0;
   text-align: center;
@@ -1694,6 +1701,14 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   font-size: 0.88rem;
 }
 .qb-roller-hint[hidden] { display: none; }
+.qb-roller-using {
+  margin: 0.35rem 0 0;
+  text-align: center;
+  color: var(--white);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.qb-roller-using[hidden] { display: none; }
 .qb-roller-error {
   margin: 0.4rem 0 0;
   text-align: center;

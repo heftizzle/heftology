@@ -219,6 +219,13 @@ function keptStartTime(typed, nearestSlot) {
   return nearestSlot || "";
 }
 
+function typedTimeNote(typed, nearestSlot) {
+  var kept = keptStartTime(typed, nearestSlot);
+  if (!kept || kept === nearestSlot) return "";
+  var label = formatTimeLabel(kept);
+  return label ? "Using " + label : "";
+}
+
 function thumbCenter(ratio, trackWidth, inset, thumb) {
   var width = Number(trackWidth);
   var pad = Number(inset);
@@ -647,6 +654,7 @@ if (typeof document !== "undefined") {
     function mountTimeRoller() {
       var list = document.getElementById("qb-time-list");
       var hint = document.getElementById("qb-time-hint");
+      var using = document.getElementById("qb-time-using");
       var exactBtn = document.getElementById("qb-exact-time");
       if (!list || !startInput) return;
       var slots = startTimeSlots();
@@ -725,6 +733,20 @@ if (typeof document !== "undefined") {
         if (hint) hint.hidden = true;
       }
 
+      function showTyped(note) {
+        var on = !!note;
+        if (startField) {
+          var roller = startField.querySelector(".qb-roller");
+          if (roller) roller.classList.toggle("is-typed", on);
+        }
+        list.classList.toggle("is-typed", on);
+        if (!using) return;
+        using.hidden = !on;
+        using.textContent = note || "";
+        if (on) list.setAttribute("aria-describedby", "qb-time-using");
+        else if (list.getAttribute("aria-describedby") === "qb-time-using") list.removeAttribute("aria-describedby");
+      }
+
       function noteUserIntent() {
         userIntent = true;
         arm();
@@ -733,6 +755,7 @@ if (typeof document !== "undefined") {
       function commit(index) {
         userIntent = false;
         arm();
+        showTyped("");
         showActive(index, true);
         showTimeError(false);
         var value = slots[index].value;
@@ -798,9 +821,11 @@ if (typeof document !== "undefined") {
         var index = indexForValue(startInput.value);
         var nearest = slots[index] ? slots[index].value : "";
         var kept = keptStartTime(startInput.value, nearest);
+        var note = typedTimeNote(startInput.value, nearest);
         showActive(index, kept === nearest);
         arm();
         showTimeError(false);
+        showTyped(note);
         list.scrollTop = index * rowHeight();
       });
       if (exactBtn && startField) {
@@ -915,6 +940,7 @@ if (typeof module === "object" && module.exports) {
     startTimeSlots: startTimeSlots,
     nearestSlotIndex: nearestSlotIndex,
     keptStartTime: keptStartTime,
+    typedTimeNote: typedTimeNote,
     thumbCenter: thumbCenter,
     hoursSummary: hoursSummary,
     decideSelection: decideSelection,

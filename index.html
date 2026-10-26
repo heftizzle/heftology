@@ -582,104 +582,207 @@
         <p style="color:var(--grey);font-size:0.95rem;margin-bottom:1.2rem;">Want to talk through your event first? Book a free 30-minute consultation — cameras off, no pressure.</p>
         <a href="https://calendly.com/carissa-heftology/30min" onclick="openCalendly(event)" class="btn-primary">Schedule a Free Consultation</a>
       </div>
+    </div>
+  </div>
+  <div class="qb-wrap">
       <form id="booking-form" name="booking" method="POST" netlify action="/thank-you.html">
       <input type="hidden" name="form-name" value="booking">
       <input class="hp-field" tabindex="-1" autocomplete="off" name="hp_field" aria-hidden="true">
       <input type="hidden" name="subject" id="booking-subject" value="New event inquiry">
-      <div class="inquiry-form">
-        <div class="form-field">
-          <label for="field-name">Name</label>
-          <input id="field-name" name="name" type="text" placeholder="First &amp; Last" autocomplete="name" required>
+      <div class="inquiry-form qb-shell wz-card">
+        <div class="wz-progress qb-progress" aria-hidden="true">
+          <div class="wz-progress-track"><div class="wz-progress-fill" id="qb-progress-fill"></div></div>
+          <p class="wz-progress-current" id="qb-progress-current">Step 1 of 5</p>
         </div>
-        <div class="form-field">
-          <label for="field-email">Email</label>
-          <input id="field-email" name="email" type="email" placeholder="you@email.com" autocomplete="email" required>
-        </div>
-        <div class="form-field">
-          <label for="field-phone">Phone</label>
-          <input id="field-phone" name="phone" type="tel" placeholder="(813) 555-0100" autocomplete="tel" required>
-        </div>
-        <div class="form-field">
-          <label for="field-type">Event Type</label>
-          <select id="field-type" name="eventType" required>
-            <option value="" disabled selected>Select one…</option>
-            <option value="Private Party">Private Party</option>
-            <option value="Wedding / Reception">Wedding / Reception</option>
-            <option value="Corporate Event">Corporate Event</option>
-            <option value="Cocktail Class">Cocktail Class</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="form-row-3">
-          <div class="form-field">
-            <label for="field-date">Event Date</label>
-            <input id="field-date" name="eventDate" type="date" required>
-          </div>
-          <div class="form-field">
-            <label for="startTime">Start Time</label>
-            <input id="startTime" name="startTime" type="time" step="900" required aria-describedby="startTime-hint">
-            <p class="form-hint" id="startTime-hint">When you'd like the bar to open.</p>
-          </div>
-          <div class="form-field">
-            <label for="serviceHours">Approx. Service Hours</label>
-            <select id="serviceHours" name="serviceHours" required aria-describedby="serviceHours-hint">
-              <option value="" disabled selected>Select one…</option>
-              <option value="3">3 hours</option>
-              <option value="4">4 hours</option>
-              <option value="5">5 hours</option>
-              <option value="6">6 hours</option>
-              <option value="7">7 hours</option>
-              <option value="8">8 hours</option>
-              <option value="9">9 hours</option>
-              <option value="10">10 hours</option>
-              <option value="11">11 hours</option>
-              <option value="12">12 hours</option>
-              <option value="unsure">Not sure yet</option>
-            </select>
-            <p class="form-hint" id="serviceHours-hint">Approximate bar service time. We'll confirm it in your quote.</p>
-          </div>
-        </div>
-        <div class="form-field">
-          <label for="field-guests">Guest Count</label>
-          <input id="field-guests" name="guests" type="text" placeholder="e.g. 45" autocomplete="off" required>
-        </div>
-        <div class="form-field">
-          <label for="contactPreference">Best Way to Reach You</label>
-          <select id="contactPreference" name="contactPreference" required>
-            <option value="" disabled selected>Select one…</option>
-            <option value="Call">Call</option>
-            <option value="Text">Text</option>
-            <option value="Email">Email</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label for="field-location">Venue Type</label>
-          <input id="field-location" name="location" type="text" placeholder="Backyard, ballroom, restaurant, etc." autocomplete="off">
-        </div>
-        <div class="form-field">
-          <label for="cityZip">City or ZIP</label>
-          <input id="cityZip" name="cityZip" type="text" placeholder="e.g. Tampa or 33579" required title="Greater Tampa Bay area; questions about coverage — carissa@heftology.com.">
-        </div>
-        <div class="form-field full">
-          <label for="heardAbout">How Did You Hear About Us?</label>
-          <select id="heardAbout" name="heardAbout">
-            <option value="" selected>Select one…</option>
-            <option value="The Knot">The Knot</option>
-            <option value="Instagram">Instagram</option>
-            <option value="Google search">Google search</option>
-            <option value="Friend or family">Friend or family</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="form-field full">
-          <label for="field-notes">Tell Us More</label>
-          <textarea id="field-notes" name="notes" rows="3" placeholder="Best time to reach you, 1-2 custom cocktails?, zero-proof options, anything else we should know."></textarea>
-        </div>
+        <p class="qb-announce" id="qb-announce" aria-live="polite"></p>
+            <div class="qb-steps">
+              <fieldset class="wz-step" data-step="1" data-name="event" data-label="Event">
+                <legend class="wz-legend" tabindex="-1">Choose who or what you're celebrating.</legend>
+                <div class="wz-chips qb-compact qb-events">
+                  <label class="wz-chip"><input type="radio" name="eventType" value="Private Party" required><span aria-hidden="true">🎉</span><span>Private Party</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="eventType" value="Wedding / Reception" required><span aria-hidden="true">💍</span><span>Wedding / Reception</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="eventType" value="Corporate Event" required><span aria-hidden="true">💼</span><span>Corporate Event</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="eventType" value="Cocktail Class" required><span aria-hidden="true">🍹</span><span>Cocktail Class</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="eventType" value="Other" required><span aria-hidden="true">✨</span><span>Other</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                </div>
+                <div class="wz-field">
+                  <label for="field-date">Event date</label>
+                  <input id="field-date" name="eventDate" type="date" required enterkeyhint="next">
+                  <p class="qb-note" id="date-readout"></p>
+                </div>
+                <p class="wz-label" id="venue-label">Where will it be?</p>
+                <div class="wz-chips qb-compact qb-venues" role="group" aria-labelledby="venue-label">
+                  <label class="wz-chip"><input type="radio" name="location" value="Beach"><span aria-hidden="true">🏖️</span><span>Beach</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Ballroom"><span aria-hidden="true">💃</span><span>Ballroom</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Hotel"><span aria-hidden="true">🏨</span><span>Hotel</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Pool"><span aria-hidden="true">🏊</span><span>Pool</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Golf Course"><span aria-hidden="true">⛳</span><span>Golf Course</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Home (Indoor)"><span aria-hidden="true">🏠</span><span>Home (Indoor)</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Backyard"><span aria-hidden="true">🏡</span><span>Backyard</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Rooftop"><span aria-hidden="true">🌆</span><span>Rooftop</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Boat / Yacht"><span aria-hidden="true">⛵</span><span>Boat / Yacht</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Park / Garden"><span aria-hidden="true">🌳</span><span>Park / Garden</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Warehouse / Industrial"><span aria-hidden="true">🏭</span><span>Warehouse / Industrial</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Historic Venue"><span aria-hidden="true">🏛️</span><span>Historic Venue</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Restaurant"><span aria-hidden="true">🍽️</span><span>Restaurant</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip is-long"><input type="radio" name="location" value="Winery / Vineyard"><span aria-hidden="true">🍷</span><span>Winery / Vineyard</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Office"><span aria-hidden="true">🏢</span><span>Office</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="location" value="Other"><span aria-hidden="true">✨</span><span>Other</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                </div>
+                <div class="wz-field">
+                  <label for="cityZip">City or ZIP</label>
+                  <input id="cityZip" name="cityZip" type="text" placeholder="e.g. Tampa or 33579" required title="Greater Tampa Bay area; questions about coverage — carissa@heftology.com." list="covered-cities" enterkeyhint="next" autocomplete="address-level2" aria-describedby="city-message">
+                  <datalist id="covered-cities">
+                    <option value="Tampa"></option>
+                    <option value="St. Pete"></option>
+                    <option value="Clearwater"></option>
+                    <option value="Dunedin"></option>
+                    <option value="Safety Harbor"></option>
+                    <option value="Brandon"></option>
+                    <option value="Riverview"></option>
+                    <option value="Valrico"></option>
+                    <option value="Wesley Chapel"></option>
+                    <option value="Zephyrhills"></option>
+                    <option value="Spring Hill"></option>
+                    <option value="Brooksville"></option>
+                    <option value="New Port Richey"></option>
+                    <option value="Tarpon Springs"></option>
+                    <option value="Sarasota"></option>
+                    <option value="Bradenton"></option>
+                    <option value="Ruskin"></option>
+                    <option value="Lakeland"></option>
+                  </datalist>
+                  <p class="qb-note" id="city-message"></p>
+                </div>
+              </fieldset>
+              <fieldset class="wz-step" data-step="2" data-name="details" data-label="Details">
+                <legend class="wz-legend" tabindex="-1">How will the event run?</legend>
+                <div class="wz-field qb-start">
+                  <label for="startTime">Start Time</label>
+                  <div class="qb-roller">
+                    <div class="qb-roller-frame">
+                      <div class="qb-roller-band" aria-hidden="true"></div>
+                      <div id="qb-time-list" class="qb-roller-list is-pending" role="listbox" aria-label="Start time" aria-orientation="vertical" tabindex="0"></div>
+                    </div>
+                    <p class="qb-roller-error" id="qb-time-error" hidden>Choose when the bar opens.</p>
+                    <p class="qb-roller-hint" id="qb-time-hint">Scroll to choose</p>
+                    <p class="qb-roller-using" id="qb-time-using" hidden></p>
+                    <button type="button" class="qb-exact" id="qb-exact-time">Enter an exact time</button>
+                  </div>
+                  <input id="startTime" name="startTime" type="time" step="900" required class="qb-native-time" aria-describedby="startTime-hint" enterkeyhint="next">
+                  <p class="form-hint" id="startTime-hint">When you'd like the bar to open.</p>
+                </div>
+                <div class="wz-field">
+                  <div class="qb-hours-head">
+                    <label for="serviceHours">Service length</label>
+                  </div>
+                  <div class="qb-range">
+                    <span class="qb-bubble" id="hours-bubble">4 hrs</span>
+                    <input id="serviceHours" name="serviceHours" class="wz-slider qb-hours-slider" type="range" min="3" max="12" step="1" value="4" aria-describedby="serviceHours-hint end-time">
+                    <div class="qb-hour-ticks" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                  </div>
+                  <p class="qb-note" id="end-time"></p>
+                  <label class="wz-checkline"><input type="checkbox" name="serviceHoursUnsure" value="Not sure yet"><span>Not sure yet</span></label>
+                  <p class="form-hint" id="serviceHours-hint">Approximate bar service time. We'll confirm it in your quote.</p>
+                </div>
+                <div class="wz-field">
+                  <label for="field-guests">Guest count</label>
+                  <div class="wz-stepper">
+                    <button type="button" class="wz-stepper-btn" id="guests-minus" aria-label="Fewer guests">−</button>
+                    <input id="field-guests" name="guests" type="number" inputmode="numeric" min="1" max="500" required placeholder="50" enterkeyhint="next" aria-describedby="guest-note guest-estimate">
+                    <button type="button" class="wz-stepper-btn" id="guests-plus" aria-label="More guests">+</button>
+                  </div>
+                  <div class="wz-chips qb-guest-picks" role="group" aria-label="Quick guest counts">
+                    <button type="button" class="wz-chip" data-guests="25" aria-pressed="false">25</button>
+                    <button type="button" class="wz-chip" data-guests="50" aria-pressed="false">50</button>
+                    <button type="button" class="wz-chip" data-guests="75" aria-pressed="false">75</button>
+                    <button type="button" class="wz-chip" data-guests="100" aria-pressed="false">100</button>
+                    <button type="button" class="wz-chip" data-guests="150" aria-pressed="false">150</button>
+                    <button type="button" class="wz-chip" data-guests="150+" aria-pressed="false">150+</button>
+                  </div>
+                  <p class="qb-note" id="guest-estimate"></p>
+                  <p class="qb-note" id="guest-note"></p>
+                </div>
+              </fieldset>
+              <fieldset class="wz-step" data-step="3" data-name="package" data-label="Package">
+                <legend class="wz-legend" tabindex="-1">Pick your bar</legend>
+                <div class="wz-options qb-packages">
+                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="The Craft Bar" data-price="600" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">🥂</span> The Craft Bar <span class="wz-badge" data-for="The Craft Bar" hidden>Our pick</span></span><span class="wz-option-summary">Up to 50 guests · 3 hours · 1 Headline Cocktail</span><span class="wz-option-price">Starting at $600</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="The Signature Pour" data-price="950" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">💍</span> The Signature Pour <span class="wz-badge" data-for="The Signature Pour" hidden>Our pick</span></span><span class="wz-option-summary">Up to 100 guests · 6 hours · 2 custom cocktails</span><span class="wz-option-price">Starting at $950</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="The Full Experience" data-price="1500" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">✨</span> The Full Experience <span class="wz-badge" data-for="The Full Experience" hidden>Our pick</span></span><span class="wz-option-summary">Up to 150 guests · 8 hours · 4 custom cocktails</span><span class="wz-option-price">Starting at $1,500</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-option wz-option-card"><input type="radio" name="packageInterest" value="Cocktail Class" data-price="45" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">🍹</span> Cocktail Class <span class="wz-badge" data-for="Cocktail Class" hidden>Our pick</span></span><span class="wz-option-summary">Per person</span><span class="wz-option-price">Starting at $45/person</span></span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-option wz-option-card wz-option-quiet"><input type="radio" name="packageInterest" value="Not sure, recommend one for me" required><span class="wz-option-body"><span class="wz-option-title"><span aria-hidden="true">🤔</span> Not sure, recommend one for me <span class="wz-badge" data-for="Not sure, recommend one for me" hidden>Our pick</span></span></span><span class="wz-check" aria-hidden="true">✓</span></label>
+                </div>
+                <p class="qb-note" id="package-note"></p>
+                <p class="qb-fine">These are starting prices. Your exact quote comes from Carissa or Michelle within 24 hours.</p>
+                <div class="qb-headline" id="qb-headline">
+                  <p id="qb-headline-text">Want to design your own Headline Cocktail first?</p>
+                  <a id="qb-headline-link" href="#cocktail-designer">Design your Headline Cocktail</a>
+                </div>
+                <input type="hidden" name="headlineCocktail" id="headlineCocktail" value="">
+              </fieldset>
+              <fieldset class="wz-step" data-step="4" data-name="contact" data-label="Contact">
+                <legend class="wz-legend" tabindex="-1">Where do we send your quote?</legend>
+                <div class="wz-field">
+                  <label for="field-name">Name</label>
+                  <input id="field-name" name="name" type="text" placeholder="First &amp; Last" autocomplete="name" required enterkeyhint="next">
+                </div>
+                <div class="wz-field">
+                  <label for="field-email">Email</label>
+                  <input id="field-email" name="email" type="email" placeholder="you@email.com" autocomplete="email" required enterkeyhint="next">
+                </div>
+                <div class="wz-field">
+                  <label for="field-phone">Phone</label>
+                  <input id="field-phone" name="phone" type="tel" placeholder="(813) 555-0100" autocomplete="tel" required enterkeyhint="next">
+                </div>
+                <p class="wz-label" id="reach-label">Best way to reach you</p>
+                <div class="wz-chips qb-compact" role="group" aria-labelledby="reach-label">
+                  <label class="wz-chip"><input type="radio" name="contactPreference" value="Call" required><span aria-hidden="true">📞</span><span>Call</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="contactPreference" value="Text" required><span aria-hidden="true">💬</span><span>Text</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                  <label class="wz-chip"><input type="radio" name="contactPreference" value="Email" required><span aria-hidden="true">✉️</span><span>Email</span><span class="wz-check" aria-hidden="true">✓</span></label>
+                </div>
+                <div class="wz-field">
+                  <label for="heardAbout">How Did You Hear About Us?</label>
+                  <select id="heardAbout" name="heardAbout">
+                    <option value="" selected>Select one…</option>
+                    <option value="The Knot">The Knot</option>
+                    <option value="Instagram">Instagram</option>
+                    <option value="Google search">Google search</option>
+                    <option value="Friend or family">Friend or family</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="wz-field">
+                  <label for="field-notes">Tell Us More</label>
+                  <textarea id="field-notes" name="notes" rows="3" placeholder="Best time to reach you, 1-2 custom cocktails?, zero-proof options, anything else we should know." enterkeyhint="send"></textarea>
+                </div>
+              </fieldset>
+              <fieldset class="wz-step" data-step="5" data-name="review" data-label="Review">
+                <legend class="wz-legend" tabindex="-1">Look good?</legend>
+                <div id="qb-receipt" class="wz-receipt"></div>
+                <p class="qb-policy" id="qb-policy">To hold your date: a 50% deposit once we've confirmed the details. The balance is due 5 days before your event. Details are in our <a href="#faq">FAQ</a>.</p>
+                <div class="qb-trust">
+                  <p>No payment needed to request a quote. We reply within 24 hours.</p>
+                  <a class="knot-badge" href="https://www.theknot.com/marketplace/heftology-palmetto-fl-2107759" target="_blank" rel="noopener noreferrer" aria-label="View our 5-star reviews on The Knot">
+                    <span class="knot-badge-score">5.0</span>
+                    <span class="knot-badge-stars" aria-hidden="true">★★★★★</span>
+                    <span class="knot-badge-label">on The Knot<span class="knot-badge-sub">Verified Wedding Vendor</span></span>
+                  </a>
+                </div>
+              </fieldset>
+            </div>
+            <div class="wz-alert" id="qb-alert" role="alert" hidden>
+              <span aria-hidden="true">⚠️</span>
+              <p id="qb-alert-text"></p>
+            </div>
+            <div class="wz-actions">
+              <button type="button" class="btn-ghost" id="qb-back">Back</button>
+              <button type="button" class="btn-primary" id="qb-next">Next</button>
+              <button type="submit" class="btn-primary" id="form-submit-btn">Send My Quote Request →</button>
+            </div>
       </div>
-      <button type="submit" class="form-submit" id="form-submit-btn">Send Inquiry →</button>
       </form>
       <p class="booking-note">We typically respond within 24 hours · All inquiries are confidential</p>
-    </div>
   </div>
 </section>
 
@@ -746,6 +849,7 @@
 
 <script src="themes/date-rules.js" defer></script>
 <script src="themes/theme-loader.js" defer></script>
+<script src="quote-builder.js" defer></script>
 <script>
 const CALENDLY_URL = "https://calendly.com/carissa-heftology/30min";
 let calendlyPromise = null;
@@ -1032,6 +1136,7 @@ function renderCocktail(c) {
   `;
   appendDesignerPhoto(result);
   result.hidden = false;
+  window.dispatchEvent(new CustomEvent('designer:result', { detail: { name: c.name || '', tagline: c.tagline || '', venue: (document.getElementById('cw-venue') || {}).value || '' } }));
   const resetBtn = document.getElementById('cw-reset');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
@@ -1209,6 +1314,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   window.resetCocktailWizard = () => {
+    window.dispatchEvent(new CustomEvent('designer:reset'));
     const result = document.getElementById('cocktail-widget-result');
     if (result) {
       result.hidden = true;

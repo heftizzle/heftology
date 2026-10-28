@@ -819,22 +819,30 @@ a[href^="mailto:"] { display: inline-flex; align-items: center; min-height: 44px
 #chat-toggle {
   position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
   width: 60px; height: 60px;
-  background: var(--pink);
-  border: none; border-radius: 50%; cursor: pointer;
+  background: var(--black);
+  border: 2px solid var(--pink); border-radius: 50%; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 0 25px rgba(214,59,143,0.6), 0 4px 20px rgba(0,0,0,0.5);
   transition: all 0.3s;
   font-size: 1.5rem;
 }
-#chat-toggle:hover { background: var(--pink-light); transform: scale(1.08); }
+#chat-toggle:hover {
+  background: var(--black);
+  border-color: var(--pink-light);
+  box-shadow: 0 0 32px rgba(214,59,143,0.75), 0 4px 20px rgba(0,0,0,0.5);
+  transform: scale(1.08);
+}
+#chat-toggle:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+}
 #chat-toggle .chat-icon {
-  width: 50%;
+  width: 62%;
   height: auto;
   display: block;
   object-fit: contain;
-  filter: brightness(0);
 }
-#chat-toggle .chat-close { display: none; font-size: 1.2rem; color: var(--black); }
+#chat-toggle .chat-close { display: none; font-size: 1.2rem; color: var(--white); }
 #chat-toggle.open .chat-icon { display: none; }
 #chat-toggle.open .chat-close { display: block; }
 

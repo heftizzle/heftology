@@ -90,6 +90,20 @@ check("index has no .pdf", html.toLowerCase().includes(".pdf"), false);
 check("styles have no .pdf", css.toLowerCase().includes(".pdf"), false);
 check("insurance card spans full width", css.includes(".cred-card--insurance"), true);
 
+const footerPhone = (css.match(/@media \(max-width: 480px\) \{[\s\S]*?\.cred-footer[\s\S]*?\}[\s\S]*?\.cred-footer \.cred-dot[\s\S]*?\}/) || [""])[0];
+check("phone footer stacks in a column", /flex-direction:\s*column/.test(footerPhone) && /align-items:\s*center/.test(footerPhone), true);
+check("phone footer hides both dots", /\.cred-footer \.cred-dot\s*\{\s*display:\s*none/.test(footerPhone), true);
+check("phone footer link does not wrap", /white-space:\s*nowrap/.test(footerPhone) || /@media \(max-width: 480px\)[\s\S]*\.cred-footer-link\s*\{\s*white-space:\s*nowrap/.test(css), true);
+check("desktop footer still wraps horizontally", /\.cred-footer\s*\{[^}]*flex-wrap:\s*wrap/.test(css), true);
+
+check("fields stay inside the static form", form.includes('id="coi-fields"') && form.includes('id="coi-submit"'), true);
+check("success panel is outside the form", html.includes('id="coi-success"') && html.indexOf('id="coi-success"') > formEnd, true);
+check("success panel starts hidden", /id="coi-success"[^>]*\bhidden\b/.test(html) || html.includes('id="coi-success" hidden'), true);
+check("success close button exists", html.includes('id="coi-done-close">Close</button>'), true);
+check("success view toggles hidden", coiScript.includes("showSuccessView") && coiScript.includes("showFormView") && coiScript.includes("successEl.hidden = false") && coiScript.includes("fieldsEl.hidden = true"), true);
+check("open resets to the form view", coiScript.includes("showFormView()") && /const open =[\s\S]*showFormView\(\)/.test(coiScript), true);
+check("form is never recreated", coiScript.includes("createElement('form')") || coiScript.includes('createElement("form")'), false);
+
 const faqAt = html.indexOf('id="faq"');
 const faqHtml = html.slice(faqAt, html.indexOf("</section>", faqAt));
 check("faq still has eight details", (faqHtml.match(/<details>/g) || []).length, 8);

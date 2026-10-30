@@ -894,35 +894,41 @@
   <div class="coi-dialog-inner">
     <button type="button" class="coi-dialog-close" id="coi-close" aria-label="Close proof of insurance dialog">✕</button>
     <h2 class="coi-title" id="coi-title">Proof of Insurance</h2>
-    <p class="coi-copy">Heftology LLC is insured through the Food Liability Insurance Program (FLIP) with general liability and liquor liability coverage. Liquor liability: $1,000,000 per occurrence / $2,000,000 aggregate. General liability: $1,000,000 per occurrence / $2,000,000 general aggregate. Venues, planners and property managers can request a certificate of insurance, and we can name your venue as an additional insured.</p>
+    <p class="coi-copy" id="coi-intro">Heftology LLC is insured through the Food Liability Insurance Program (FLIP) with general liability and liquor liability coverage. Liquor liability: $1,000,000 per occurrence / $2,000,000 aggregate. General liability: $1,000,000 per occurrence / $2,000,000 general aggregate. Venues, planners and property managers can request a certificate of insurance, and we can name your venue as an additional insured.</p>
     <form name="coi-request" method="POST" data-netlify="true" id="coi-form">
       <input type="hidden" name="form-name" value="coi-request">
       <input type="hidden" name="subject" id="coi-subject" value="Certificate of insurance request">
       <input class="hp-field" tabindex="-1" autocomplete="off" name="hp_field" aria-hidden="true">
-      <div class="coi-field">
-        <label for="coi-venue">Venue or organization name</label>
-        <input id="coi-venue" type="text" name="venue" required maxlength="120" autocomplete="organization">
+      <div class="coi-fields" id="coi-fields">
+        <div class="coi-field">
+          <label for="coi-venue">Venue or organization name</label>
+          <input id="coi-venue" type="text" name="venue" required maxlength="120" autocomplete="organization">
+        </div>
+        <div class="coi-field">
+          <label for="coi-contact-name">Contact person</label>
+          <input id="coi-contact-name" type="text" name="contactName" required maxlength="100" autocomplete="name">
+        </div>
+        <div class="coi-field">
+          <label for="coi-contact-email">Email to send the certificate to</label>
+          <input id="coi-contact-email" type="email" name="contactEmail" required maxlength="160" autocomplete="email">
+        </div>
+        <div class="coi-field">
+          <label for="coi-event-date">Event date</label>
+          <input id="coi-event-date" type="date" name="eventDate">
+        </div>
+        <div class="coi-field">
+          <label for="coi-notes">Venue requirements</label>
+          <textarea id="coi-notes" name="notes" maxlength="500" rows="4" placeholder="Does the venue require additional insured, primary and non-contributory, or waiver of subrogation wording?"></textarea>
+        </div>
+        <button type="submit" class="btn-primary coi-submit" id="coi-submit">Request certificate</button>
+        <p class="coi-status" id="coi-status" aria-live="polite"></p>
       </div>
-      <div class="coi-field">
-        <label for="coi-contact-name">Contact person</label>
-        <input id="coi-contact-name" type="text" name="contactName" required maxlength="100" autocomplete="name">
-      </div>
-      <div class="coi-field">
-        <label for="coi-contact-email">Email to send the certificate to</label>
-        <input id="coi-contact-email" type="email" name="contactEmail" required maxlength="160" autocomplete="email">
-      </div>
-      <div class="coi-field">
-        <label for="coi-event-date">Event date</label>
-        <input id="coi-event-date" type="date" name="eventDate">
-      </div>
-      <div class="coi-field">
-        <label for="coi-notes">Venue requirements</label>
-        <textarea id="coi-notes" name="notes" maxlength="500" rows="4" placeholder="Does the venue require additional insured, primary and non-contributory, or waiver of subrogation wording?"></textarea>
-      </div>
-      <button type="submit" class="btn-primary coi-submit" id="coi-submit">Request certificate</button>
-      <p class="coi-status" id="coi-status" aria-live="polite"></p>
     </form>
-    <p class="coi-fineprint">Coverage is subject to the terms, conditions and exclusions of the policies. A certificate of insurance is not a policy.</p>
+    <p class="coi-fineprint" id="coi-fineprint">Coverage is subject to the terms, conditions and exclusions of the policies. A certificate of insurance is not a policy.</p>
+    <div class="coi-success" id="coi-success" hidden>
+      <p class="coi-status" id="coi-thanks" aria-live="polite"></p>
+      <button type="button" class="coi-done-close" id="coi-done-close">Close</button>
+    </div>
   </div>
 </dialog>
 <script>
@@ -930,17 +936,44 @@ window.addEventListener('DOMContentLoaded', () => {
   const dialog = document.getElementById('coi-dialog');
   const form = document.getElementById('coi-form');
   const closeBtn = document.getElementById('coi-close');
+  const doneCloseBtn = document.getElementById('coi-done-close');
   const submitBtn = document.getElementById('coi-submit');
   const statusEl = document.getElementById('coi-status');
+  const thanksEl = document.getElementById('coi-thanks');
   const subjectEl = document.getElementById('coi-subject');
   const venueEl = document.getElementById('coi-venue');
-  if (!dialog || !form || !closeBtn || !submitBtn || !statusEl || !subjectEl || !venueEl) return;
+  const introEl = document.getElementById('coi-intro');
+  const fieldsEl = document.getElementById('coi-fields');
+  const fineprintEl = document.getElementById('coi-fineprint');
+  const successEl = document.getElementById('coi-success');
+  if (!dialog || !form || !closeBtn || !doneCloseBtn || !submitBtn || !statusEl || !thanksEl || !subjectEl || !venueEl || !introEl || !fieldsEl || !fineprintEl || !successEl) return;
 
   let opener = null;
 
+  const showFormView = () => {
+    introEl.hidden = false;
+    fieldsEl.hidden = false;
+    fineprintEl.hidden = false;
+    successEl.hidden = true;
+    statusEl.textContent = '';
+    thanksEl.textContent = '';
+    form.reset();
+    subjectEl.value = 'Certificate of insurance request';
+    submitBtn.disabled = false;
+  };
+
+  const showSuccessView = () => {
+    introEl.hidden = true;
+    fieldsEl.hidden = true;
+    fineprintEl.hidden = true;
+    successEl.hidden = false;
+    statusEl.textContent = '';
+    thanksEl.textContent = "Thanks! We'll send the certificate to the email you gave us, usually within one business day.";
+  };
+
   const open = (trigger) => {
     opener = trigger || null;
-    statusEl.textContent = '';
+    showFormView();
     dialog.showModal();
     document.body.classList.add('lightbox-open');
     closeBtn.focus();
@@ -958,6 +991,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   closeBtn.addEventListener('click', close);
+  doneCloseBtn.addEventListener('click', close);
   dialog.addEventListener('cancel', (event) => {
     event.preventDefault();
     close();
@@ -984,12 +1018,12 @@ window.addEventListener('DOMContentLoaded', () => {
         body: new URLSearchParams(new FormData(form)).toString(),
       });
       if (!res.ok) throw new Error('bad status');
-      statusEl.textContent = "Thanks! We'll send the certificate to the email you gave us, usually within one business day.";
       form.reset();
       subjectEl.value = 'Certificate of insurance request';
+      showSuccessView();
+      doneCloseBtn.focus();
     } catch {
       statusEl.textContent = 'Something went wrong. Please email carissa@heftology.com.';
-    } finally {
       submitBtn.disabled = false;
     }
   });

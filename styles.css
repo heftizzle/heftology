@@ -553,8 +553,7 @@ button.wz-chip[aria-disabled="true"] { opacity: 0.45; cursor: default; }
   margin: 0 0 1.25rem;
 }
 #coi-form {
-  display: grid;
-  gap: 0.85rem;
+  display: block;
 }
 .coi-field {
   display: grid;
@@ -623,6 +622,44 @@ button.wz-chip[aria-disabled="true"] { opacity: 0.45; cursor: default; }
   .coi-dialog-inner {
     padding: 1.25rem 1rem 1.15rem;
   }
+}
+#coi-form .coi-fields {
+  display: grid;
+  gap: 0.85rem;
+}
+.coi-success {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.coi-success[hidden],
+#coi-intro[hidden],
+#coi-fields[hidden],
+#coi-fineprint[hidden] {
+  display: none !important;
+}
+.coi-done-close {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0.55rem 1.1rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.28);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.coi-done-close:hover {
+  border-color: var(--pink-light);
+  color: var(--pink-light);
+}
+.coi-done-close:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
 }
 .cred-card {
   background: rgba(255,255,255,0.03);
@@ -749,6 +786,21 @@ button.wz-chip[aria-disabled="true"] { opacity: 0.45; cursor: default; }
   border-radius: 50%;
   background: rgba(214,59,143,0.35);
   flex-shrink: 0;
+}
+@media (max-width: 480px) {
+  .cred-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+  }
+  .cred-footer .cred-dot {
+    display: none;
+  }
+  .cred-footer-link {
+    white-space: nowrap;
+  }
 }
 
 /* ─── FAQ ─── */

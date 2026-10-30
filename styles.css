@@ -578,7 +578,7 @@ button.wz-chip[aria-disabled="true"] { opacity: 0.45; cursor: default; }
   background: rgba(255,255,255,0.04);
   color: var(--white);
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 300;
 }
 .coi-field textarea {

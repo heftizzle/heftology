@@ -445,8 +445,184 @@ button.wz-chip[aria-disabled="true"] { opacity: 0.45; cursor: default; }
   gap: 1.25rem;
   text-align: center;
 }
-.cred-card--guild {
+.cred-card--guild,
+.cred-card--insurance {
   grid-column: 1 / -1;
+}
+.cred-coi-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.35rem;
+  min-height: 44px;
+  padding: 0.55rem 1.1rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pink-light);
+  background: transparent;
+  border: 1px solid rgba(214,59,143,0.45);
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+}
+.cred-coi-btn:hover {
+  border-color: var(--pink-light);
+  background: rgba(214,59,143,0.12);
+  color: var(--white);
+}
+.cred-coi-btn:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+}
+.cred-footer-link {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+.cred-footer-link:hover {
+  color: var(--pink-light);
+}
+.cred-footer-link:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+  color: var(--pink-light);
+}
+#coi-dialog {
+  width: min(100vw - 1.5rem, 34rem);
+  max-height: min(92vh, 44rem);
+  margin: auto;
+  padding: 0;
+  border: 1px solid rgba(214,59,143,0.28);
+  border-radius: 16px;
+  background: var(--black-mid);
+  color: var(--white);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.65);
+  overflow: auto;
+}
+#coi-dialog::backdrop {
+  background: rgba(0,0,0,0.72);
+}
+.coi-dialog-inner {
+  position: relative;
+  padding: 1.5rem 1.25rem 1.35rem;
+  text-align: left;
+}
+.coi-dialog-close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  color: var(--white);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.coi-dialog-close:hover {
+  border-color: var(--pink-light);
+  color: var(--pink-light);
+}
+.coi-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1.1rem, 4vw, 1.35rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 2.5rem 0.9rem 0;
+  line-height: 1.2;
+}
+.coi-copy {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.72);
+  margin: 0 0 1.25rem;
+}
+#coi-form {
+  display: grid;
+  gap: 0.85rem;
+}
+.coi-field {
+  display: grid;
+  gap: 0.35rem;
+}
+.coi-field label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pink);
+}
+.coi-field input,
+.coi-field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  color: var(--white);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 300;
+}
+.coi-field textarea {
+  min-height: 6.5rem;
+  resize: vertical;
+}
+.coi-field input::placeholder,
+.coi-field textarea::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+.coi-submit {
+  width: 100%;
+  text-align: center;
+  margin-top: 0.25rem;
+}
+.coi-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.coi-status {
+  min-height: 1.25rem;
+  margin: 0;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--pink-light);
+}
+.coi-fineprint {
+  margin: 1rem 0 0;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.38);
+}
+@media (prefers-reduced-motion: reduce) {
+  #coi-dialog,
+  #coi-dialog::backdrop {
+    transition: none;
+  }
+}
+@media (max-width: 480px) {
+  .coi-dialog-inner {
+    padding: 1.25rem 1rem 1.15rem;
+  }
 }
 .cred-card {
   background: rgba(255,255,255,0.03);

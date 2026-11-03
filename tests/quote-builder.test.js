@@ -113,7 +113,10 @@ check("no recap strip", form.includes("qb-strip"), false);
 check("no step dots", form.includes("wz-dot"), false);
 check("quote builder has no inline svg", /<svg\b/i.test(form), false);
 
-const optionEmoji = ["🎉", "💍", "💼", "🍹", "✨", "🏖️", "💃", "🏨", "🏊", "⛳", "🏠", "🏡", "🌆", "⛵", "🌳", "🏭", "🏛️", "🍽️", "🍷", "🏢", "🥂", "🤔", "📞", "💬", "✉️", "✓"];
+const optionEmoji = [
+  "🎉", "💍", "💼", "🍹", "✨", "🏖️", "💃", "🏨", "🏊", "⛳", "🏠", "🏡", "🌆", "⛵", "🌳", "🏭", "🏛️", "🍽️", "🍷", "🏢", "🥂", "🤔", "📞", "💬", "✉️", "✓",
+  "💐", "🎂", "🎓", "🎀", "🕎", "🎊", "🍼", "🎄", "🤝", "🏈", "🙌", "🌾", "🍊", "⛪", "🏘️", "🖼️", "🪴", "🏫", "🔑", "🏰", "⚓", "🏝️", "🎪",
+];
 const formWithoutHidden = form.replace(/<span\b[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/span>/g, "");
 optionEmoji.forEach((emoji) => {
   check(emoji + " sits in an aria-hidden span", new RegExp('<span\\b[^>]*aria-hidden="true"[^>]*>' + emoji + "</span>").test(form), true);
@@ -132,6 +135,21 @@ const designerVenueBlock = html.slice(html.indexOf('aria-labelledby="cw-legend-4
 const locationBlock = form.slice(form.indexOf('aria-labelledby="venue-label"'), form.indexOf('id="cityZip"'));
 check("designer venue emoji matches the quote builder", hiddenEmoji(designerVenueBlock), hiddenEmoji(locationBlock).slice(0, designerVenues.length));
 check("readme keeps the venue lists in sync", readme.includes("venue lists stay in sync"), true);
+
+const designerThemes = [...html.matchAll(/data-target="theme" data-value="([^"]+)"/g)].map((item) => item[1]);
+const eventTypeValues = [...form.matchAll(/name="eventType" value="([^"]+)"/g)].map((item) => item[1]);
+const sharedDesignerThemes = designerThemes.filter((value) => value !== "Other").map((value) => value.toLowerCase());
+const sharedEventTypes = eventTypeValues
+  .filter((value) => value !== "Other" && value !== "Cocktail Class")
+  .map((value) => value.toLowerCase().replace(/ \/ reception$/, ""));
+check("event-type lists stay in sync", sharedEventTypes, sharedDesignerThemes);
+check("eventType keeps Quinceañera with ñ", eventTypeValues.includes("Quinceañera"), true);
+check("designer keeps Quinceañera with ñ", designerThemes.includes("Quinceañera"), true);
+const designerThemeBlock = html.slice(html.indexOf('aria-labelledby="cw-legend-1"'), html.indexOf('id="cw-legend-2"'));
+const eventTypeBlock = form.slice(form.indexOf('class="wz-chips qb-compact qb-events"'), form.indexOf('id="field-date"'));
+const sharedEventEmoji = hiddenEmoji(eventTypeBlock).filter((emoji) => emoji !== "🍹");
+check("designer theme emoji matches the quote builder", hiddenEmoji(designerThemeBlock), sharedEventEmoji);
+check("readme keeps the event-type lists in sync", readme.includes("event-type lists stay in sync"), true);
 
 check("designer result sends the venue", designer.includes("venue:"), true);
 check("designer venue fills an empty choice", qb.applyDesignerVenue({ current: "", source: "", incoming: "Beach" }), { selection: "Beach", source: "designer" });

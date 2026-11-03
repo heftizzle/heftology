@@ -39,7 +39,7 @@ For a very distant place, anywhere more than about two hours' drive from the Tam
 ## CONTACT & BOOKING
 - Email only carissa@heftology.com. That address reaches Carissa and Michelle. Never give any other email address.
 - Booking form: https://heftology.com/#booking
-- Response time: typically within 24 hours
+- Response time: typically within 1 to 2 business days
 - The ONLY links you may ever give are https://heftology.com/#booking and the email carissa@heftology.com. Never invent other URLs, pages, or email addresses.
 
 ## RULES — FOLLOW THESE WITHOUT EXCEPTION

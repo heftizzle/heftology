@@ -46,8 +46,33 @@ check("packageInterest is one radio group", count("packageInterest"), 5);
 check("headlineCocktail once", count("headlineCocktail"), 1);
 check("serviceHoursUnsure once", count("serviceHoursUnsure"), 1);
 check("serviceHours once", count("serviceHours"), 1);
-check("eventType is one radio group", count("eventType"), 5);
-check("location is one radio group", count("location"), 16);
+check("eventType is one radio group", count("eventType"), 21);
+check("location is one radio group", count("location"), 28);
+const eventTypeValues = [...form.matchAll(/name="eventType" value="([^"]+)"/g)].map((item) => item[1]);
+check("eventType values stay ordered", eventTypeValues, [
+  "Wedding / Reception",
+  "Engagement Party",
+  "Rehearsal Dinner",
+  "Bridal Shower",
+  "Bachelorette",
+  "Birthday",
+  "Anniversary",
+  "Baby Shower",
+  "Graduation",
+  "Quinceañera",
+  "Bar / Bat Mitzvah",
+  "Retirement Party",
+  "Housewarming",
+  "Reunion",
+  "Game Day / Watch Party",
+  "Holiday Party",
+  "Corporate Event",
+  "Employee Appreciation",
+  "Private Party",
+  "Cocktail Class",
+  "Other",
+]);
+check("eventType keeps Quinceañera with ñ", eventTypeValues.includes("Quinceañera"), true);
 check("contactPreference is one radio group", count("contactPreference"), 3);
 
 check("start time input", /<input id="startTime" name="startTime" type="time" step="900" required\b/.test(form), true);

@@ -1987,6 +1987,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 }
 .qb-venues > .wz-chip,
 .cw-venues > .wz-chip { padding-right: 2rem; }
+.qb-events > .wz-chip,
+.cw-choices > .wz-chip[data-target="theme"] { padding-right: 1.25rem; }
 .qb-guest-picks { flex-direction: row; flex-wrap: wrap; margin-top: 0.85rem; }
 .qb-guest-picks .wz-chip {
   flex: 1 1 calc(33.333% - 0.65rem);

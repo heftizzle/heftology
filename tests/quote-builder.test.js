@@ -150,6 +150,59 @@ const eventTypeBlock = form.slice(form.indexOf('class="wz-chips qb-compact qb-ev
 const sharedEventEmoji = hiddenEmoji(eventTypeBlock).filter((emoji) => emoji !== "🍹");
 check("designer theme emoji matches the quote builder", hiddenEmoji(designerThemeBlock), sharedEventEmoji);
 check("readme keeps the event-type lists in sync", readme.includes("event-type lists stay in sync"), true);
+function cssRules(source) {
+  const rules = [];
+  const re = /([^{}]+)\{([^{}]*)\}/g;
+  let match;
+  while ((match = re.exec(source))) {
+    rules.push({
+      selectors: match[1].replace(/\/\*[\s\S]*?\*\//g, "").trim(),
+      body: match[2].trim(),
+      index: match.index,
+    });
+  }
+  return rules;
+}
+function selectorParts(selectors) {
+  return selectors.split(",").map((part) => part.trim().replace(/\s+/g, " "));
+}
+const styleRules = cssRules(css);
+const eventThemeRule = styleRules.find((rule) => {
+  const parts = selectorParts(rule.selectors);
+  return parts.includes(".qb-events > .wz-chip") && parts.includes('.cw-choices > .wz-chip[data-target="theme"]');
+});
+check("event/theme padding rule exists", !!eventThemeRule, true);
+check(
+  "event/theme padding rule has only padding-right 1.25rem",
+  !!(eventThemeRule && eventThemeRule.body.replace(/\s+/g, " ").trim().replace(/;$/, "") === "padding-right: 1.25rem"),
+  true
+);
+check(
+  "event/theme padding rule excludes venues",
+  !!(eventThemeRule && !/\.qb-venues|\.cw-venues/.test(eventThemeRule.selectors)),
+  true
+);
+const compactChipAt = css.indexOf(".qb-compact > .wz-chip {");
+check(
+  "event/theme padding comes after compact chip rule",
+  !!(eventThemeRule && compactChipAt !== -1 && eventThemeRule.index > compactChipAt),
+  true
+);
+const venueRule = styleRules.find((rule) => {
+  const parts = selectorParts(rule.selectors);
+  return parts.includes(".qb-venues > .wz-chip") && parts.includes(".cw-venues > .wz-chip");
+});
+check("venue padding rule exists", !!venueRule, true);
+check(
+  "venue padding rule is exactly 2rem",
+  !!(venueRule && venueRule.body.replace(/\s+/g, " ").trim().replace(/;$/, "") === "padding-right: 2rem"),
+  true
+);
+check(
+  "venue padding rule has only venue selectors",
+  !!(venueRule && selectorParts(venueRule.selectors).every((part) => part === ".qb-venues > .wz-chip" || part === ".cw-venues > .wz-chip") && selectorParts(venueRule.selectors).length === 2),
+  true
+);
 
 check("designer result sends the venue", designer.includes("venue:"), true);
 check("designer venue fills an empty choice", qb.applyDesignerVenue({ current: "", source: "", incoming: "Beach" }), { selection: "Beach", source: "designer" });

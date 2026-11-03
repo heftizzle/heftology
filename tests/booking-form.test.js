@@ -62,9 +62,9 @@ check("eventType values stay ordered", eventTypeValues, [
   "Quinceañera",
   "Bar / Bat Mitzvah",
   "Retirement Party",
-  "Housewarming",
+  "House Warming",
   "Reunion",
-  "Game Day / Watch Party",
+  "Game Day / Party",
   "Holiday Party",
   "Corporate Event",
   "Employee Appreciation",
@@ -92,6 +92,8 @@ check("heard about options", [...heard.matchAll(/<option\b[^>]*>([^<]*)<\/option
 ]);
 check("notes placeholder", form.includes('placeholder="Best time to reach you, 1-2 custom cocktails?, zero-proof options, anything else we should know."'), true);
 check("no start time chips", form.includes("data-time"), false);
+const guestChipValues = [...form.matchAll(/data-guests="([^"]+)"/g)].map((item) => item[1]);
+check("guest chips stay ordered", guestChipValues, ["25", "50", "75", "100", "150", "150+", "200", "250", "300+"]);
 check("guest chips have no name", [...form.matchAll(/<button\b[^>]*data-guests="[^"]+"[^>]*>/g)].every((item) => !/\sname=/.test(item[0])), true);
 
 for (const name of ["theme", "colors", "extras"]) {

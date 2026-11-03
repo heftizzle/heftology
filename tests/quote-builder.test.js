@@ -150,6 +150,11 @@ const eventTypeBlock = form.slice(form.indexOf('class="wz-chips qb-compact qb-ev
 const sharedEventEmoji = hiddenEmoji(eventTypeBlock).filter((emoji) => emoji !== "🍹");
 check("designer theme emoji matches the quote builder", hiddenEmoji(designerThemeBlock), sharedEventEmoji);
 check("readme keeps the event-type lists in sync", readme.includes("event-type lists stay in sync"), true);
+check(
+  "event and theme chips reserve checkmark padding",
+  /\.qb-events\s*>\s*\.wz-chip[\s\S]*?\.cw-choices\s*>\s*\.wz-chip\[data-target="theme"\][\s\S]*?padding-right:\s*1\.25rem/.test(css),
+  true
+);
 
 check("designer result sends the venue", designer.includes("venue:"), true);
 check("designer venue fills an empty choice", qb.applyDesignerVenue({ current: "", source: "", incoming: "Beach" }), { selection: "Beach", source: "designer" });

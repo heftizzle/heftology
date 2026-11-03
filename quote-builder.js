@@ -304,7 +304,9 @@ if (typeof document !== "undefined") {
     var receipt = document.getElementById("qb-receipt");
     var packageSource = "auto";
     var locationSource = "";
+    var GUEST_ESTIMATES = { "150+": 151, "300+": 300 };
     var guestEstimate = false;
+    var guestEstimateKey = "";
     var currentStep = 1;
 
     var missingCopy = {
@@ -464,7 +466,10 @@ if (typeof document !== "undefined") {
     }
 
     function setGuests(value, keepEstimate) {
-      if (!keepEstimate) guestEstimate = false;
+      if (!keepEstimate) {
+        guestEstimate = false;
+        guestEstimateKey = "";
+      }
       guestsInput.value = String(Math.min(500, Math.max(1, value)));
       refresh();
     }
@@ -473,7 +478,10 @@ if (typeof document !== "undefined") {
       var value = guestsInput ? guestsInput.value : "";
       Array.prototype.forEach.call(form.querySelectorAll("[data-guests]"), function (chip) {
         var key = chip.getAttribute("data-guests");
-        var on = key === "150+" ? guestEstimate && value === "151" : key === value;
+        var estimateValue = GUEST_ESTIMATES[key];
+        var on = estimateValue
+          ? guestEstimate && guestEstimateKey === key && value === String(estimateValue)
+          : key === value;
         chip.classList.toggle("is-selected", on);
         chip.setAttribute("aria-pressed", on ? "true" : "false");
       });
@@ -647,7 +655,13 @@ if (typeof document !== "undefined") {
       var target = event.target;
       if (target && target.name === "packageInterest") packageSource = "user";
       if (target && target.name === "location") locationSource = "user";
-      if (target && target === guestsInput && guestsInput.value !== "151") guestEstimate = false;
+      if (target && target === guestsInput) {
+        var estimateValue = guestEstimateKey ? GUEST_ESTIMATES[guestEstimateKey] : null;
+        if (!estimateValue || guestsInput.value !== String(estimateValue)) {
+          guestEstimate = false;
+          guestEstimateKey = "";
+        }
+      }
       refresh();
     }
 
@@ -882,9 +896,11 @@ if (typeof document !== "undefined") {
     Array.prototype.forEach.call(form.querySelectorAll("[data-guests]"), function (chip) {
       chip.addEventListener("click", function () {
         var key = chip.getAttribute("data-guests");
-        if (key === "150+") {
+        var estimateValue = GUEST_ESTIMATES[key];
+        if (estimateValue) {
           guestEstimate = true;
-          setGuests(151, true);
+          guestEstimateKey = key;
+          setGuests(estimateValue, true);
           if (guestsInput) {
             guestsInput.focus();
             if (guestsInput.select) guestsInput.select();

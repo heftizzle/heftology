@@ -20,7 +20,28 @@ const context = {};
 vm.createContext(context);
 vm.runInContext(block[1], context);
 
-const themes = ["Wedding", "Bridal shower", "Bachelorette", "Birthday", "Anniversary", "Corporate event", "Holiday party", "Other"];
+const themes = [
+  "Wedding",
+  "Engagement party",
+  "Rehearsal dinner",
+  "Bridal shower",
+  "Bachelorette",
+  "Birthday",
+  "Anniversary",
+  "Baby shower",
+  "Graduation",
+  "Quinceañera",
+  "Bar / Bat Mitzvah",
+  "Retirement party",
+  "Housewarming",
+  "Reunion",
+  "Game day / watch party",
+  "Holiday party",
+  "Corporate event",
+  "Employee appreciation",
+  "Private party",
+  "Other",
+];
 const colors = ["Blush & sage", "Navy & gold", "Black & white", "Tropical", "Jewel tones", "Earth tones", "Other"];
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const drinks = ["Not too sweet", "Fruity", "Citrus", "Spicy", "Smoky", "Tequila", "Whiskey", "Vodka", "Gin", "Rum", "Zero-proof", "No coconut"];

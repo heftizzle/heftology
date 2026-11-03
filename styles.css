@@ -1986,49 +1986,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   font-size: 0.75rem;
 }
 .qb-venues > .wz-chip,
-.cw-venues > .wz-chip {
-  padding-right: 2rem;
-  font-size: 0.72rem;
-  gap: 0.25rem;
-}
-.qb-venues > .wz-chip > span[aria-hidden="true"]:not(.wz-check),
-.cw-venues > .wz-chip > span[aria-hidden="true"]:not(.wz-check) {
-  font-size: 0.9rem;
-}
-.qb-venues > .wz-chip > span:not(.wz-check):not([aria-hidden="true"]),
-.cw-venues > .wz-chip > span:not(.wz-check):not([aria-hidden="true"]) {
-  flex: 1 1 0%;
-  min-width: 0;
-  width: 0;
-}
-.qb-venues > .wz-chip .wz-check,
-.cw-venues > .wz-chip .wz-check {
-  font-size: 0.62rem;
-  top: 0.08rem;
-  right: 0.14rem;
-}
+.cw-venues > .wz-chip { padding-right: 2rem; }
 .qb-events > .wz-chip,
-.cw-choices > .wz-chip[data-target="theme"] {
-  padding-right: 1.25rem;
-  font-size: 0.68rem;
-  gap: 0.25rem;
-}
-.qb-events > .wz-chip > span[aria-hidden="true"]:not(.wz-check),
-.cw-choices > .wz-chip[data-target="theme"] > span[aria-hidden="true"]:not(.wz-check) {
-  font-size: 0.9rem;
-}
-.qb-events > .wz-chip > span:not(.wz-check):not([aria-hidden="true"]),
-.cw-choices > .wz-chip[data-target="theme"] > span:not(.wz-check):not([aria-hidden="true"]) {
-  flex: 1 1 0%;
-  min-width: 0;
-  width: 0;
-}
-.qb-events > .wz-chip .wz-check,
-.cw-choices > .wz-chip[data-target="theme"] .wz-check {
-  font-size: 0.62rem;
-  top: 0.08rem;
-  right: 0.14rem;
-}
+.cw-choices > .wz-chip[data-target="theme"] { padding-right: 1.25rem; }
 .qb-guest-picks { flex-direction: row; flex-wrap: wrap; margin-top: 0.85rem; }
 .qb-guest-picks .wz-chip {
   flex: 1 1 calc(33.333% - 0.65rem);
